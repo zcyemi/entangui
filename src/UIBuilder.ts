@@ -4,7 +4,7 @@ import eventListenersModule from 'snabbdom/modules/eventlisteners';
 import propsModule from 'snabbdom/modules/props';
 import styleModule from 'snabbdom/modules/style';
 import { toVNode } from 'snabbdom/tovnode';
-import { VNode } from 'snabbdom/vnode';
+import vnode, { VNode } from 'snabbdom/vnode';
 
 var patchConfig = init([
     propsModule,
@@ -111,6 +111,8 @@ export abstract class UIContext{
         window.requestAnimationFrame(this.OnUpdate.bind(this));
     }
 
+    private pushNode(v:VNode){this.builder.pushNode(v)}
+
 
 
     private wrapEvent(f?:Action):()=>void{
@@ -128,10 +130,16 @@ export abstract class UIContext{
 
 
     public button(text:string,onclick?:Action){
-        let btn = h('button',{on:{}});
-
-        btn.data.on.click = this.wrapEvent(onclick);
-
+        let btn = h('button',
+        {
+            class:{
+                'btn':true,
+                'btn-primary':true
+            },
+            on:{
+                click: this.wrapEvent(onclick),
+            }
+        });
 
         btn.text = text;
         this.builder.pushNode(btn);
@@ -153,7 +161,19 @@ export abstract class UIContext{
 
     // public toggle(text:string,value:boolean){}
 
-    // public alert(text:string){}
+    public alert(text:string){
+
+        let alert=  h('div',{
+            class:{
+                'alert':true,
+                'alert-primary':true
+            },
+            attrs:{
+                role:'alert'
+            }
+        },text);
+        this.builder.pushNode(alert);
+    }
 
     // public label(text:string){};
 
@@ -166,6 +186,50 @@ export abstract class UIContext{
     // public inputEmail(lable:string){
     // }
 
+
+    public beginForm(){
+        let root = h('form');
+        this.pushNode(root);
+        this.builder.beginChildren();
+
+
+    }
+
+
+    public formInput(label:string,id:string,value:string,helper?:string){
+        let item = h('div',{class:{'form-group':true}},[
+            h('label',{},label),
+            h('input',{
+                class:{'form-control':true},
+                attrs:{
+                    id:id
+                },
+                text:value
+            })
+        ]);
+        this.pushNode(item);
+    }
+
+    public endForm(){
+        this.builder.endChildren();
+    }
+
+
+    public beginGroup(padding:any = '3px'){
+        let wrap = h('div',{
+            style:{
+                padding:padding
+            }
+        });
+
+        this.pushNode(wrap);
+        this.builder.beginChildren();
+    }
+
+
+    public endGroup(){
+        this.builder.endChildren();
+    }
 
     public update(){
         console.log("update ui");
