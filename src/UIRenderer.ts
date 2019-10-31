@@ -6,7 +6,7 @@ import styleModule from 'snabbdom/modules/style';
 import toVNode from 'snabbdom/tovnode';
 import { VNode } from 'snabbdom/vnode';
 import { UIBuilder } from "./UIBuilder";
-import { UIDrawCmdType, UIFrameData } from "./UIProtocol";
+import { UIDrawCmdType, UIFrameData, UIEventData } from "./UIProtocol";
 
 var patchConfig = init([
     propsModule,
@@ -23,12 +23,23 @@ export class UIRenderer{
 
     private m_builder: UIBuilder;
 
+
+    public MessageEventCallback: (evt:UIEventData)=>void;
+
     public constructor(html:HTMLElement){
         this.m_html = html;
         this.m_vnodePrev = toVNode(html);
 
-        this.m_builder = new UIBuilder();
+        this.m_builder = new UIBuilder(this.onMessageEvent.bind(this));
     }
+
+    private onMessageEvent(evt:UIEventData){
+        let cb = this.MessageEventCallback;
+        if(cb !=null){
+            cb(evt);
+        }
+    }
+
 
 
     public onUIFrame(data:UIFrameData){

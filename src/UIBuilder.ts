@@ -4,6 +4,7 @@ import eventListenersModule from 'snabbdom/modules/eventlisteners';
 import propsModule from 'snabbdom/modules/props';
 import styleModule from 'snabbdom/modules/style';
 import { VNode } from 'snabbdom/vnode';
+import { UIEventData } from './UIProtocol';
 
 var patchConfig = init([
     propsModule,
@@ -26,8 +27,11 @@ export class UIBuilder {
 
     private curChidrenList: (VNode | string)[];
 
+    private m_evtCallback:(evtdata:UIEventData)=>void;
 
-    public constructor() {
+
+    public constructor(eventCallback:(evtdata:UIEventData)=>void) {
+        this.m_evtCallback = eventCallback;
         this.resetRootNode();
     }
 
@@ -84,13 +88,34 @@ export class UIBuilder {
         this.endChildren();
     }
 
+    private wrapEvent(id:string,event:string):Function{
+        var evt = new UIEventData();
+        evt.id = id;
+        evt.event = event;
+        return ()=>{this.emiEvent(evt)}
+    }
+
+    private emiEvent(evt:UIEventData){
+
+        if(this.m_evtCallback!=null){
+            this.m_evtCallback(evt);
+        }
+    }
+
     public cmdButton(options: any) {
+
+        var listeners:any = {};
+        if(options.click){
+            listeners.click = this.wrapEvent(options.id,'click');
+        }
+
         let btn = h('button',
             {
                 class: {
                     'btn': true,
                     'btn-primary': true
                 },
+                on:listeners
             });
         btn.text = options.text;
         this.pushNode(btn);

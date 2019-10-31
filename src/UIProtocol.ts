@@ -11,7 +11,11 @@ export enum UIDrawCmdType{
 export class UIFrameData{
     public frameid:number;
     public draw_commands:UIDrawCmd[] = [];
-    public event_reg:UIEventReg[] = [];
+}
+
+export class UIEventData{
+    public id:string;
+    public event:string;
 }
 
 export class UIDrawCmd{
@@ -19,18 +23,34 @@ export class UIDrawCmd{
     public parameters:object;
 }
 
-export class UIEventReg{
+export class UIEventListener{
     public id:string;
     public type:string;
 }
 
 
-export class UIFrameDataBuilder{
+
+export class UIContext{
 
 
     private m_data:UIFrameData;
+    
+
+    private m_eventRegister:Map<String,Map<String,Function>> = new Map();
+
 
     public constructor(){
+
+    }
+
+    public dispatchEvent(evt:UIEventData){
+        let registry = this.m_eventRegister;
+        let idmap = registry.get(evt.id);
+        if(idmap == null) return;
+        var action:Function = idmap.get(evt.event);
+        if(action !=null){
+            action();
+        }
 
     }
 
@@ -42,9 +62,14 @@ export class UIFrameDataBuilder{
         return this.m_data;
     }
 
-    public button(text:string){
+    public button(id:string,text:string,click?:Function){
+        if(click !=null){
+            this.pushEventListener(id,'click',click);
+        }
         return this.pushCmd(UIDrawCmdType.button,{
-            text:text
+            text:text,
+            click:click!=null,
+            id:id
         });
     }
 
@@ -67,10 +92,28 @@ export class UIFrameDataBuilder{
         cmd.cmd = type;
         cmd.parameters =parameter;
 
+
+
         this.m_data.draw_commands.push(
             cmd
         )
         return this;
+    }
+
+    public pushEventListener(id:string,event:string,action:Function){
+        var listener = new UIEventListener();
+        listener.id = id;
+        listener.type = event;
+
+
+        let registry = this.m_eventRegister;
+        var idmap = registry.get(id);
+        if(idmap == null){
+            idmap = new Map();
+            registry.set(id,idmap);
+        }
+
+        idmap.set(event,action);
     }
 }
 

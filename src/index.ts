@@ -1,6 +1,6 @@
-import { UIRenderer } from "./UIClient";
-import { UIFrameDataBuilder } from "./UIProtocol";
-import { UIContext } from "./UIContext";
+import { UIRenderer } from "./UIRenderer";
+import { UIContext } from "./UIProtocol";
+import { UIContainer } from "./UIContainer";
 
 var container = document.getElementById("container");
 
@@ -43,27 +43,38 @@ var container = document.getElementById("container");
 // ctx.patch(container);
 // ctx.update();
 
-class TestUI extends UIContext{
+class TestUI extends UIContainer{
 
-    protected onGUI(builder:UIFrameDataBuilder){
-        
+
+    private m_showbtn2:boolean = false;
+
+    protected onGUI(builder:UIContext){
+
+        var self = this;
+        builder.beginGroup('5px');
+        {
+            builder.button("btn1",'clickme1',()=>{
+                self.m_showbtn2 = !self.m_showbtn2;
+            });
+
+            if(self.m_showbtn2){
+                builder.button("btn2",'clickme2');
+            }
+            builder.alert("test alert");
+        }
+        builder.endFrame();
     }
+
 }
 
+var testui = new TestUI();
+
+
 var renderer = new UIRenderer(container);
+renderer.MessageEventCallback = (evt)=>{
+    testui.context.dispatchEvent(evt);
+    renderer.onUIFrame(testui.update());
+}
 
 
-var builder = new UIFrameDataBuilder();
-
-
-
-
-builder.beginFrame();
-builder.beginGroup('5px');
-builder.button('Click me1').button('Click me2').alert('test alert')
-builder.endGroup();
-
-var data = builder.endFrame();
-
-
-renderer.onUIFrame(data);
+renderer.onUIFrame(testui.update());
