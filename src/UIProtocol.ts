@@ -15,7 +15,7 @@ export class UIFrameData{
 
 export class UIEventData{
     public id:string;
-    public event:string;
+    public evt:string;
 }
 
 export class UIDrawCmd{
@@ -47,7 +47,7 @@ export class UIContext{
         let registry = this.m_eventRegister;
         let idmap = registry.get(evt.id);
         if(idmap == null) return;
-        var action:Function = idmap.get(evt.event);
+        var action:Function = idmap.get(evt.evt);
         if(action !=null){
             action();
         }

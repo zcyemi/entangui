@@ -91,7 +91,7 @@ export class UIBuilder {
     private wrapEvent(id:string,event:string):Function{
         var evt = new UIEventData();
         evt.id = id;
-        evt.event = event;
+        evt.evt = event;
         return ()=>{this.emiEvent(evt)}
     }
 

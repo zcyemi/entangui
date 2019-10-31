@@ -1,6 +1,7 @@
 import { UIRenderer } from "./UIRenderer";
 import { UIContext } from "./UIProtocol";
 import { UIContainer } from "./UIContainer";
+import { WebSockertClient } from "./WebSocketClient";
 
 var container = document.getElementById("container");
 
@@ -70,11 +71,19 @@ class TestUI extends UIContainer{
 var testui = new TestUI();
 
 
+
+var ws =new WebSockertClient();
+
 var renderer = new UIRenderer(container);
 renderer.MessageEventCallback = (evt)=>{
-    testui.context.dispatchEvent(evt);
-    renderer.onUIFrame(testui.update());
+    ws.send(JSON.stringify(evt));
 }
 
 
 renderer.onUIFrame(testui.update());
+
+ws.onReceive = (msg)=>{
+    var data = JSON.parse(msg);
+    renderer.onUIFrame(data);
+}
+ws.connect("127.0.0.1",5500);
