@@ -1,4 +1,23 @@
+export enum UIMessageType{
+    init = 0,
+    frame = 1,
+    evt = 2,
+}
 
+export class UIMessage{
+    public type:UIMessageType;
+    public ts:number;
+    public data:any;
+
+    public constructor(type:UIMessageType,data:any){
+        this.type = type;
+        this.data = data;
+    }
+
+    public attachTs(){
+        this.ts = new Date().valueOf();
+    }
+}
 
 export enum UIDrawCmdType{
     begin_group,
@@ -28,30 +47,22 @@ export class UIEventListener{
     public type:string;
 }
 
-
-
 export class UIContext{
-
-
     private m_data:UIFrameData;
-    
-
     private m_eventRegister:Map<String,Map<String,Function>> = new Map();
-
-
     public constructor(){
-
     }
 
-    public dispatchEvent(evt:UIEventData){
+    public dispatchEvent(evt:UIEventData):boolean{
         let registry = this.m_eventRegister;
         let idmap = registry.get(evt.id);
-        if(idmap == null) return;
+        if(idmap == null) return false;
         var action:Function = idmap.get(evt.evt);
         if(action !=null){
             action();
+            return true;
         }
-
+        return false;
     }
 
     public beginFrame(){
@@ -116,4 +127,3 @@ export class UIContext{
         idmap.set(event,action);
     }
 }
-

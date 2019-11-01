@@ -1,52 +1,12 @@
-import { UIRenderer } from "./UIRenderer";
+import { UIRenderer, UISourceSocket, UISourceLocal, ServiceBind } from "./UIService";
 import { UIContext } from "./UIProtocol";
 import { UIContainer } from "./UIContainer";
 import { WebSockertClient } from "./WebSocketClient";
 
 var container = document.getElementById("container");
-
-// export class TestUI extends UIContext {
-
-//     private showButton: boolean = false;
-
-//     public constructor() {
-//         super();
-//     }
-
-//     DrawUI() {
-
-//         this.beginGroup('5px');
-//         {
-//             this.button("Click me1", () => {
-//                 this.showButton = !this.showButton;
-//             });
-
-//             if (this.showButton) {
-//                 this.button("Click me2");
-//             }
-
-//             this.alert("Warning nothing error");
-
-
-//             this.beginForm();
-
-//             this.formInput("Test Input", 'test input', 'hello world');
-//             this.formInput("Test Input", 'test input', 'hello world');
-//             this.formInput("Test Input", 'test input', 'hello world');
-//             this.formInput("Test Input", 'test input', 'hello world');
-//             this.endForm();
-//         }
-//         this.endGroup();
-//     }
-// }
-
-// var ctx = new TestUI();
-// ctx.patch(container);
-// ctx.update();
+var menubar = document.getElementById('menubar');
 
 class TestUI extends UIContainer{
-
-
     private m_showbtn2:boolean = false;
 
     protected onGUI(builder:UIContext){
@@ -65,25 +25,15 @@ class TestUI extends UIContainer{
         }
         builder.endFrame();
     }
-
 }
 
-var testui = new TestUI();
+var renderMenuBar = new UIRenderer(menubar);
+var uisourecLocal = new UISourceLocal(new TestUI());
 
+ServiceBind(uisourecLocal,renderMenuBar);
 
+var renderContainer = new UIRenderer(container);
+var uisource =new UISourceSocket("127.0.0.1",5500);
 
-var ws =new WebSockertClient();
+ServiceBind(uisource,renderContainer);
 
-var renderer = new UIRenderer(container);
-renderer.MessageEventCallback = (evt)=>{
-    ws.send(JSON.stringify(evt));
-}
-
-
-renderer.onUIFrame(testui.update());
-
-ws.onReceive = (msg)=>{
-    var data = JSON.parse(msg);
-    renderer.onUIFrame(data);
-}
-ws.connect("127.0.0.1",5500);
