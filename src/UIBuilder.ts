@@ -102,6 +102,21 @@ export class UIBuilder {
         }
     }
 
+    public cmdText(options:any){
+        let text = h('span',{}, options['text']);
+        this.pushNode(text);
+    }
+
+    public cmdBandage(options:any){
+        let bandage = h('span', {
+            class: {
+                'badge': true,
+                'badge-secondary': true
+            }
+        }, options['text']);
+        this.pushNode(bandage);
+    }
+
     public cmdButton(options: any) {
 
         var listeners:any = {};

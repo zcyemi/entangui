@@ -25,6 +25,7 @@ export enum UIDrawCmdType{
     button,
     text,
     alert,
+    bandage,
 }
 
 export class UIFrameData{
@@ -84,6 +85,16 @@ export class UIContext{
         });
     }
 
+    public text(text:string){
+        return this.pushCmd(UIDrawCmdType.text,{
+            text:text
+        });
+    }
+
+    public bandage(text:string){
+        return this.pushCmd(UIDrawCmdType.bandage,{text:text});
+    }
+
     public alert(text:string){
         return this.pushCmd(UIDrawCmdType.alert,{
             text:text
@@ -103,8 +114,6 @@ export class UIContext{
         cmd.cmd = type;
         cmd.parameters =parameter;
 
-
-
         this.m_data.draw_commands.push(
             cmd
         )
@@ -116,7 +125,6 @@ export class UIContext{
         listener.id = id;
         listener.type = event;
 
-
         let registry = this.m_eventRegister;
         var idmap = registry.get(id);
         if(idmap == null){
@@ -126,4 +134,5 @@ export class UIContext{
 
         idmap.set(event,action);
     }
+
 }

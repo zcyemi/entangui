@@ -1,21 +1,28 @@
 import { UIContext, UIFrameData } from "./UIProtocol";
 
-export abstract class UIContainer{
-    private m_ctx:UIContext;
+export abstract class UIContainer extends UIContext{
 
-    public get context():UIContext{ return this.m_ctx;}
+    private m_isdirty:boolean = false;
+
+    public get isDirty():boolean{
+        return this.m_isdirty;
+    }
+
+    protected abstract OnGUI();
 
     public constructor(){
-        this.m_ctx = new UIContext();
-    }
-    protected abstract onGUI(builder:UIContext);
-
-    public update():UIFrameData{
-        let builder= this.m_ctx;
-        builder.beginFrame();
-        this.onGUI(builder);
-        return builder.endFrame();
+        super();
     }
 
+    public  update():UIFrameData{
+        this.m_isdirty =false;
+        this.beginFrame();
+        this.OnGUI();
+        return this.endFrame();
+    }
+
+    public setDirty(){
+        this.m_isdirty = true;
+    }
 
 }

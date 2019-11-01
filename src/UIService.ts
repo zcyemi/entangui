@@ -16,112 +16,134 @@ var patchConfig = init([
     eventListenersModule,
 ]);
 
-export class UIRenderer{
+export class UIRenderer {
 
-    private m_vnodePrev:VNode;
-    private m_html:HTMLElement;
+    private m_vnodePrev: VNode;
+    private m_html: HTMLElement;
 
     private m_builder: UIBuilder;
 
 
-    public MessageEventCallback: (evt:UIEventData)=>void;
+    public MessageEventCallback: (evt: UIEventData) => void;
 
-    public constructor(html:HTMLElement){
+    public constructor(html: HTMLElement) {
         this.m_html = html;
         this.m_vnodePrev = toVNode(html);
 
         this.m_builder = new UIBuilder(this.onMessageEvent.bind(this));
     }
 
-    private onMessageEvent(evt:UIEventData){
+    private onMessageEvent(evt: UIEventData) {
         let cb = this.MessageEventCallback;
-        if(cb !=null){
+        if (cb != null) {
             cb(evt);
         }
     }
 
-    public onUIFrame(data:UIFrameData){
+    public onUIFrame(data: UIFrameData) {
 
         let builder = this.m_builder;
         builder.beginChildren();
 
-        var drawcmd= data.draw_commands;
-        drawcmd.forEach(draw=>{
+        var drawcmd = data.draw_commands;
+        drawcmd.forEach(draw => {
             var parameters = draw.parameters;
-            switch(draw.cmd){
+            switch (draw.cmd) {
                 case UIDrawCmdType.begin_group:
-                builder.cmdBeginGroup(parameters);
-                break;
+                    builder.cmdBeginGroup(parameters);
+                    break;
                 case UIDrawCmdType.end_group:
-                builder.cmdEndGroup();
-                break;
+                    builder.cmdEndGroup();
+                    break;
                 case UIDrawCmdType.button:
-                builder.cmdButton(parameters);
-                break;
+                    builder.cmdButton(parameters);
+                    break;
                 case UIDrawCmdType.alert:
-                builder.cmdAlert(parameters);
-                break;
+                    builder.cmdAlert(parameters);
+                    break;
+                case UIDrawCmdType.text:
+                    builder.cmdText(parameters);
+                    break;
+                case UIDrawCmdType.bandage:
+                    builder.cmdBandage(parameters);
+                    break;
             }
         })
 
         builder.endChildren();
 
-        this.m_vnodePrev = patchConfig(this.m_vnodePrev,builder.rootNode);
+        this.m_vnodePrev = patchConfig(this.m_vnodePrev, builder.rootNode);
         builder.resetRootNode();
     }
 }
 
-export abstract class UISource{
+export abstract class UISource {
 
-    public MessageFrameCallback:(data:UIFrameData)=>void;
+    public MessageFrameCallback: (data: UIFrameData) => void;
 
-    public constructor(){
+    public constructor() {
     }
 
-    public abstract sendUIEvent(evt:UIEventData);
-    public Render(){}
+    public abstract sendUIEvent(evt: UIEventData);
+    public Render() { }
 }
 
-export class UISourceLocal extends UISource{
+export class UISourceLocal extends UISource {
 
-    private m_container:UIContainer;
-    public constructor(uicontainer:UIContainer){
+    private m_container: UIContainer;
+    public constructor(uicontainer: UIContainer) {
         super();
         this.m_container = uicontainer;
+
+        window.requestAnimationFrame(this.onUpdate.bind(this))
+
+    }
+
+    public onUpdate(){
+        if(this.m_container.isDirty){
+            this.Render();
+        }
+
+        setTimeout(() => {
+            window.requestAnimationFrame(this.onUpdate.bind(this));
+        }, 200);
     }
 
     public sendUIEvent(evt: UIEventData) {
-        var update = this.m_container.context.dispatchEvent(evt);
-        if(update){
+        var update = this.m_container.dispatchEvent(evt);
+        if (update) {
             this.Render();
         }
     }
 
-    public Render(){
+
+    public Render() {
         var framcb = this.MessageFrameCallback;
-        if(framcb!=null){
+        if (framcb != null) {
             framcb(this.m_container.update());
         }
     }
 }
 
-export class UISourceSocket extends UISource{
+export class UISourceSocket extends UISource {
 
-    private m_ws:string;
-    private m_socket:WebSocket;
+    private m_ws: string;
+    private m_socket: WebSocket;
 
-    private m_pendingMsg:UIMessage[] = [];
+    private m_pendingMsg: UIMessage[] = [];
 
-    public constructor(ip:string,port:number){
+    public EventLogs:(msg:string)=>void;
+
+    public constructor(ip: string, port: number) {
         super();
         this.m_ws = `ws://${ip}:${port}`;
     }
 
-    public connect(){
+    public connect() {
 
         let socket = this.m_socket;
-        if(socket !=null){
-            if(socket.readyState == WebSocket.CONNECTING || socket.readyState == WebSocket.OPEN){
+        if (socket != null) {
+            if (socket.readyState == WebSocket.CONNECTING || socket.readyState == WebSocket.OPEN) {
                 return;
             }
         }
@@ -129,73 +151,82 @@ export class UISourceSocket extends UISource{
         socket = new WebSocket(this.m_ws);
         this.m_pendingMsg = [];
 
-        socket.addEventListener("open",this.onOpen.bind(this));        
-        socket.addEventListener("message",this.onMessage.bind(this));
-        socket.addEventListener('close',this.onClose.bind(this));
-        socket.addEventListener('close',this.onError.bind(this));
+        socket.addEventListener("open", this.onOpen.bind(this));
+        socket.addEventListener("message", this.onMessage.bind(this));
+        socket.addEventListener('close', this.onClose.bind(this));
+        socket.addEventListener('close', this.onError.bind(this));
 
         this.m_socket = socket;
     }
 
-    private get socketStatus():number{
+    private get socketStatus(): number {
         return this.m_socket.readyState;
     }
 
-    public sendUIEvent(evt:UIEventData){
-        if(evt == null) return;
+    public sendUIEvent(evt: UIEventData) {
+        if (evt == null) return;
 
-        let msg = new UIMessage(UIMessageType.evt,evt);
+        let msg = new UIMessage(UIMessageType.evt, evt);
         msg.attachTs();
         this.connect();
-        if(this.socketStatus == WebSocket.OPEN){
+        if (this.socketStatus == WebSocket.OPEN) {
             this.m_socket.send(JSON.stringify(msg));
         }
-        else{
+        else {
             this.m_pendingMsg.push(msg);
         }
     }
 
-    private onOpen(evt:Event){
-        let msg = new UIMessage(UIMessageType.init,null);
+    private onOpen(evt: Event) {
+        this.log('socket open');
+        let msg = new UIMessage(UIMessageType.init, null);
         this.m_socket.send(JSON.stringify(msg));
     }
-    
-    private onMessage(evt:MessageEvent){
+
+    private onMessage(evt: MessageEvent) {
         var data = evt.data;
-        
-        var msg:UIMessage = JSON.parse(data);
-        if(msg  == null){
-            console.log("unprocess message: "+ data);
+
+        var msg: UIMessage = JSON.parse(data);
+        if (msg == null) {
+            console.log("unprocess message: " + data);
             return;
         }
 
-        switch(msg.type){
+        this.log(`socket msg: ${UIMessageType[msg.type]}`);
+
+        switch (msg.type) {
             case UIMessageType.frame:
-                var framdata:UIFrameData = msg.data;
-                if(framdata == null){
+                var framdata: UIFrameData = msg.data;
+                if (framdata == null) {
                     console.error("ui framedata is null");
                 }
-                if(this.MessageFrameCallback!=null){
+                if (this.MessageFrameCallback != null) {
                     this.MessageFrameCallback(framdata);
                 }
-            break;
+                break;
         }
     }
 
-
-    private onClose(evt:Event){
-        console.log(`socket close: ${evt}`);
+    private log(obj:any){
+        let evtlogs= this.EventLogs;
+        if(evtlogs !=null){
+            evtlogs(obj);
+        }
     }
 
-    private onError(evt:Event){
-        console.error(`socket error: ${evt}`);
+    private onClose(evt: Event) {
+        this.log('socket close');
     }
 
-    public Render(){}
+    private onError(evt: CloseEvent) {
+        this.log(`socket error: ${evt.code}`);
+    }
+
+    public Render() { }
 }
 
-export function ServiceBind(source:UISource,render:UIRenderer){
-    source.MessageFrameCallback = (data)=> render.onUIFrame(data);
-    render.MessageEventCallback = (data)=> source.sendUIEvent(data);
+export function ServiceBind(source: UISource, render: UIRenderer) {
+    source.MessageFrameCallback = (data) => render.onUIFrame(data);
+    render.MessageEventCallback = (data) => source.sendUIEvent(data);
     source.Render();
 }

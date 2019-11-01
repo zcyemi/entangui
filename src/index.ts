@@ -6,34 +6,52 @@ import { WebSockertClient } from "./WebSocketClient";
 var container = document.getElementById("container");
 var menubar = document.getElementById('menubar');
 
-class TestUI extends UIContainer{
-    private m_showbtn2:boolean = false;
+class UIHeaderBar extends UIContainer{
 
-    protected onGUI(builder:UIContext){
+    private m_msg:string;
+
+
+    private m_render:UIRenderer;
+    private m_sourceSocket:UISourceSocket;
+
+    public constructor(){
+        super();
+        var renderContainer = new UIRenderer(container);
+        var uisource =new UISourceSocket("127.0.0.1",5500);
+        uisource.EventLogs = (msg)=>{
+            this.m_msg= msg;
+            this.setDirty();
+        }
+
+        this.m_render =renderContainer;
+        this.m_sourceSocket = uisource;
+        
+        ServiceBind(uisource,renderContainer);
+    }
+
+    protected OnGUI() {
+
+        var socket = this.m_sourceSocket;
 
         var self = this;
-        builder.beginGroup('5px');
+        this.beginGroup('5px');
         {
-            builder.button("btn1",'clickme1',()=>{
-                self.m_showbtn2 = !self.m_showbtn2;
+            this.button("btn-conn",'Connect',()=>{
+                socket.connect();
             });
 
-            if(self.m_showbtn2){
-                builder.button("btn2",'clickme2');
-            }
-            builder.alert("test alert");
+            this.text(this.m_msg);
         }
-        builder.endFrame();
+        this.endFrame();
     }
 }
 
 var renderMenuBar = new UIRenderer(menubar);
-var uisourecLocal = new UISourceLocal(new TestUI());
+var uisourecLocal = new UISourceLocal(new UIHeaderBar());
+
+uisourecLocal.sendUIEvent
 
 ServiceBind(uisourecLocal,renderMenuBar);
 
-var renderContainer = new UIRenderer(container);
-var uisource =new UISourceSocket("127.0.0.1",5500);
 
-ServiceBind(uisource,renderContainer);
 
