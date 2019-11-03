@@ -29,6 +29,10 @@ export enum UIDrawCmdType{
     SidebarBegin,
     SidebarEnd,
     SidebarItem,
+    FlexBegin,
+    FlexEnd,
+    FlexItemBegin,
+    FlexItemEnd,
 }
 
 export class UIFrameData{
@@ -134,6 +138,22 @@ export class UIContext{
         });
     }
 
+    public flexBegin(){
+        return this.pushCmd(UIDrawCmdType.FlexBegin);
+    }
+    public flexEnd(){
+        return this.pushCmd(UIDrawCmdType.FlexEnd);
+    }
+
+    public FlexItemBegin(width?:string){
+        return this.pushCmd(UIDrawCmdType.FlexItemBegin,{
+            'width':width
+        });
+    }
+
+    public flexItemEnd(){
+        return this.pushCmd(UIDrawCmdType.FlexItemEnd)
+    }
 
     public pushCmd(type:UIDrawCmdType,parameter?:any){
         var cmd=  new UIDrawCmd();

@@ -152,8 +152,6 @@ export class UIBuilder {
         }, options['text']);
         this.pushNode(alert);
     }
-
-    
     public cmdSidebarBegin(options:any){
 
 
@@ -189,12 +187,10 @@ export class UIBuilder {
         this.pushNode(list);
         this.beginChildren();
     }
-
     public cmdSidebarEnd(){
         this.endChildren();
         this.endChildren();
     }
-
     public cmdSidebarItem(options:any){
 
         let id = this.m_paramCache.get('sidebar');
@@ -213,6 +209,38 @@ export class UIBuilder {
             }
         },options['text']);
         this.pushNode(item);
+    }
+
+    public cmdFlexBegin(options:any){
+        let flex = h('div',{
+            class:{
+                'd-flex':true
+            }
+        });
+        this.pushNode(flex);
+        this.beginChildren();
+    }
+
+    public cmdFlexItemBegin(options:any){
+        var width = options.width;
+
+        var style = {};
+        if(width){
+            style['width'] = width;
+        }
+        let div = h('div',{
+            style:style
+        });
+        this.pushNode(div);
+        this.beginChildren();
+    }
+
+    public cmdFlexItemEnd(){
+        this.endChildren();
+    }
+
+    public cmdFlexEnd(){
+        this.endChildren();
     }
 
 }
