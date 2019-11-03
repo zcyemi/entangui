@@ -4,7 +4,9 @@ import eventListenersModule from 'snabbdom/modules/eventlisteners';
 import propsModule from 'snabbdom/modules/props';
 import styleModule from 'snabbdom/modules/style';
 import { VNode } from 'snabbdom/vnode';
-import { UIEventData } from './UIProtocol';
+import { UIEventData, UIDrawCmdType } from './UIProtocol';
+
+import $ from "jquery";
 
 var patchConfig = init([
     propsModule,
@@ -92,12 +94,75 @@ export class UIBuilder {
         this.endChildren();
     }
 
+    public cmdInput(options: any){
+        let label = options['label'];
+        let text = options['text'];
+        let id = options['id'];
+        let finish = options['finish'];
+
+        var onEvents = null;
+        if(finish){
+            onEvents = {};
+            onEvents['focusout'] = this.wrapEventDelay(id,'finish',()=>{
+                var val = $(`#${id}`).val();
+                return val;
+            });
+        }
+
+
+        var prepend = label != null? h('div',{
+            class:{
+                'input-group-prepend':true
+            }
+        },[
+            h('span',{
+                class:{
+                    'input-group-text':true,
+                }
+            },label)
+        ]):null;
+
+        let input = h('div',{
+            class:{
+                'input-group':true,
+                'mb-3':true,
+            }
+        },[
+            prepend
+            ,
+            h('input',{
+                class:{'form-control':true},
+                props:{
+                    type:'text',
+                    placeholder:label,
+                    value:text,
+                    id:id
+                },
+                on:onEvents
+            })
+        ]);
+
+        this.pushNode(input);
+    }
+
     private wrapEvent(id:string,event:string,data?:any):(p:any)=>void{
         var evt = new UIEventData();
         evt.id = id;
         evt.evt = event;
         evt.data = data;
         return ()=>{this.emiEvent(evt)}
+    }
+
+
+    private wrapEventDelay(id:string,event:string,datafunc:()=>any):(p:any)=>void{
+        return ()=>{
+            var dataf = datafunc;
+            var evt = new UIEventData();
+            evt.id = id;
+            evt.evt = event;
+            evt.data = dataf();
+            this.emiEvent(evt)
+        }
     }
 
     private emiEvent(evt:UIEventData){
@@ -107,7 +172,8 @@ export class UIBuilder {
     }
 
     public cmdText(options:any){
-        let text = h('span',{}, options['text']);
+        let tag = options['tag'] || 'p';
+        let text = h(tag,{}, options['text']);
         this.pushNode(text);
     }
 
@@ -134,7 +200,10 @@ export class UIBuilder {
                     'btn': true,
                     'btn-primary': true
                 },
-                on:listeners
+                on:listeners,
+                style:{
+                    margin:'3px'
+                }
             });
         btn.text = options.text;
         this.pushNode(btn);
@@ -223,10 +292,14 @@ export class UIBuilder {
 
     public cmdFlexItemBegin(options:any){
         var width = options.width;
+        var flex = options.flex;
 
         var style = {};
         if(width){
             style['width'] = width;
+        }
+        if(flex){
+            style['flex'] = flex;
         }
         let div = h('div',{
             style:style
@@ -243,4 +316,8 @@ export class UIBuilder {
         this.endChildren();
     }
 
+    public cmdDivider(){
+        let hr = h('hr');
+        this.pushChildren(hr);
+    }
 }

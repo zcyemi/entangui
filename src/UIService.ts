@@ -109,16 +109,22 @@ export class UISourceLocal extends UISource {
 
 export class UISourceSocket extends UISource {
 
-    private m_ws: string;
     private m_socket: WebSocket;
 
     private m_pendingMsg: UIMessage[] = [];
+    private m_port:number;
+    private m_ip:string;
 
     public EventLogs:(msg:string)=>void;
 
     public constructor(ip: string, port: number) {
         super();
-        this.m_ws = `ws://${ip}:${port}`;
+        this.m_ip = ip;
+        this.m_port = port;
+    }
+
+    public setIp(ip:string){
+        this.m_ip = ip;
     }
 
     public connect() {
@@ -130,7 +136,7 @@ export class UISourceSocket extends UISource {
             }
         }
 
-        socket = new WebSocket(this.m_ws);
+        socket = new WebSocket(`ws://${this.m_ip}:${this.m_port}`);
         this.m_pendingMsg = [];
 
         socket.addEventListener("open", this.onOpen.bind(this));

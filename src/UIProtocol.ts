@@ -33,6 +33,8 @@ export enum UIDrawCmdType{
     FlexEnd,
     FlexItemBegin,
     FlexItemEnd,
+    Input,
+    Divider,
 }
 
 export class UIFrameData{
@@ -59,6 +61,9 @@ export class UIEventListener{
 export class UIContext{
     private m_data:UIFrameData;
     private m_eventRegister:Map<String,Map<String,Function>> = new Map();
+    private m_idbuilder = {};
+
+
     public constructor(){
     }
 
@@ -74,8 +79,26 @@ export class UIContext{
         return false;
     }
 
+
+    public genItemID(type:UIDrawCmdType):string{
+        let builder= this.m_idbuilder;
+
+        var tname = UIDrawCmdType[type];
+        let lastid =builder[type];
+        if(!lastid){
+            builder[type] = 0;
+            lastid = 0;
+        }
+        else{
+            lastid ++;
+        }
+
+        return `${tname}-${lastid}`;
+    }
+
     public beginFrame(){
         this.m_data =new UIFrameData();
+        this.m_idbuilder = {};
         return this;
     }
     public endFrame():UIFrameData{
@@ -108,11 +131,29 @@ export class UIContext{
             text:text
         });
     }
+
+    public input(label:string,text:string,finish?:(val:string)=>void){
+        let id = this.genItemID(UIDrawCmdType.Input);
+        this.pushEventListener(id,'finish',finish);
+
+        return this.pushCmd(UIDrawCmdType.Input,{
+            'text':text,
+            'label':label,
+            'id':id,
+            'finish':finish!=null
+        });
+    }
+
+    public divider(){
+        return this.pushCmd(UIDrawCmdType.Divider);
+    }
+
     public beginGroup(padidng:string = '3px'){
         return this.pushCmd(UIDrawCmdType.BeginGroup,{
             padding:padidng
         });
     }
+
     public endGroup(){
         return this.pushCmd(UIDrawCmdType.EndGroup);
     }
@@ -127,6 +168,7 @@ export class UIContext{
             click:click!=null
         });
     }
+
 
     public sidebarEnd(){
         return this.pushCmd(UIDrawCmdType.SidebarEnd);
@@ -155,6 +197,7 @@ export class UIContext{
         return this.pushCmd(UIDrawCmdType.FlexItemEnd)
     }
 
+
     public pushCmd(type:UIDrawCmdType,parameter?:any){
         var cmd=  new UIDrawCmd();
         cmd.cmd = type;
@@ -167,6 +210,7 @@ export class UIContext{
     }
 
     public pushEventListener(id:string,event:string,action:Function){
+        if(action==null) return;
         var listener = new UIEventListener();
         listener.id = id;
         listener.type = event;

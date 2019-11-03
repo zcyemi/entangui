@@ -6,6 +6,7 @@
   "author": "Yemi <zcyemi@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@types/jquery": "^3.3.31",
     "browser-sync": "^2.26.7",
     "gulp": "^4.0.2",
     "rollup": "^1.23.1",
@@ -15,6 +16,7 @@
     "typescript": "^3.6.4"
   },
   "dependencies": {
+    "jquery": "^3.4.1",
     "snabbdom": "^0.7.3"
   },
   "scripts": {
