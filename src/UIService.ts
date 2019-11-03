@@ -48,27 +48,9 @@ export class UIRenderer {
         var drawcmd = data.draw_commands;
         drawcmd.forEach(draw => {
             var parameters = draw.parameters;
-            switch (draw.cmd) {
-                case UIDrawCmdType.begin_group:
-                    builder.cmdBeginGroup(parameters);
-                    break;
-                case UIDrawCmdType.end_group:
-                    builder.cmdEndGroup();
-                    break;
-                case UIDrawCmdType.button:
-                    builder.cmdButton(parameters);
-                    break;
-                case UIDrawCmdType.alert:
-                    builder.cmdAlert(parameters);
-                    break;
-                case UIDrawCmdType.text:
-                    builder.cmdText(parameters);
-                    break;
-                case UIDrawCmdType.bandage:
-                    builder.cmdBandage(parameters);
-                    break;
-            }
-        })
+            let method = `cmd${UIDrawCmdType[draw.cmd]}`;
+            builder[method](parameters);
+        });
 
         builder.endChildren();
 

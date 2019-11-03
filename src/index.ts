@@ -42,14 +42,13 @@ class UIHeaderBar extends UIContainer{
 
             this.text(this.m_msg);
         }
-        this.endFrame();
+        this.endGroup();
+
     }
 }
 
 var renderMenuBar = new UIRenderer(menubar);
 var uisourecLocal = new UISourceLocal(new UIHeaderBar());
-
-uisourecLocal.sendUIEvent
 
 ServiceBind(uisourecLocal,renderMenuBar);
 

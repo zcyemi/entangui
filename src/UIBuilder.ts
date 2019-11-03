@@ -28,6 +28,10 @@ export class UIBuilder {
     private curChidrenList: (VNode | string)[];
 
     private m_evtCallback:(evtdata:UIEventData)=>void;
+    
+    
+
+    private m_paramCache:Map<string,any> = new Map();
 
 
     public constructor(eventCallback:(evtdata:UIEventData)=>void) {
@@ -88,15 +92,15 @@ export class UIBuilder {
         this.endChildren();
     }
 
-    private wrapEvent(id:string,event:string):Function{
+    private wrapEvent(id:string,event:string,data?:any):(p:any)=>void{
         var evt = new UIEventData();
         evt.id = id;
         evt.evt = event;
+        evt.data = data;
         return ()=>{this.emiEvent(evt)}
     }
 
     private emiEvent(evt:UIEventData){
-
         if(this.m_evtCallback!=null){
             this.m_evtCallback(evt);
         }
@@ -149,183 +153,66 @@ export class UIBuilder {
         this.pushNode(alert);
     }
 
+    
+    public cmdSidebarBegin(options:any){
+
+
+        let id = options['id'];
+        this.m_paramCache.set('sidebar',id);
+
+        let nav = h('nav',{
+            class:{
+                'sidebar':true,
+                'bg-light':true,
+                'border-right':true,
+                'sidebar-list':true,
+            },
+            id:id
+        })
+        this.pushNode(nav);
+        this.beginChildren();
+
+        let header= h('div',{
+            class:{
+                'sidebar-header':true
+            }
+        },options['text']);
+        this.pushNode(header);
+
+        let list = h('div',{
+            class:{
+                'list-group':true,
+                'list-group-flush':true
+            }
+        });
+
+        this.pushNode(list);
+        this.beginChildren();
+    }
+
+    public cmdSidebarEnd(){
+        this.endChildren();
+        this.endChildren();
+    }
+
+    public cmdSidebarItem(options:any){
+
+        let id = this.m_paramCache.get('sidebar');
+        let key = options['key'];
+        let item = h('a',{
+            class:{
+                'list-group-item':true,
+                'list-group-item-action':true,
+                'bg-light':true
+            },
+            attrs:{
+                'href':'#'
+            },
+            on:{
+                click: this.wrapEvent(id,'click',key)
+            }
+        },options['text']);
+        this.pushNode(item);
+    }
+
 }
-
-
-
-
-// export abstract class UIContext{
-//     private m_html:HTMLElement;
-//     private m_originNode:VNode;
-//     private m_vnodePrev:VNode;
-//     private m_vnodeCur:VNode;
-
-//     private get node():VNode{
-//         return this.m_vnodeCur;
-//     }
-
-//     private builder:UIBuilder;
-
-
-//     private m_trigUpdate:boolean = false;
-
-//     constructor(){
-//         this.builder=  new UIBuilder();
-//         window.requestAnimationFrame(this.OnUpdate.bind(this));
-//     }
-
-//     abstract DrawUI();
-
-//     private OnUpdate(){
-
-//         if(this.m_trigUpdate){
-//             this.m_trigUpdate = false;
-//             this.update();
-//         }
-
-//         window.requestAnimationFrame(this.OnUpdate.bind(this));
-//     }
-
-//     private pushNode(v:VNode){this.builder.pushNode(v)}
-
-
-
-//     private wrapEvent(f?:Action):()=>void{
-//         if(f == null) return null;
-//         var self = this;
-//         return ()=>{
-//             f(this);
-//             self.trigUpdate();
-//         }
-//     }
-
-//     private trigUpdate(){
-//         this.m_trigUpdate =true;
-//     }
-
-
-//     public button(text:string,onclick?:Action){
-//         let btn = h('button',
-//         {
-//             class:{
-//                 'btn':true,
-//                 'btn-primary':true
-//             },
-//             on:{
-//                 click: this.wrapEvent(onclick),
-//             }
-//         });
-
-//         btn.text = text;
-//         this.builder.pushNode(btn);
-//     }
-
-//     public beginVertical(){
-
-//         const builder =this.builder;
-//         builder.pushNode(h('div'));
-//         builder.beginChildren();
-//     }
-
-//     public endVertical(){
-
-//         const builder = this.builder;
-//         builder.endChildren();
-
-//     }
-
-//     // public toggle(text:string,value:boolean){}
-
-//     public alert(text:string){
-
-//         let alert=  h('div',{
-//             class:{
-//                 'alert':true,
-//                 'alert-primary':true
-//             },
-//             attrs:{
-//                 role:'alert'
-//             }
-//         },text);
-//         this.builder.pushNode(alert);
-//     }
-
-//     // public label(text:string){};
-
-//     // public seperator(){}
-
-//     // public beginForm(){}
-
-//     // public endForm(){}
-
-//     // public inputEmail(lable:string){
-//     // }
-
-
-//     public beginForm(){
-//         let root = h('form');
-//         this.pushNode(root);
-//         this.builder.beginChildren();
-
-
-//     }
-
-
-//     public formInput(label:string,id:string,value:string,helper?:string){
-//         let item = h('div',{class:{'form-group':true}},[
-//             h('label',{},label),
-//             h('input',{
-//                 class:{'form-control':true},
-//                 attrs:{
-//                     id:id
-//                 },
-//                 text:value
-//             })
-//         ]);
-//         this.pushNode(item);
-//     }
-
-//     public endForm(){
-//         this.builder.endChildren();
-//     }
-
-
-//     public beginGroup(padding:any = '3px'){
-//         let wrap = h('div',{
-//             style:{
-//                 padding:padding
-//             }
-//         });
-
-//         this.pushNode(wrap);
-//         this.builder.beginChildren();
-//     }
-
-
-//     public endGroup(){
-//         this.builder.endChildren();
-//     }
-
-//     public update(){
-//         console.log("update ui");
-
-//         this.builder.beginChildren();
-//         this.DrawUI();
-//         this.builder.endChildren();
-
-//         this.m_vnodePrev = patchConfig(this.m_vnodePrev,this.builder.rootNode);
-//         this.builder.resetRootNode();
-
-//     }
-
-
-//     public patch(html:HTMLElement|null){
-//         if(html == null) return;
-
-//         this.m_html = html;
-//         this.m_originNode = toVNode(html);
-//         this.m_vnodePrev = toVNode(html);
-//     }
-
-
-// }

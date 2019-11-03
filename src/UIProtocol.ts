@@ -20,12 +20,15 @@ export class UIMessage{
 }
 
 export enum UIDrawCmdType{
-    begin_group,
-    end_group,
-    button,
-    text,
-    alert,
-    bandage,
+    BeginGroup,
+    EndGroup,
+    Button,
+    Text,
+    Alert,
+    Bandage,
+    SidebarBegin,
+    SidebarEnd,
+    SidebarItem,
 }
 
 export class UIFrameData{
@@ -36,6 +39,7 @@ export class UIFrameData{
 export class UIEventData{
     public id:string;
     public evt:string;
+    public data:any;
 }
 
 export class UIDrawCmd{
@@ -60,7 +64,7 @@ export class UIContext{
         if(idmap == null) return false;
         var action:Function = idmap.get(evt.evt);
         if(action !=null){
-            action();
+            action(evt.data);
             return true;
         }
         return false;
@@ -78,7 +82,7 @@ export class UIContext{
         if(click !=null){
             this.pushEventListener(id,'click',click);
         }
-        return this.pushCmd(UIDrawCmdType.button,{
+        return this.pushCmd(UIDrawCmdType.Button,{
             text:text,
             click:click!=null,
             id:id
@@ -86,28 +90,50 @@ export class UIContext{
     }
 
     public text(text:string){
-        return this.pushCmd(UIDrawCmdType.text,{
+        return this.pushCmd(UIDrawCmdType.Text,{
             text:text
         });
     }
 
     public bandage(text:string){
-        return this.pushCmd(UIDrawCmdType.bandage,{text:text});
+        return this.pushCmd(UIDrawCmdType.Bandage,{text:text});
     }
 
     public alert(text:string){
-        return this.pushCmd(UIDrawCmdType.alert,{
+        return this.pushCmd(UIDrawCmdType.Alert,{
             text:text
         });
     }
     public beginGroup(padidng:string = '3px'){
-        return this.pushCmd(UIDrawCmdType.begin_group,{
+        return this.pushCmd(UIDrawCmdType.BeginGroup,{
             padding:padidng
         });
     }
     public endGroup(){
-        return this.pushCmd(UIDrawCmdType.end_group);
+        return this.pushCmd(UIDrawCmdType.EndGroup);
     }
+
+    public sidebarBegin(id:string,text:string,click?:Function){
+        if(click !=null){
+            this.pushEventListener(id,'click',click);
+        }
+        return this.pushCmd(UIDrawCmdType.SidebarBegin,{
+            text:text,
+            id:id,
+            click:click!=null
+        });
+    }
+
+    public sidebarEnd(){
+        return this.pushCmd(UIDrawCmdType.SidebarEnd);
+    }
+    public sidebarItem(key:string,text:string){
+        return this.pushCmd(UIDrawCmdType.SidebarItem,{
+            text:text,
+            key:key
+        });
+    }
+
 
     public pushCmd(type:UIDrawCmdType,parameter?:any){
         var cmd=  new UIDrawCmd();
