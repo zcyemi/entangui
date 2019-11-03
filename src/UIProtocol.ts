@@ -37,6 +37,9 @@ export enum UIDrawCmdType{
     Divider,
     CardBegin,
     CardEnd,
+    ListBegin,
+    ListItemNext,
+    ListEnd,
 }
 
 export class UIFrameData{
@@ -144,9 +147,10 @@ export class UIContext{
         });
     }
 
-    public text(text:string){
+    public text(text:string,tag:string='p'){
         return this.pushCmd(UIDrawCmdType.Text,{
-            text:text
+            text:text,
+            tag:tag
         });
     }
 
@@ -234,6 +238,16 @@ export class UIContext{
         return this.pushCmd(UIDrawCmdType.CardEnd);
     }
 
+    public listBegin(flush:boolean){
+        return this.pushCmd(UIDrawCmdType.ListBegin,{'flush':flush});
+    }
+
+    public listItemNext(){
+        return this.pushCmd(UIDrawCmdType.ListItemNext);
+    }
+    public listEnd(){
+        return this.pushCmd(UIDrawCmdType.ListEnd);
+    }
     
 
 }

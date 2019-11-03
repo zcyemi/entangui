@@ -350,4 +350,42 @@ export class UIBuilder {
         this.endChildren();
     }
 
+    public cmdListBegin(options:any){
+        let classes = {
+            'list-group':true
+        };
+        if(options['flush']){
+            classes['list-group-flush'] = true;
+        }
+
+        let list = h('div',{
+            class:classes
+        });
+
+        this.pushNode(list);
+        this.beginChildren();
+
+        let item = h('div',{
+            class:{
+                'list-group-item':true
+            }
+        });
+        this.pushNode(item);
+        this.beginChildren();
+    }
+    public cmdListItemNext(){
+        this.endChildren();
+        let item = h('div',{
+            class:{
+                'list-group-item':true
+            }
+        });
+        this.pushNode(item);
+        this.beginChildren();
+    }
+    public cmdListEnd(){
+        this.endChildren();
+        this.endChildren();
+    }
+
 }
