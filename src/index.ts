@@ -39,7 +39,7 @@ class UIHeaderBar extends UIContainer{
         {
 
             this.flexBegin();
-            this.button("btn-conn",'Connect',()=>{
+            this.button('Connect','primary',()=>{
                 socket.connect();
             });
             this.input("deviceIp",this.m_lastValidIpAddr,(val)=>{
@@ -52,17 +52,6 @@ class UIHeaderBar extends UIContainer{
             });
             this.flexEnd();
             this.text(this.m_msg);
-
-
-            this.listBegin(false);
-
-            this.text('item1','span');
-            this.listItemNext();
-            this.text('dwdwww','span');
-            this.listItemNext();
-            this.button("dwdw",'ewwqqq');
-
-            this.listEnd();
         }
         this.endGroup();
 

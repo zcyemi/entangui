@@ -193,13 +193,14 @@ export class UIBuilder {
         if(options.click){
             listeners.click = this.wrapEvent(options.id,'click');
         }
+        let theme = 'btn-'+(options['theme'] || 'primary');
+
+        let classes = {'btn':true};
+        classes[theme] = true;
 
         let btn = h('button',
             {
-                class: {
-                    'btn': true,
-                    'btn-primary': true
-                },
+                class: classes,
                 on:listeners,
                 style:{
                     margin:'3px'

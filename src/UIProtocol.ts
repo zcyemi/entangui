@@ -136,13 +136,16 @@ export class UIContext{
         return this.m_data;
     }
 
-    public button(id:string,text:string,click?:Function){
+    public button(text:string,theme:string =null,click?:Function){
+
+        let id = this.genItemID(UIDrawCmdType.Button);
         if(click !=null){
             this.pushEventListener(id,'click',click);
         }
         return this.pushCmd(UIDrawCmdType.Button,{
             text:text,
             click:click!=null,
+            theme: theme,
             id:id
         });
     }
