@@ -35,7 +35,6 @@ class UIHeaderBar extends UIContainer{
 
         var socket = this.m_sourceSocket;
 
-        var self = this;
         this.beginGroup('5px');
         {
 
@@ -52,7 +51,6 @@ class UIHeaderBar extends UIContainer{
                 }
             });
             this.flexEnd();
-
             this.text(this.m_msg);
         }
         this.endGroup();

@@ -35,6 +35,8 @@ export enum UIDrawCmdType{
     FlexItemEnd,
     Input,
     Divider,
+    CardBegin,
+    CardEnd,
 }
 
 export class UIFrameData{
@@ -79,6 +81,32 @@ export class UIContext{
         return false;
     }
 
+    public pushCmd(type:UIDrawCmdType,parameter?:any){
+        var cmd=  new UIDrawCmd();
+        cmd.cmd = type;
+        cmd.parameters =parameter;
+
+        this.m_data.draw_commands.push(
+            cmd
+        )
+        return this;
+    }
+
+    public pushEventListener(id:string,event:string,action:Function){
+        if(action==null) return;
+        var listener = new UIEventListener();
+        listener.id = id;
+        listener.type = event;
+
+        let registry = this.m_eventRegister;
+        var idmap = registry.get(id);
+        if(idmap == null){
+            idmap = new Map();
+            registry.set(id,idmap);
+        }
+
+        idmap.set(event,action);
+    }
 
     public genItemID(type:UIDrawCmdType):string{
         let builder= this.m_idbuilder;
@@ -198,31 +226,14 @@ export class UIContext{
     }
 
 
-    public pushCmd(type:UIDrawCmdType,parameter?:any){
-        var cmd=  new UIDrawCmd();
-        cmd.cmd = type;
-        cmd.parameters =parameter;
-
-        this.m_data.draw_commands.push(
-            cmd
-        )
-        return this;
+    public cardBegin(title:string){
+        return this.pushCmd(UIDrawCmdType.CardBegin,{'title':title});
     }
 
-    public pushEventListener(id:string,event:string,action:Function){
-        if(action==null) return;
-        var listener = new UIEventListener();
-        listener.id = id;
-        listener.type = event;
-
-        let registry = this.m_eventRegister;
-        var idmap = registry.get(id);
-        if(idmap == null){
-            idmap = new Map();
-            registry.set(id,idmap);
-        }
-
-        idmap.set(event,action);
+    public cardEnd(){
+        return this.pushCmd(UIDrawCmdType.CardEnd);
     }
+
+    
 
 }

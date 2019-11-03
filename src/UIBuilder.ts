@@ -320,4 +320,34 @@ export class UIBuilder {
         let hr = h('hr');
         this.pushChildren(hr);
     }
+
+    public cmdCardBegin(options:any){
+        let card = h('div',{
+            class:{
+                'card':true,
+            },
+            style:{
+                'margin':'3px'
+            }
+        });
+        this.pushNode(card);
+        this.beginChildren();
+
+        var title = options['title'];
+        if(title){
+            let cardheader = h('div',{
+                class:{'card-header':true}
+            },title);
+            this.pushNode(cardheader);
+        }
+
+        this.pushNode(h('div',{class:{'card-body':true}}));
+        this.beginChildren();
+    }
+    
+    public cmdCardEnd(){
+        this.endChildren();
+        this.endChildren();
+    }
+
 }
