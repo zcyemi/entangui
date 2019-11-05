@@ -136,7 +136,7 @@ export class UISourceSocket extends UISource {
             }
         }
 
-        socket = new WebSocket(`ws://${this.m_ip}:${this.m_port}`);
+        socket = new WebSocket(`wss://${this.m_ip}:${this.m_port}`);
         this.m_pendingMsg = [];
 
         socket.addEventListener("open", this.onOpen.bind(this));
