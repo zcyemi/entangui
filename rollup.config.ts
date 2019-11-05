@@ -4,26 +4,26 @@ import typescript from 'rollup-plugin-typescript2';
 import process from 'process';
 
 
-export default{
+export default {
     input: `src/index.ts`,
     output: [
-        {file: 'dist/index.js',format: 'es'}
+        { file: 'dist/index.es.js', format: 'es' }
     ],
     external: [],
     plugins: [
         typescript({
             tsconfigOverride: {
-                compilerOptions: { module: 'es2015',declaration:false},
+                compilerOptions: { module: 'es2015', declaration: false },
             },
             tsconfig: 'tsconfig.json',
-            useTsconfigDeclarationDir:true
+            useTsconfigDeclarationDir: true
         }),
         commonjs({
             include: 'node_modules/**'
         }),
         resolve({
-            jsnext:true,
-            extensions: ['.ts','.js']
+            jsnext: true,
+            extensions: ['.ts', '.js']
         }),
     ]
 }

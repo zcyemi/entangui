@@ -1,8 +1,9 @@
 {
-  "name": "semantic-gui",
+  "name": "entangui",
   "version": "1.0.0",
   "main": "dist/index.js",
-  "repository": "git@github.com:zcyemi/semantic-ui.git",
+  "module": "dist/index.es.js",
+  "repository": "git@github.com:zcyemi/proto-ui.git",
   "author": "Yemi <zcyemi@gmail.com>",
   "license": "MIT",
   "devDependencies": {
@@ -21,6 +22,11 @@
   },
   "scripts": {
     "start": "gulp start",
+    "build": "tsc && rollup -c rollup.config.ts",
     "watch": "rollup -c rollup.config.ts -w"
-  }
+  },
+  "files": [
+    "./dist/**.js",
+    "./dist/**.ts"
+  ]
 }

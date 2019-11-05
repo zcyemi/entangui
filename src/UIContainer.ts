@@ -14,7 +14,7 @@ export abstract class UIContainer extends UIContext{
         super();
     }
 
-    public  update():UIFrameData{
+    public update():UIFrameData{
         this.m_isdirty =false;
         this.beginFrame();
         this.OnGUI();
