@@ -1,9 +1,9 @@
 {
-  "name": "entangui",
-  "version": "1.0.0",
+  "name": "@zcyemi/entangui",
+  "version": "0.0.1",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
-  "repository": "git@github.com:zcyemi/proto-ui.git",
+  "repository": "git@github.com:zcyemi/entangui.git",
   "author": "Yemi <zcyemi@gmail.com>",
   "license": "MIT",
   "devDependencies": {
@@ -19,6 +19,9 @@
   "dependencies": {
     "jquery": "^3.4.1",
     "snabbdom": "^0.7.3"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
   },
   "scripts": {
     "start": "gulp start",
