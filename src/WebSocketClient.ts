@@ -16,7 +16,7 @@ export class WebSockertClient{
         if(socket != null){
             socket.close(-1);
         }
-        socket = new WebSocket(`ws://${ip}:${port}`);
+        socket = new WebSocket(`wss://${ip}:${port}`);
         socket.addEventListener("open",this.onOpen.bind(this));        
         socket.addEventListener("message",this.onMessage.bind(this));
         socket.addEventListener('close',this.onClose.bind(this));
