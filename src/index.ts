@@ -6,3 +6,4 @@ export * from './UIContainer';
 export * from './UIService';
 export * from './UIProtocol';
 
+export * from './samples/Sample';

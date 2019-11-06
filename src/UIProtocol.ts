@@ -113,17 +113,16 @@ export class UIContext{
 
     public genItemID(type:UIDrawCmdType):string{
         let builder= this.m_idbuilder;
-
         var tname = UIDrawCmdType[type];
-        let lastid =builder[type];
-        if(!lastid){
-            builder[type] = 0;
+        let lastid =builder[tname];
+        if(lastid == undefined){
+            builder[tname] = 0;
             lastid = 0;
         }
         else{
             lastid ++;
+            builder[tname] = lastid;
         }
-
         return `${tname}-${lastid}`;
     }
 
@@ -169,6 +168,8 @@ export class UIContext{
 
     public input(label:string,text:string,finish?:(val:string)=>void){
         let id = this.genItemID(UIDrawCmdType.Input);
+
+        console.log(id);
         this.pushEventListener(id,'finish',finish);
 
         return this.pushCmd(UIDrawCmdType.Input,{
