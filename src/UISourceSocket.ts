@@ -1,81 +1,8 @@
-import { UIContainer } from "./UIContainer";
 import { UIActionData, UIEventData, UIFrameData, UIMessage, UIMessageType } from "./UIProtocol";
-import { UIRenderer } from "./UIRender";
-
-
-
-export abstract class UISource {
-
-    public MessageFrameCallback: (data: UIFrameData) => void;
-    public MessageActionCallback:(data:UIActionData) =>void;
-
-    public constructor() {
-    }
-
-    public abstract sendUIEvent(evt: UIEventData);
-    public Render() { }
-}
-
-export class UISourceLocal extends UISource {
-
-    private m_container: UIContainer;
-    public constructor(uicontainer: UIContainer) {
-        super();
-        this.m_container = uicontainer;
-
-        window.requestAnimationFrame(this.onUpdate.bind(this))
-
-    }
-
-    public onUpdate(){
-
-        let container = this.m_container;
-
-        let actions = container.actions;
-        if(actions!=null){
-            container.actions = [];
-
-            let actioncb = this.MessageActionCallback;
-            if(actioncb!=null){
-                actions.forEach(data=>{
-                    actioncb(data);
-                })
-            }
-        }
-
-        if(container.isDirty){
-            this.Render();
-        }
-
-
-
-
-        setTimeout(() => {
-            window.requestAnimationFrame(this.onUpdate.bind(this));
-        }, 200);
-    }
-
-    public sendUIEvent(evt: UIEventData) {
-        var update = this.m_container.dispatchEvent(evt);
-        if (update) {
-            this.Render();
-        }
-    }
-
-
-    public Render() {
-        var framcb = this.MessageFrameCallback;
-        if (framcb != null) {
-            framcb(this.m_container.update());
-        }
-    }
-
-}
+import { UISource } from "./UISource";
 
 export class UISourceSocket extends UISource {
-
     private m_socket: WebSocket;
-
     private m_pendingMsg: UIMessage[] = [];
     private m_port:number;
     private m_ip:string;
@@ -101,7 +28,7 @@ export class UISourceSocket extends UISource {
             }
         }
 
-        socket = new WebSocket(`wss://${this.m_ip}:${this.m_port}`);
+        socket = new WebSocket(`ws://${this.m_ip}:${this.m_port}`);
         this.m_pendingMsg = [];
 
         socket.addEventListener("open", this.onOpen.bind(this));
@@ -185,11 +112,4 @@ export class UISourceSocket extends UISource {
     }
 
     public Render() { }
-}
-
-export function ServiceBind(source: UISource, render: UIRenderer) {
-    source.MessageFrameCallback = (data) => render.onUIFrame(data);
-    source.MessageActionCallback = (data) => render.onUIAction(data);
-    render.MessageEventCallback = (data) => source.sendUIEvent(data);
-    source.Render();
 }

@@ -1,6 +1,7 @@
 import { UIContainer } from "../UIContainer";
-import { ServiceBind, UISourceLocal } from "../UIService";
 import { UIRenderer } from "../UIRender";
+import { UISourceLocal } from "../UISourceLocal";
+import { UIRenderingBind } from "../UISource";
 
 enum SampleGroup {
     Input,
@@ -83,5 +84,5 @@ export class SampleUI extends UIContainer {
 var render = new UIRenderer(document.getElementById('container'));
 
 var source = new UISourceLocal(new SampleUI());
-ServiceBind(source, render);
+UIRenderingBind(source, render);
 
