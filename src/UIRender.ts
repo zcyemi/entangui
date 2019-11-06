@@ -7,6 +7,8 @@ import toVNode from "snabbdom/tovnode";
 import { VNode } from "snabbdom/vnode";
 import { UIBuilder } from "./UIBuilder";
 import { UIActionData, UIActionType, UIDrawCmdType, UIEventData, UIFrameData } from "./UIProtocol";
+import attributesModule from "snabbdom/modules/attributes";
+import datasetModule from "snabbdom/modules/dataset";
 
 
 var patchConfig = init([
@@ -14,6 +16,8 @@ var patchConfig = init([
     classModule,
     styleModule,
     eventListenersModule,
+    attributesModule,
+    datasetModule,
 ]);
 
 export class UIRenderer {
@@ -69,7 +73,6 @@ export class UIRenderer {
         });
 
         builder.endChildren();
-
         this.m_vnodePrev = patchConfig(this.m_vnodePrev, builder.rootNode);
         builder.resetRootNode();
     }

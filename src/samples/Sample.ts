@@ -9,6 +9,7 @@ import { UIRenderingBind } from "../UISource";
 enum SampleGroup {
     Input,
     Buttons,
+    Tabs,
 }
 
 export class SampleUI extends UIContainer {
@@ -34,7 +35,7 @@ export class SampleUI extends UIContainer {
         this.drawNavBar();
         this.flexItemEnd();
 
-        this.FlexItemBegin();
+        this.FlexItemBegin(null,1);
 
         this.drawContent();
         this.flexItemEnd();
@@ -81,6 +82,12 @@ export class SampleUI extends UIContainer {
 
             this.actionToast('Test Toast','hello world');
         })
+    }
+
+    private m_tabInd:number = 0;
+    private sampleTabs(){
+        this.tabBegin(['TabA','TabB','TabC'],ind=>this.m_tabInd = ind);
+        this.text('select tab:' + this.m_tabInd);
     }
 }
 

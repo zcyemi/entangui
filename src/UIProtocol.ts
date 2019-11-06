@@ -41,6 +41,21 @@ export enum UIDrawCmdType{
     ListBegin,
     ListItemNext,
     ListEnd,
+    CollapseBegin,
+    CollapseEnd,
+    TabBegin,
+    TabEnd,
+
+    FormBegin,
+    FormEnd,
+    FormSelect,
+    FormInput,
+    FormCheckbox,
+    FormText,
+    FormTextArea,
+    FormRangeInput,
+    FormRadio,
+
 }
 
 
@@ -225,9 +240,10 @@ export class UIContext{
         return this.pushCmd(UIDrawCmdType.Divider);
     }
 
-    public beginGroup(padidng:string = '3px'){
+    public beginGroup(padidng:string = '3px',classes?:string[]){
         return this.pushCmd(UIDrawCmdType.BeginGroup,{
-            padding:padidng
+            padding:padidng,
+            classes:classes
         });
     }
 
@@ -264,9 +280,10 @@ export class UIContext{
         return this.pushCmd(UIDrawCmdType.FlexEnd);
     }
 
-    public FlexItemBegin(width?:string){
+    public FlexItemBegin(width?:string,flex?:number){
         return this.pushCmd(UIDrawCmdType.FlexItemBegin,{
-            'width':width
+            width:width,
+            flex:flex
         });
     }
 
@@ -293,6 +310,21 @@ export class UIContext{
     public listEnd(){
         return this.pushCmd(UIDrawCmdType.ListEnd);
     }
+
+    public tabBegin(tabs:string[],click?:(index:number)=>void){
+        let id = this.genItemID(UIDrawCmdType.TabBegin);
+
+        this.pushEventListener(id,'click',click);
+        return this.pushCmd(UIDrawCmdType.TabBegin,{
+            id:id,
+            tabs:tabs,
+        });
+    }
+
+    public tabEnd(){
+        this.pushCmd(UIDrawCmdType.TabEnd);
+    }
+
 
     public actionToast(title:string,msg:string):string{
         let id  =this.getActionId(UIActionType.Toast);

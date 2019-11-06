@@ -1,20 +1,8 @@
-import { h, init } from 'snabbdom';
-import classModule from 'snabbdom/modules/class';
-import eventListenersModule from 'snabbdom/modules/eventlisteners';
-import propsModule from 'snabbdom/modules/props';
-import styleModule from 'snabbdom/modules/style';
+import { h } from 'snabbdom';
 import { VNode } from 'snabbdom/vnode';
-import { UIEventData, UIDrawCmdType } from './UIProtocol';
+import { UIEventData } from './UIProtocol';
 
-import toVNode from 'snabbdom/tovnode';
-import { UIRenderer } from './UIRender';
 
-var patchConfig = init([
-    propsModule,
-    classModule,
-    styleModule,
-    eventListenersModule,
-]);
 
 export class UIBuilder {
 
@@ -87,12 +75,30 @@ export class UIBuilder {
 
     }
 
-    public cmdBeginGroup(options: any) {
-        let padding = options.padding || "3px";
+    private mergeObject(tar: any, src: any) {
+        if (src == null) return tar;
+        return Object.assign(tar, src);
+    }
+
+    private buildClasses(...cls: string[]) {
+        let ret = {};
+        cls.forEach(c => {
+            ret[c] = true
+        });
+        return ret;
+    }
+
+    public cmdBeginGroup(options?: any) {
+        let padding = "3px";
+        if (options && options.padding) {
+            padding = options.padding;
+        }
         let wrap = h('div', {
             style: {
-                padding: padding
-            }
+                padding: padding,
+                width: '100%'
+            },
+            class: options && options.classes
         });
         this.pushNode(wrap);
         this.beginChildren();
@@ -303,6 +309,7 @@ export class UIBuilder {
         var width = options.width;
         var flex = options.flex;
 
+
         var style = {};
         if (width) {
             style['width'] = width;
@@ -396,6 +403,52 @@ export class UIBuilder {
         this.endChildren();
         this.endChildren();
     }
+
+    public cmdTabBegin(options: any) {
+        let id = options.id;
+        let tabs: string[] = options.tabs;
+
+        if (tabs == null) return;
+
+        this.cmdBeginGroup();
+
+        let ul = h('ul', {
+            class: this.buildClasses("nav", 'nav-pills', 'nav-fill'),
+            props: { id: id, role: 'tablist' },
+        }, []);
+        this.pushNode(ul);
+        this.beginChildren();
+        tabs.forEach((tabname, t) => {
+            var itemid = `${id}-${t}`;
+            var funcClick = this.wrapEventDelay(id, 'click', () => {
+                return t;
+            });
+            let li = h('li', { class: this.buildClasses('nav-item') }, [
+                h('a', {
+                    class: this.buildClasses('nav-link'),
+                    props: {
+                        id: itemid,
+                        href: '#',
+                        role: 'tab'
+                    },
+                    dataset: {
+                        toggle: 'pill'
+                    },
+                    on: {
+                        click: funcClick
+                    }
+                }, tabname)
+            ]);
+            ul.children.push(li);
+        });
+        this.endChildren();
+    }
+
+
+    public cmdTabEnd() {
+        this.cmdEndGroup();
+    }
+
     //actions
 
     public actionToast(id: string, options: any) {
@@ -416,12 +469,12 @@ export class UIBuilder {
         `);
 
 
-        var toastObj:any = $(`#${id}`);
-        toastObj.on('hidden.bs.toast',()=>{
+        var toastObj: any = $(`#${id}`);
+        toastObj.on('hidden.bs.toast', () => {
             toastObj.remove();
         })
         toastObj.toast('show');
-        
+
     }
 
 }
