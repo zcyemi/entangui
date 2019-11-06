@@ -1,6 +1,6 @@
 import { UIContainer } from "../UIContainer";
-import { UIRenderer, UISourceLocal, ServiceBind } from "../UIService";
-
+import { ServiceBind, UISourceLocal } from "../UIService";
+import { UIRenderer } from "../UIRender";
 
 enum SampleGroup {
     Input,
@@ -25,9 +25,7 @@ export class SampleUI extends UIContainer {
     }
 
     protected OnGUI() {
-
         this.flexBegin();
-
         this.FlexItemBegin('250px');
         this.drawNavBar();
         this.flexItemEnd();
@@ -38,11 +36,10 @@ export class SampleUI extends UIContainer {
         this.flexItemEnd();
 
         this.flexEnd();
-
     }
 
     private drawNavBar() {
-        this.sidebarBegin('menubar', 'EntanGUI Samples', (item) => { this.m_groupId = item });
+        this.sidebarBegin('menubar', 'DebugTool', (item) => { this.m_groupId = item });
 
         this.m_groupMap.forEach(item => {
             this.sidebarItem(item, item);
@@ -56,9 +53,11 @@ export class SampleUI extends UIContainer {
         let funcName = `sample${this.m_groupId}`;
         let func: Function = this[funcName];
         if (!func) return;
-        func.call(this);
-    }
 
+        this.beginGroup();
+        func.call(this);
+        this.endGroup();
+    }
 
     private m_inputA:string;
     private m_inputB:string;
@@ -74,6 +73,10 @@ export class SampleUI extends UIContainer {
 
     private sampleButtons() {
 
+        this.button('show toast',null,()=>{
+
+            this.actionToast('Test Toast','hello world');
+        })
     }
 }
 
@@ -81,3 +84,4 @@ var render = new UIRenderer(document.getElementById('container'));
 
 var source = new UISourceLocal(new SampleUI());
 ServiceBind(source, render);
+

@@ -2,6 +2,7 @@ export enum UIMessageType{
     init = 0,
     frame = 1,
     evt = 2,
+    action =3,
 }
 
 export class UIMessage{
@@ -42,6 +43,13 @@ export enum UIDrawCmdType{
     ListEnd,
 }
 
+
+export enum UIActionType{
+    Toast,
+    Query,
+    Notification,
+}
+
 export class UIFrameData{
     public frameid:number;
     public draw_commands:UIDrawCmd[] = [];
@@ -51,6 +59,18 @@ export class UIEventData{
     public id:string;
     public evt:string;
     public data:any;
+}
+
+export class UIActionData{
+    public id:string;
+    public action:UIActionType;
+    public data:any;
+
+    public constructor(id:string,action:UIActionType,data:any){
+        this.id = id;
+        this.action = action;
+        this.data = data;
+    }
 }
 
 export class UIDrawCmd{
@@ -67,10 +87,22 @@ export class UIContext{
     private m_data:UIFrameData;
     private m_eventRegister:Map<String,Map<String,Function>> = new Map();
     private m_idbuilder = {};
+    private m_actionIds:Map<UIActionType,number> = new Map();
+
+    public actions:UIActionData[] = [];
 
 
     public constructor(){
+        for (const key in UIActionType) {
+            if (UIActionType.hasOwnProperty(key)) {
+                const element = UIActionType[key];
+                if(typeof element === 'string'){
+                    this.m_actionIds.set(<UIActionType>UIActionType[element],0);
+                }
+            }
+        }
     }
+
 
     public dispatchEvent(evt:UIEventData):boolean{
         let registry = this.m_eventRegister;
@@ -95,6 +127,10 @@ export class UIContext{
         return this;
     }
 
+    public pushAction(data:UIActionData){
+        this.actions.push(data);
+    }
+
     public pushEventListener(id:string,event:string,action:Function){
         if(action==null) return;
         var listener = new UIEventListener();
@@ -109,6 +145,13 @@ export class UIContext{
         }
 
         idmap.set(event,action);
+    }
+
+
+    public getActionId(type:UIActionType):string{
+        let index = this.m_actionIds.get(type);
+        this.m_actionIds.set(type,index+1);
+        return `${UIActionType[type]}_${index}`;
     }
 
     public genItemID(type:UIDrawCmdType):string{
@@ -168,8 +211,6 @@ export class UIContext{
 
     public input(label:string,text:string,finish?:(val:string)=>void){
         let id = this.genItemID(UIDrawCmdType.Input);
-
-        console.log(id);
         this.pushEventListener(id,'finish',finish);
 
         return this.pushCmd(UIDrawCmdType.Input,{
@@ -251,6 +292,13 @@ export class UIContext{
     }
     public listEnd(){
         return this.pushCmd(UIDrawCmdType.ListEnd);
+    }
+
+    public actionToast(title:string,msg:string):string{
+        let id  =this.getActionId(UIActionType.Toast);
+        var data = new UIActionData(id,UIActionType.Toast,{title:title,msg:msg});
+        this.pushAction(data);
+        return id;
     }
     
 

@@ -18,3 +18,13 @@
     overflow: auto;
     -webkit-overflow-scrolling: touch;
 }
+
+#entangui-toastroot{
+    position: absolute;
+    top: 50%;
+    right: 20px;
+}
+
+.toast{
+    min-width: 250px;
+}

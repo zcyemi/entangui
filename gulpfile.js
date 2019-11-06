@@ -3,7 +3,10 @@ const browserSync = require('browser-sync').create();
 
 gulp.task("start",()=>{
 
-    gulp.src('./samples/**').pipe(gulp.dest('./dist'));
+    gulp.watch('./samples/**.*',()=>{
+        return gulp.src('./samples/**').pipe(gulp.dest('./dist'));
+    })
+    
     browserSync.init({
         server: "./dist",
         files: "./dist/**/**.*"
