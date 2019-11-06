@@ -1,13 +1,19 @@
 import { UIActionData, UIEventData, UIFrameData, UIMessage, UIMessageType } from "./UIProtocol";
 import { UISource } from "./UISource";
 
+export enum UISocketEvent{
+    open,
+    close,
+    error,
+    message,
+}
+
 export class UISourceSocket extends UISource {
     private m_socket: WebSocket;
     private m_pendingMsg: UIMessage[] = [];
     private m_port:number;
     private m_ip:string;
-
-    public EventLogs:(msg:string)=>void;
+    public EventSocket:(evt:UISocketEvent,data:any)=>void;
 
     public constructor(ip: string, port: number) {
         super();
@@ -34,7 +40,7 @@ export class UISourceSocket extends UISource {
         socket.addEventListener("open", this.onOpen.bind(this));
         socket.addEventListener("message", this.onMessage.bind(this));
         socket.addEventListener('close', this.onClose.bind(this));
-        socket.addEventListener('close', this.onError.bind(this));
+        socket.addEventListener('error', this.onError.bind(this));
 
         this.m_socket = socket;
     }
@@ -58,7 +64,7 @@ export class UISourceSocket extends UISource {
     }
 
     private onOpen(evt: Event) {
-        this.log('socket open');
+        this.emitSocketEvent(UISocketEvent.open,evt);
         let msg = new UIMessage(UIMessageType.init, null);
         this.m_socket.send(JSON.stringify(msg));
     }
@@ -71,8 +77,7 @@ export class UISourceSocket extends UISource {
             console.log("unprocess message: " + data);
             return;
         }
-
-        this.log(`socket msg: ${UIMessageType[msg.type]}`);
+        this.emitSocketEvent(UISocketEvent.message,{type:msg.type});
 
         switch (msg.type) {
             case UIMessageType.frame:
@@ -96,19 +101,18 @@ export class UISourceSocket extends UISource {
         }
     }
 
-    private log(obj:any){
-        let evtlogs= this.EventLogs;
-        if(evtlogs !=null){
-            evtlogs(obj);
-        }
+    private emitSocketEvent(evt:UISocketEvent,data:any){
+        if(this.EventSocket == null) return;
+        let cb = this.EventSocket;
+        cb(evt,data);
     }
 
-    private onClose(evt: Event) {
-        this.log('socket close');
+    private onClose(evt: CloseEvent) {
+        this.emitSocketEvent(UISocketEvent.close,{code:evt.code});
     }
 
-    private onError(evt: CloseEvent) {
-        this.log(`socket error: ${evt.code}`);
+    private onError(evt: Event) {
+        this.emitSocketEvent(UISocketEvent.error,evt);
     }
 
     public Render() { }
