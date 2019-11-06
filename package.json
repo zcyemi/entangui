@@ -1,6 +1,6 @@
 {
   "name": "@zcyemi/entangui",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "repository": "git@github.com:zcyemi/entangui.git",
@@ -25,7 +25,7 @@
   },
   "scripts": {
     "start": "gulp start",
-    "build": "tsc && rollup -c rollup.config.ts",
+    "build": "tsc && rollup -c rollup.config.ts && gulp sync",
     "watch": "rollup -c rollup.config.ts -w"
   },
   "files": [

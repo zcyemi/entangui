@@ -3,6 +3,9 @@ import { UIRenderer } from "../UIRender";
 import { UISourceLocal } from "../UISourceLocal";
 import { UIRenderingBind } from "../UISource";
 
+
+
+
 enum SampleGroup {
     Input,
     Buttons,
@@ -81,8 +84,12 @@ export class SampleUI extends UIContainer {
     }
 }
 
-var render = new UIRenderer(document.getElementById('container'));
 
-var source = new UISourceLocal(new SampleUI());
-UIRenderingBind(source, render);
+export function InitSample(){
+    var render = new UIRenderer(document.getElementById('container'));
+    var source = new UISourceLocal(new SampleUI());
+    UIRenderingBind(source, render);
+}
 
+
+window['entangui_sample_init'] = InitSample;

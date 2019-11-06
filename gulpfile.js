@@ -12,3 +12,8 @@ gulp.task("start",()=>{
         files: "./dist/**/**.*"
     });
 })
+
+
+gulp.task("sync",()=>{
+   return gulp.src('./samples/**').pipe(gulp.dest('./dist'));
+})
