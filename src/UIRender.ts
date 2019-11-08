@@ -80,7 +80,7 @@ export class UIRenderer {
     private static sharedUIinit(){
         let root = UIRenderer.s_internalDiv;
 
-        let toastroot = `<div id="entangui-toastroot" aria-live="polite" aria-atomic="true" style="min-height: 200px;"></div>`;
+        let toastroot = `<div id="entangui-toastroot" aria-live="polite" aria-atomic="true"></div>`;
         root.appendChild(UIRenderer.buildDom(toastroot));
         
 

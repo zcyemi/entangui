@@ -111,6 +111,9 @@ export class UIBuilder {
         toastObj.on('hidden.bs.toast', () => {
             toastObj.remove();
         })
+        toastObj.toast({
+            delay: 2000
+        });
         toastObj.toast('show');
     }
 

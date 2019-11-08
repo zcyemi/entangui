@@ -21,7 +21,7 @@
 
 #entangui-toastroot{
     position: absolute;
-    top: 50%;
+    top: 50vh;
     right: 20px;
 }
 
