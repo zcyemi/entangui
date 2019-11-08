@@ -85,6 +85,38 @@ export class UIBuilder {
         return ret;
     }
 
+
+    
+    //actions
+
+    public actionToast(id: string, options: any) {
+        console.log('show toast', id, options);
+
+        let title = options.title;
+        let msg = options.msg;
+
+        $('#entangui-toastroot').append(`
+            <div id="${id}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <strong class="mr-auto">${title}</strong>
+                </div>
+                <div class="toast-body">
+                    ${msg}
+                </div>
+            </div>
+        `);
+
+
+        var toastObj: any = $(`#${id}`);
+        toastObj.on('hidden.bs.toast', () => {
+            toastObj.remove();
+        })
+        toastObj.toast('show');
+
+    }
+
+    //widgets
+
     public cmdBeginGroup(options?: any) {
         let padding = "3px";
         if (options && options.padding) {
@@ -119,7 +151,6 @@ export class UIBuilder {
                 return val;
             });
         }
-
 
         var prepend = label != null ? h('div', {
             class: {
@@ -479,32 +510,69 @@ export class UIBuilder {
         this.endChildren();
     }
 
-    //actions
+    public cmdFormBegin(options:any){
+        let form = h('form');
+        this.pushNode(form);
+        this.beginChildren();
+    }
 
-    public actionToast(id: string, options: any) {
-        console.log('show toast', id, options);
+    public cmdFormEnd(){
+        this.endChildren();
+    }
 
-        let title = options.title;
-        let msg = options.msg;
+    public cmdFormInput(options:any){
+        let label = options.label;
+        let id = options.id;
+        let type = options.type || 'text';
+        let finish = options.finish;
+        let text = options.text;
 
-        $('#entangui-toastroot').append(`
-            <div id="${id}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header">
-                    <strong class="mr-auto">${title}</strong>
-                </div>
-                <div class="toast-body">
-                    ${msg}
-                </div>
-            </div>
-        `);
+        this.formGroupBegin(label,id);
+        {
 
+            let onEvents = finish? {
+                focusout: this.wrapEventDelay(id, 'finish', () => {
+                    var val = $(`#${id}`).val();
+                    return val;
+                })
+            }:null;
 
-        var toastObj: any = $(`#${id}`);
-        toastObj.on('hidden.bs.toast', () => {
-            toastObj.remove();
-        })
-        toastObj.toast('show');
+            let input = h('input',{
+                props:{
+                    type:type,
+                    id:id,
+                    placeholder: label,
+                    value:text
+                },
+                class:this.buildClasses('form-control'),
+                on: onEvents
+            });
+            this.pushNode(input);
+        }
+        this.formGroupEnd();
 
     }
+
+    private formGroupBegin(label?:string,id?:string){
+        let group = h('div',{
+            class:this.buildClasses('form-group')
+        });
+        this.pushNode(group);
+        this.beginChildren();
+
+        if(label){
+            let labeldom = h('label',{
+                props:{
+                    for:id
+                }
+            },label);
+            this.pushNode(labeldom);
+        }
+    }
+
+    private formGroupEnd(){
+        this.endChildren();
+    }
+
 
 }

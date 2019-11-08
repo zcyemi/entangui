@@ -8,6 +8,7 @@ enum SampleGroup {
     Buttons,
     Tabs,
     Collapse,
+    Form,
 }
 
 export class SampleUI extends UIContainer {
@@ -109,6 +110,28 @@ export class SampleUI extends UIContainer {
 
 
         this.collapseEnd();
+    }
+
+
+    private m_formInputEmail:string = "test@coconut.is";
+    private sampleForm(){
+        this.beginGroup();
+        this.formBegin();
+        this.formInput("Email",this.m_formInputEmail,"email",(val)=>{
+            this.m_formInputEmail = val;
+        })
+
+        this.button("exec");
+
+        this.formInput("Password","123",'password');
+
+        this.formInput("Text","123",'text');
+
+        this.formInput("number","123",'number');
+
+
+        this.formEnd();
+        this.endGroup();
     }
 }
 

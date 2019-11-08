@@ -193,6 +193,13 @@ export class UIContext{
         return this.m_data;
     }
 
+    public actionToast(title:string,msg:string):string{
+        let id  =this.getActionId(UIActionType.Toast);
+        var data = new UIActionData(id,UIActionType.Toast,{title:title,msg:msg});
+        this.pushAction(data);
+        return id;
+    }
+
     public button(text:string,theme:string =null,click?:Function){
 
         let id = this.genItemID(UIDrawCmdType.Button);
@@ -335,12 +342,26 @@ export class UIContext{
         return this.pushCmd(UIDrawCmdType.CollapseEnd);
     }
 
-    public actionToast(title:string,msg:string):string{
-        let id  =this.getActionId(UIActionType.Toast);
-        var data = new UIActionData(id,UIActionType.Toast,{title:title,msg:msg});
-        this.pushAction(data);
-        return id;
+    public formBegin(){
+        return this.pushCmd(UIDrawCmdType.FormBegin);
     }
+
+    public formEnd(){
+        return this.pushCmd(UIDrawCmdType.FormEnd);
+    }
+
+    public formInput(label:string,text:string,type:"email"|"password"|"text"|"number",finish?:(val:string)=>void){
+        let id = this.genItemID(UIDrawCmdType.Input);
+        return this.pushCmd(UIDrawCmdType.FormInput,{
+            label:label,
+            text:text,
+            type:type,
+            id:id,
+            finish:finish!=null
+        });
+    }
+
+
     
 
 }
