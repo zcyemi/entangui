@@ -24,6 +24,8 @@ export class UIBuilder {
 
     public constructor(eventCallback: (evtdata: UIEventData) => void, internalDiv?: HTMLDivElement) {
 
+        
+
         this.m_internalDiv = internalDiv;
         if (internalDiv != null) {
         }
@@ -420,7 +422,7 @@ export class UIBuilder {
             });
             let li = h('li', { class: this.buildClasses('nav-item') }, [
                 h('a', {
-                    class: this.buildClasses('nav-link'),
+                    class: t ==0 ? this.buildClasses('nav-link','active') : this.buildClasses('nav-link'),
                     props: {
                         id: itemid,
                         href: '#',
@@ -442,6 +444,39 @@ export class UIBuilder {
 
     public cmdTabEnd() {
         this.cmdEndGroup();
+    }
+
+    public cmdCollapseBegin(options:any){
+
+        let style = this.mergeObject({
+            'margin-top':'3px'
+        },options.style);
+
+        
+
+        let id = options.id;
+        let title = options.title;
+        let btn = h('button',{
+            class:this.buildClasses('btn','btn-block','btn-outline-primary'),
+            dataset:{
+                toggle:'collapse',
+                target:`#${id}`,
+            },
+            style:style
+        },title);
+        this.pushNode(btn);
+        let div = h('div',{
+            props:{
+                id:id,
+            },
+            class:this.buildClasses('collapse')
+        });
+        this.pushNode(div);
+        this.beginChildren();
+    }
+
+    public cmdCollapseEnd(){
+        this.endChildren();
     }
 
     //actions

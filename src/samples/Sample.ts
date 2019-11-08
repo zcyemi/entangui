@@ -3,13 +3,11 @@ import { UIRenderer } from "../UIRender";
 import { UISourceLocal } from "../UISourceLocal";
 import { UIRenderingBind } from "../UISource";
 
-
-
-
 enum SampleGroup {
     Input,
     Buttons,
     Tabs,
+    Collapse,
 }
 
 export class SampleUI extends UIContainer {
@@ -87,6 +85,30 @@ export class SampleUI extends UIContainer {
     private sampleTabs(){
         this.tabBegin(['TabA','TabB','TabC'],ind=>this.m_tabInd = ind);
         this.text('select tab:' + this.m_tabInd);
+    }
+
+    private sampleCollapse(){
+        this.collapseBegin('Test Collapse');
+
+        this.beginGroup();
+        this.text('text in collapse');
+
+        this.endGroup();
+
+        this.collapseEnd();
+
+
+        this.collapseBegin('Test Collapse 2');
+
+        this.text('text in collapse','h4');
+        this.text('text in collapse');
+        this.divider();
+
+        this.text('text in collapse','h2');
+
+
+
+        this.collapseEnd();
     }
 }
 

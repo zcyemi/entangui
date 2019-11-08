@@ -326,6 +326,15 @@ export class UIContext{
     }
 
 
+    public collapseBegin(title:string){
+        let id = this.genItemID(UIDrawCmdType.CardBegin);
+        return this.pushCmd(UIDrawCmdType.CollapseBegin,{title:title,id:id});
+    }
+
+    public collapseEnd(){
+        return this.pushCmd(UIDrawCmdType.CollapseEnd);
+    }
+
     public actionToast(title:string,msg:string):string{
         let id  =this.getActionId(UIActionType.Toast);
         var data = new UIActionData(id,UIActionType.Toast,{title:title,msg:msg});
