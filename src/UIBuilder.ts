@@ -553,6 +553,37 @@ export class UIBuilder {
 
     }
 
+    public cmdFormTextArea(options:any){
+        let label = options.label;
+        let id = options.id;
+        let finish = options.finish;
+        let text = options.text;
+        let rows = options.rows || 3;
+
+        this.formGroupBegin(label,id);
+        {
+            let onEvents = finish? {
+                focusout: this.wrapEventDelay(id, 'finish', () => {
+                    var val = $(`#${id}`).val();
+                    return val;
+                })
+            }:null;
+
+            let input = h('textarea',{
+                props:{
+                    id:id,
+                    placeholder: label,
+                    value:text,
+                    rows:rows
+                },
+                class:this.buildClasses('form-control'),
+                on: onEvents
+            });
+            this.pushNode(input);
+        }
+        this.formGroupEnd();
+    }
+
     private formGroupBegin(label?:string,id?:string){
         let group = h('div',{
             class:this.buildClasses('form-group')

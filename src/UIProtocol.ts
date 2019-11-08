@@ -51,7 +51,6 @@ export enum UIDrawCmdType{
     FormSelect,
     FormInput,
     FormCheckbox,
-    FormText,
     FormTextArea,
     FormRangeInput,
     FormRadio,
@@ -351,11 +350,22 @@ export class UIContext{
     }
 
     public formInput(label:string,text:string,type:"email"|"password"|"text"|"number",finish?:(val:string)=>void){
-        let id = this.genItemID(UIDrawCmdType.Input);
+        let id = this.genItemID(UIDrawCmdType.FormInput);
         return this.pushCmd(UIDrawCmdType.FormInput,{
             label:label,
             text:text,
             type:type,
+            id:id,
+            finish:finish!=null
+        });
+    }
+
+    public formTextArea(label:string,text:string,rows:number =3,finish?:(val:string)=>void){
+        let id = this.genItemID(UIDrawCmdType.FormTextArea);
+        return this.pushCmd(UIDrawCmdType.FormTextArea,{
+            label:label,
+            text:text,
+            rows:rows,
             id:id,
             finish:finish!=null
         });

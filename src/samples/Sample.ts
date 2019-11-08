@@ -98,7 +98,6 @@ export class SampleUI extends UIContainer {
 
         this.collapseEnd();
 
-
         this.collapseBegin('Test Collapse 2');
 
         this.text('text in collapse','h4');
@@ -106,8 +105,6 @@ export class SampleUI extends UIContainer {
         this.divider();
 
         this.text('text in collapse','h2');
-
-
 
         this.collapseEnd();
     }
@@ -128,6 +125,8 @@ export class SampleUI extends UIContainer {
         this.formInput("Text","123",'text');
 
         this.formInput("number","123",'number');
+
+        this.formTextArea("Json","{}",5);
 
 
         this.formEnd();
