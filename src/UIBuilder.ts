@@ -23,9 +23,7 @@ export class UIBuilder {
 
 
     public constructor(eventCallback: (evtdata: UIEventData) => void, internalDiv?: HTMLDivElement) {
-
         
-
         this.m_internalDiv = internalDiv;
         if (internalDiv != null) {
         }
@@ -84,14 +82,10 @@ export class UIBuilder {
         });
         return ret;
     }
-
-
     
     //actions
 
     public actionToast(id: string, options: any) {
-        console.log('show toast', id, options);
-
         let title = options.title;
         let msg = options.msg;
 
@@ -256,13 +250,13 @@ export class UIBuilder {
     }
 
 
-    private wrapEventDelay(id: string, event: string, datafunc: () => any): (p: any) => void {
-        return () => {
+    private wrapEventDelay(id: string, event: string, datafunc: (val?:any) => any): (p: any) => void {
+        return (val) => {
             var dataf = datafunc;
             var evt = new UIEventData();
             evt.id = id;
             evt.evt = event;
-            evt.data = dataf();
+            evt.data = dataf(val);
             this.emitEvent(evt)
         }
     }
@@ -644,6 +638,53 @@ export class UIBuilder {
             this.pushNode(input);
         }
         this.formGroupEnd();
+    }
+
+    public cmdFormSelect(options:any){
+        let items = options.items;
+        let label = options.label;
+        let id = options.id;
+
+        let onEvent = {};
+        if(options.change){
+            onEvent = {
+                change: this.wrapEventDelay(id,'change',(evt)=>{
+                    let tar = evt.target;
+                    return tar.options[tar.selectedIndex].value;
+                })
+            }; 
+        };
+        
+        this.formGroupBegin(label,id);
+
+        let sel = h('select',{
+            class:this.buildClasses('form-control'),
+            props:{
+                id:id
+            },
+            on:onEvent
+        });
+
+        this.pushNode(sel);
+        this.beginChildren();
+        {
+            if(items){
+                for (const key in items) {
+                    if (items.hasOwnProperty(key)) {
+                        const val = items[key];
+                        this.pushNode(h('option',{
+                            props:{
+                                value:key
+                            }
+                        },val))
+                    }
+                }
+            }
+        }
+        this.endChildren();
+
+        this.formGroupEnd();
+
     }
 
     private formGroupBegin(label?:string,id?:string){

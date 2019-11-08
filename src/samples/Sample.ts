@@ -129,6 +129,14 @@ export class SampleUI extends UIContainer {
 
         this.formTextArea("Json","{}",5);
 
+        this.formSelect('Select',{
+            AAAA:"AAAA",
+            BBBB:'BBBB',
+            CCCC:'CCCC',
+        },(sel)=>{
+            this.actionToast('Select',"you selection: "+ sel);
+        })
+
         this.formEnd();
         this.endGroup();
     }
