@@ -41,6 +41,7 @@ export enum UIDrawCmdType{
     ListBegin,
     ListItemNext,
     ListEnd,
+
     CollapseBegin,
     CollapseEnd,
     TabBegin,
@@ -105,7 +106,6 @@ export class UIContext{
 
     public actions:UIActionData[] = [];
 
-
     public constructor(){
         for (const key in UIActionType) {
             if (UIActionType.hasOwnProperty(key)) {
@@ -117,14 +117,18 @@ export class UIContext{
         }
     }
 
-
     public dispatchEvent(evt:UIEventData):boolean{
         let registry = this.m_eventRegister;
         let idmap = registry.get(evt.id);
         if(idmap == null) return false;
-        var action:Function = idmap.get(evt.evt);
+
+        var evtname = evt.evt;
+        var action:Function = idmap.get(evtname);
         if(action !=null){
             action(evt.data);
+            if(evtname == 'result'){
+                registry.delete(evt.id);
+            }
             return true;
         }
         return false;
@@ -144,6 +148,7 @@ export class UIContext{
     public pushAction(data:UIActionData){
         this.actions.push(data);
     }
+
 
     public pushEventListener(id:string,event:string,action:Function){
         if(action==null) return;
@@ -195,6 +200,24 @@ export class UIContext{
     public actionToast(title:string,msg:string):string{
         let id  =this.getActionId(UIActionType.Toast);
         var data = new UIActionData(id,UIActionType.Toast,{title:title,msg:msg});
+        this.pushAction(data);
+        return id;
+    }
+
+    public actionQuery(title:string,msg:string,result?:(confirm:boolean)=>void,text_confirm?:string,text_cancel?:string){
+        let id = this.getActionId(UIActionType.Query);
+        var data= new UIActionData(id,UIActionType.Query,{
+            title:title,
+            msg:msg,
+            text_confirm: text_confirm,
+            text_cancel:text_cancel,
+            result:result!=null
+        });
+
+        if(result){
+            this.pushEventListener(id,'result',result);
+        }
+
         this.pushAction(data);
         return id;
     }

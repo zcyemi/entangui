@@ -112,7 +112,64 @@ export class UIBuilder {
             toastObj.remove();
         })
         toastObj.toast('show');
+    }
 
+    public actionQuery(id:string,options:any){
+     
+        let title = options.title;
+        let msg = options.msg;
+
+        let text_confirm = options.text_confirm || "Confirm";
+        let text_cancel = options.text_cancel || "Cancel";
+
+        let id_title= `${id}_title`;
+
+        let id_btn_ok = `${id}_btn_ok`;
+
+        $("#entangui-modalroot").append(`
+        <div class="modal fade" id="${id}" tabindex="-1" role="dialog" data-keyboard="false" data-backdrop="static" aria-labelledby="${id_title}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="${id_title}">${title}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" click>
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ${msg}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">${text_cancel}</button>
+                    <button type="button" id="${id_btn_ok}" class="btn btn-primary">${text_confirm}</button>
+                </div>
+                </div>
+            </div>
+        </div>
+        `);
+
+
+        var resultSend = false;
+        
+        var modalobj: any = $(`#${id}`);
+        $(`#${id_btn_ok}`).click(()=>{
+            modalobj.modal('hide');
+            if(!resultSend){
+                this.wrapEvent(id,'result',true)(null);
+            }
+            resultSend = true;
+        });
+
+
+        modalobj.on('hidden.bs.modal', (e) => {
+            modalobj.modal('dispose');
+            modalobj.remove();
+            if(!resultSend){
+                this.wrapEvent(id,'result',false)(null);
+            }
+            resultSend =true;
+        })
+        modalobj.modal('show');
     }
 
     //widgets
@@ -266,7 +323,6 @@ export class UIBuilder {
     }
     public cmdSidebarBegin(options: any) {
 
-
         let id = options['id'];
         this.m_paramCache.set('sidebar', id);
 
@@ -277,7 +333,10 @@ export class UIBuilder {
                 'border-right': true,
                 'sidebar-list': true,
             },
-            id: id
+            id: id,
+            style:{
+                height: '100vh'
+            }
         })
         this.pushNode(nav);
         this.beginChildren();

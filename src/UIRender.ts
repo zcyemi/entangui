@@ -78,9 +78,14 @@ export class UIRenderer {
     }
 
     private static sharedUIinit(){
-        let toastroot = `<div id="entangui-toastroot" aria-live="polite" aria-atomic="true" style="min-height: 200px;"></div>`;
         let root = UIRenderer.s_internalDiv;
+
+        let toastroot = `<div id="entangui-toastroot" aria-live="polite" aria-atomic="true" style="min-height: 200px;"></div>`;
         root.appendChild(UIRenderer.buildDom(toastroot));
+        
+
+        let modalroot = `<div id="entangui-modalroot"></div>`
+        root.appendChild(UIRenderer.buildDom(modalroot));
     }
 
     public static sharedUIPushDom(id:string|HTMLElement,html:HTMLElement){

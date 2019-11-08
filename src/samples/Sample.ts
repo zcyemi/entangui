@@ -9,6 +9,7 @@ enum SampleGroup {
     Tabs,
     Collapse,
     Form,
+    Actions,
 }
 
 export class SampleUI extends UIContainer {
@@ -128,9 +129,37 @@ export class SampleUI extends UIContainer {
 
         this.formTextArea("Json","{}",5);
 
-
         this.formEnd();
         this.endGroup();
+    }
+
+
+    private m_actToastMsg:string = "test msg";
+    private m_actQueryData:any = {
+        text_cancel:'No',
+        text_confirm:'Yes',
+        msg:'React is better than Vue?',
+        title:'Question'
+    }
+    private sampleActions(){
+        this.input('Toast Message',this.m_actToastMsg,(val)=>this.m_actToastMsg = val);
+        this.button('Show Toast','primary',()=>{
+            this.actionToast('Test Toast',this.m_actToastMsg);
+        });
+
+        this.divider();
+
+        this.input('Query Title',this.m_actQueryData.title,val=>this.m_actQueryData.title = val);
+        this.input('Query Msg',this.m_actQueryData.msg,val=>this.m_actQueryData.msg = val);
+        this.input('Query Text Confirm',this.m_actQueryData.text_confirm,val=>this.m_actQueryData.text_confirm = val);
+        this.input('Query Text Cancel',this.m_actQueryData.text_cancel,val=>this.m_actQueryData.text_cancel = val);
+        
+        this.button("Show Query",'primary',()=>{
+            let querydata = this.m_actQueryData;
+            this.actionQuery(querydata.title,querydata.msg,(res)=>{
+                console.log("query result:" + res);
+            },querydata.text_confirm,querydata.text_cancel);
+        })
     }
 }
 
