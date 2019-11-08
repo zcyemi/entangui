@@ -25,8 +25,8 @@
   },
   "scripts": {
     "start": "gulp start",
-    "build": "tsc && rollup -c rollup.config.ts && gulp sync",
-    "watch": "rollup -c rollup.config.ts -w"
+    "build": "gulp build",
+    "watch": "gulp watch"
   },
   "files": [
     "/dist"

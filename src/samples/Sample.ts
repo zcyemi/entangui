@@ -13,7 +13,6 @@ enum SampleGroup {
 }
 
 export class SampleUI extends UIContainer {
-
     private m_groupId: string;
     private m_groupMap: string[] = [];
     public constructor() {

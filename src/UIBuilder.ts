@@ -2,8 +2,6 @@ import { h } from 'snabbdom';
 import { VNode } from 'snabbdom/vnode';
 import { UIEventData } from './UIProtocol';
 
-
-
 export class UIBuilder {
 
     private m_rootNode: VNode;
@@ -21,9 +19,6 @@ export class UIBuilder {
     private curChidrenList: (VNode | string)[];
 
     private m_evtCallback: (evtdata: UIEventData) => void;
-
-
-
     private m_paramCache: Map<string, any> = new Map();
 
 
