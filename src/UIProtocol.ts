@@ -374,6 +374,8 @@ export class UIContext{
 
     public formInput(label:string,text:string,type:"email"|"password"|"text"|"number",finish?:(val:string)=>void){
         let id = this.genItemID(UIDrawCmdType.FormInput);
+
+        this.pushEventListener(id,'finish',finish);
         return this.pushCmd(UIDrawCmdType.FormInput,{
             label:label,
             text:text,
