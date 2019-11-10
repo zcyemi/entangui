@@ -289,18 +289,16 @@ export class UIBuilder {
         if (options.click) {
             listeners.click = this.wrapEvent(options.id, 'click');
         }
-        let theme = 'btn-' + (options['theme'] || 'primary');
 
-        let classes = { 'btn': true };
-        classes[theme] = true;
+        let classes = this.buildClasses('btn',...options.class);
 
         let btn = h('button',
             {
                 class: classes,
                 on: listeners,
-                style: {
+                style:this.mergeObject({
                     margin: '3px'
-                }
+                },options.style)
             });
         btn.text = options.text;
         this.pushNode(btn);

@@ -75,12 +75,53 @@ export class SampleUI extends UIContainer {
         });
     }
 
-    private sampleButtons() {
 
-        this.button('show toast',null,()=>{
+    private m_btnThemes:string[] = [
+        'primary',
+        'secondary',
+        'success',
+        'danger',
+        'warning',
+        'info',
+        'light',
+        'dark',
+        'outline-primary',
+        'outline-secondary',
+        'outline-success',
+        'outline-danger',
+        'outline-warning',
+        'outline-info',
+        'outline-light',
+        'outline-dark'
+    ];
+
+    private sampleButtons() {
+        this.button('show toast',()=>{
 
             this.actionToast('Test Toast','hello world');
         })
+        this.divider();
+
+        this.m_btnThemes.forEach(theme=>{
+            this.button(`Btn-${theme}`,null,theme);
+        })
+
+        this.divider();
+
+        const btnwidth:string[] = [
+            '100px',
+            '200px',
+            '50vw',
+            '75%'
+        ]
+
+        btnwidth.forEach(w=>{
+            this.button(w).style({
+                width:w
+            });
+        });
+
+        this.divider();
     }
 
     private m_tabInd:number = 0;
@@ -151,7 +192,7 @@ export class SampleUI extends UIContainer {
     }
     private sampleActions(){
         this.input('Toast Message',this.m_actToastMsg,(val)=>this.m_actToastMsg = val);
-        this.button('Show Toast','primary',()=>{
+        this.button('Show Toast',()=>{
             this.actionToast('Test Toast',this.m_actToastMsg);
         });
 
@@ -162,7 +203,7 @@ export class SampleUI extends UIContainer {
         this.input('Query Text Confirm',this.m_actQueryData.text_confirm,val=>this.m_actQueryData.text_confirm = val);
         this.input('Query Text Cancel',this.m_actQueryData.text_cancel,val=>this.m_actQueryData.text_cancel = val);
         
-        this.button("Show Query",'primary',()=>{
+        this.button("Show Query",()=>{
             let querydata = this.m_actQueryData;
             this.actionQuery(querydata.title,querydata.msg,(res)=>{
                 console.log("query result:" + res);

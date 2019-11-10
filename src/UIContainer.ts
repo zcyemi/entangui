@@ -1,4 +1,5 @@
-import { UIContext, UIFrameData } from "./UIProtocol";
+import { UIFrameData } from "./UIProtocol";
+import { UIContext } from "./UIContext";
 
 export abstract class UIContainer extends UIContext{
 
