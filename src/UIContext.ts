@@ -360,6 +360,7 @@ export class UIContext{
 
     public formTextArea(label:string,text:string,rows:number =3,finish?:(val:string)=>void){
         let id = this.genItemID(UIDrawCmdType.FormTextArea);
+        this.pushEventListener(id,"finish",finish);
         return this.pushCmd(UIDrawCmdType.FormTextArea,{
             label:label,
             text:text,

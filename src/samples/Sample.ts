@@ -168,12 +168,10 @@ export class SampleUI extends UIContainer {
         this.button("exec");
 
         this.formInput("Password","123",'password');
-
         this.formInput("Text","123",'text');
-
         this.formInput("number","123",'number');
 
-        this.formTextArea("Json","{}",5);
+        this.formTextArea("Json","{}",5,val=>console.log(val));
 
         this.formSelect('Select',{
             AAAA:"AAAA",
