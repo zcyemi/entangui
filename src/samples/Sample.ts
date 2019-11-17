@@ -73,6 +73,11 @@ export class SampleUI extends UIContainer {
         this.input('InputB', this.m_inputB,(val)=>{
             this.m_inputB = val;
         });
+
+        this.inputComplex('InputComplex',this.m_inputA,"Clear Content",val=>this.m_inputA= val,()=>{
+            console.log("clear");
+            this.m_inputA = "";
+        })
     }
 
 

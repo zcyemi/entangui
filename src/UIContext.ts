@@ -218,6 +218,26 @@ export class UIContext{
         });
     }
 
+    public inputComplex(label:string,text:string,btn:string,finish?:(val:string)=>void,click?:()=>void):UIDrawCmdBuilder{
+        let id = this.genItemID(UIDrawCmdType.Input);
+        this.pushEventListener(id,'finish',finish);
+
+        let btnid = `${id}-btn`;
+
+        if(click){
+            this.pushEventListener(btnid,'click',click);
+        }
+
+        return this.pushCmd(UIDrawCmdType.Input,{
+            'text':text,
+            'label':label,
+            'id':id,
+            'finish':finish!=null,
+            'btn':btn,
+            'click': click!=null
+        });
+    }
+
     public divider(){
         return this.pushCmd(UIDrawCmdType.Divider);
     }

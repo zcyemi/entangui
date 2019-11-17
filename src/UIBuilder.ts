@@ -197,6 +197,11 @@ export class UIBuilder {
         let id = options['id'];
         let finish = options['finish'];
 
+        let btn = options['btn'];
+        let click = options['click'];
+
+        let hasBtn = btn != null && click!=null;
+
         var onEvents = null;
         if (finish) {
             onEvents = {};
@@ -218,6 +223,30 @@ export class UIBuilder {
             }, label)
         ]) : null;
 
+
+        let append:any = null;
+        if(hasBtn){
+            let btnListener:any = {};
+            let btnid = `${id}-btn`;
+            if(click){
+                btnListener.click = this.wrapEvent(btnid,'click');
+            }
+            
+
+            append = h('div',{
+                class:this.buildClasses('input-group-append')
+            },[
+                h('button',{
+                    class:this.buildClasses('btn','btn-outline-secondary'),
+                    props: {
+                        type: 'text',
+                        id: id+"-btn",
+                    },
+                    on:btnListener
+                },btn)
+            ]);
+        }
+
         let input = h('div', {
             class: {
                 'input-group': true,
@@ -235,7 +264,8 @@ export class UIBuilder {
                     id: id
                 },
                 on: onEvents
-            })
+            }),
+            append
         ]);
 
         this.pushNode(input);
@@ -246,7 +276,7 @@ export class UIBuilder {
         evt.id = id;
         evt.evt = event;
         evt.data = data;
-        return () => { this.emitEvent(evt) }
+        return () => { this.emitEvent(evt); }
     }
 
 
