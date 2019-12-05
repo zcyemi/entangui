@@ -5,6 +5,17 @@ export enum UIMessageType{
     action =3,
 }
 
+export enum UITheme{
+    primary,
+    secondary,
+    success,
+    danger,
+    warning,
+    info,
+    light,
+    dark,
+}
+
 export class UIMessage{
     public type:UIMessageType;
     public ts:number;

@@ -2,6 +2,7 @@ import { UIContainer } from "../UIContainer";
 import { UIRenderer } from "../UIRender";
 import { UISourceLocal } from "../UISourceLocal";
 import { UIRenderingBind } from "../UISource";
+import { UITheme } from "../UIProtocol";
 
 enum SampleGroup {
     Input,
@@ -10,6 +11,7 @@ enum SampleGroup {
     Collapse,
     Form,
     Actions,
+    Alert,
 }
 
 export class SampleUI extends UIContainer {
@@ -212,6 +214,16 @@ export class SampleUI extends UIContainer {
                 console.log("query result:" + res);
             },querydata.text_confirm,querydata.text_cancel);
         })
+    }
+
+    private sampleAlert(){
+        for (const key in UITheme) {
+            if (UITheme.hasOwnProperty(key)) {
+                const element = UITheme[key];
+                if(typeof element === 'number') continue;
+                this.alert(`Alert with theme: ${element}`).theme(UITheme[element]);
+            }
+        }
     }
 }
 

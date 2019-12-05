@@ -1,4 +1,4 @@
-import { UIDrawCmdType, UIActionType, UIActionData, UIFrameData, UIEventListener, UIEventData, UIDrawCmd } from "./UIProtocol";
+import { UIDrawCmdType, UIActionType, UIActionData, UIFrameData, UIEventListener, UIEventData, UIDrawCmd, UITheme } from "./UIProtocol";
 
 
 function MergeArray(tar:string[],src:string[]){
@@ -36,6 +36,12 @@ export class UIDrawCmdBuilder{
         cmd.parameters['class'] = MergeArray(cmd.parameters['class'],classdef);
 
         console.log(cmd.parameters);
+        return this;
+    }
+
+    public theme(theme:UITheme){
+        const cmd = this.cmd;
+        cmd.parameters['theme'] = UITheme[theme];
         return this;
     }
 
@@ -93,6 +99,9 @@ export class UIContext{
     public pushCmd(type:UIDrawCmdType,parameter?:any):UIDrawCmdBuilder{
         var cmd=  new UIDrawCmd();
         cmd.cmd = type;
+        if(parameter!=null){
+            parameter.class = parameter.class || [];
+        }
         cmd.parameters =parameter;
 
         this.m_data.draw_commands.push(
@@ -201,7 +210,7 @@ export class UIContext{
         return this.pushCmd(UIDrawCmdType.Bandage,{text:text});
     }
 
-    public alert(text:string){
+    public alert(text:string):UIDrawCmdBuilder{
         return this.pushCmd(UIDrawCmdType.Alert,{
             text:text
         });

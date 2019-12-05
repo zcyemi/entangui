@@ -314,7 +314,6 @@ export class UIBuilder {
     }
 
     public cmdButton(options: any) {
-
         var listeners: any = {};
         if (options.click) {
             listeners.click = this.wrapEvent(options.id, 'click');
@@ -335,11 +334,10 @@ export class UIBuilder {
     }
 
     public cmdAlert(options: any) {
+        let theme = options['theme'] || 'primary';
+        let alertCls = this.buildClasses('alert',`alert-${theme}`,...options.class);
         let alert = h('div', {
-            class: {
-                'alert': true,
-                'alert-primary': true
-            },
+            class:alertCls,
             attrs: {
                 role: 'alert'
             }
