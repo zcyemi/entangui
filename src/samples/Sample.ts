@@ -12,7 +12,7 @@ enum SampleGroup {
     Form,
     Actions,
     Alert,
-    Custom,
+    Dynamic,
 }
 
 export class SampleUI extends UIContainer {
@@ -227,7 +227,7 @@ export class SampleUI extends UIContainer {
         }
     }
 
-    private sampleCustom(){
+    private sampleDynamic(){
 
         this.text("Element");
 
@@ -250,6 +250,41 @@ export class SampleUI extends UIContainer {
         this.endChildren();
 
         this.divider();
+
+        this.text('HTML');
+
+        this.html(`
+        <div class="border rounded bg-success text-white">
+        <span style="flex:1">测试成功</span><i class="fa fa-check-circle fa-lg"></i>
+        </div>
+        `).style({
+            padding:'4px',
+            display:'flex',
+            'align-items':'center',
+            margin:'3px'
+        });
+
+        this.html(`
+        <div class="border-2 rounded bg-danger text-white">
+        <span style="flex:1">测试失败</span><i class="fa fa-exclamation-circle fa-lg"></i>
+        </div>
+        `).style({
+            padding:'3px',
+            display:'flex',
+            'align-items':'center',
+            margin:'3px'
+        });
+
+        this.html(`
+        <div class="border rounded bg-warning text-white">
+        <span style="flex:1">测试中...</span><i class="fa fa-circle-o-notch fa-spin fa-lg"></i>
+        </div>
+        `).style({
+            padding:'3px',
+            display:'flex',
+            'align-items':'center',
+            margin:'3px'
+        });
     }
 }
 

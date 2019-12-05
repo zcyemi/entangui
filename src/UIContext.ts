@@ -152,6 +152,7 @@ export class UIContext{
         return `${tname}-${lastid}`;
     }
 
+
     public beginFrame(){
         this.m_data =new UIFrameData();
         this.m_idbuilder = {};
@@ -160,6 +161,8 @@ export class UIContext{
     public endFrame():UIFrameData{
         return this.m_data;
     }
+
+   
 
     public actionToast(title:string,msg:string):string{
         let id  =this.getActionId(UIActionType.Toast);
@@ -184,6 +187,12 @@ export class UIContext{
 
         this.pushAction(data);
         return id;
+    }
+
+    public html(html:string):UIDrawCmdBuilder{
+        return this.pushCmd(UIDrawCmdType.HTML,{
+            html:html.trim()
+        });
     }
 
     public element(tag:string,text?:string):UIDrawCmdBuilder{

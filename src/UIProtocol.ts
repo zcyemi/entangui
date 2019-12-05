@@ -70,6 +70,8 @@ export enum UIDrawCmdType{
     Element,
     BeginChildren,
     EndChildren,
+
+    HTML,
 }
 
 

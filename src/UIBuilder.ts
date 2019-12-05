@@ -1,6 +1,7 @@
 import { h } from 'snabbdom';
 import { VNode } from 'snabbdom/vnode';
 import { UIEventData } from './UIProtocol';
+import toVNode from 'snabbdom/tovnode';
 
 export class UIBuilder {
 
@@ -349,6 +350,16 @@ export class UIBuilder {
     }
     public cmdEndChildren(){
         this.endChildren();
+    }
+
+    public cmdHTML(option?:any){
+        let nodes =$.parseHTML(option.html);
+        if(nodes == null || nodes.length == 0)return;
+        let domnode = nodes[0];
+        let vnode = toVNode(domnode);
+        vnode.data.style = this.mergeObject(vnode.data.style || {},option.style);
+        if(vnode == null) return;
+        this.pushNode(vnode);
     }
 
     public cmdAlert(options: any) {
