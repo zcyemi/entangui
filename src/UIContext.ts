@@ -103,7 +103,6 @@ export class UIContext{
             parameter.class = parameter.class || [];
         }
         cmd.parameters =parameter;
-
         this.m_data.draw_commands.push(
             cmd
         )
@@ -113,7 +112,6 @@ export class UIContext{
     public pushAction(data:UIActionData){
         this.actions.push(data);
     }
-
 
     public pushEventListener(id:string,event:string,action:Function){
         if(action==null) return;
@@ -129,7 +127,6 @@ export class UIContext{
         }
         idmap.set(event,action);
     }
-
 
     public getActionId(type:UIActionType):string{
         let index = this.m_actionIds.get(type);
@@ -152,7 +149,6 @@ export class UIContext{
         return `${tname}-${lastid}`;
     }
 
-
     public beginFrame(){
         this.m_data =new UIFrameData();
         this.m_idbuilder = {};
@@ -161,8 +157,6 @@ export class UIContext{
     public endFrame():UIFrameData{
         return this.m_data;
     }
-
-   
 
     public actionToast(title:string,msg:string):string{
         let id  =this.getActionId(UIActionType.Toast);
@@ -180,11 +174,9 @@ export class UIContext{
             text_cancel:text_cancel,
             result:result!=null
         });
-
         if(result){
             this.pushEventListener(id,'result',result);
         }
-
         this.pushAction(data);
         return id;
     }
@@ -405,9 +397,7 @@ export class UIContext{
 
     public formSelect(label:string,items:{[key:string]:string},change?:(key:string)=>void){
         let id = this.genItemID(UIDrawCmdType.FormSelect);
-
         this.pushEventListener(id,'change',change);
-
         return this.pushCmd(UIDrawCmdType.FormSelect,{
             label:label,
             items:items,

@@ -320,7 +320,7 @@ export class UIBuilder {
             listeners.click = this.wrapEvent(options.id, 'click');
         }
 
-        let classes = this.buildClasses('btn',...options.class);
+        let classes = this.buildClasses('btn',...(options.class || []));
 
         let btn = h('button',
             {
@@ -339,7 +339,7 @@ export class UIBuilder {
         if(tag == null) return;
 
         let el = h(tag,{
-            class: this.buildClasses(...options.class),
+            class: this.buildClasses(...(options.class || [])),
             style: options.style
         },text);
         this.pushNode(el);
@@ -364,7 +364,7 @@ export class UIBuilder {
 
     public cmdAlert(options: any) {
         let theme = options['theme'] || 'primary';
-        let alertCls = this.buildClasses('alert',`alert-${theme}`,...options.class);
+        let alertCls = this.buildClasses('alert',`alert-${theme}`,...(options.class || []));
         let alert = h('div', {
             class:alertCls,
             attrs: {
