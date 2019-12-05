@@ -11,6 +11,35 @@ import attributesModule from "snabbdom/modules/attributes";
 import datasetModule from "snabbdom/modules/dataset";
 
 
+const INTERNAL_CSS = `
+#wrap{
+    overflow: hidden;
+}
+.sidebar{
+    max-width: 250px;
+    min-width: 250px;
+    height: 100%;
+    z-index: 999;
+    transition: all 0.3s;
+}
+.sidebar-header{
+    padding: 0.875rem 1.25rem;
+    font-size: 1.2rem;
+}
+.sidebar-list{
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+#entangui-toastroot{
+    position: absolute;
+    top: 50vh;
+    right: 20px;
+}
+.toast{
+    min-width: 250px;
+}
+`;
+
 var patchConfig = init([
     propsModule,
     classModule,
@@ -30,7 +59,22 @@ export class UIRenderer {
 
     public MessageEventCallback: (evt: UIEventData) => void;
 
+
+    private static s_cssInited:boolean = false;
+
+    private static initCSS(){
+        if(UIRenderer.s_cssInited) return;
+        UIRenderer.s_cssInited = true;
+        $("<style>")
+        .prop("type", "text/css")
+        .html(INTERNAL_CSS)
+        .appendTo("head");
+
+    }
+
     public constructor(html: HTMLElement) {
+
+        UIRenderer.initCSS();
 
         if(UIRenderer.s_internalDiv == null){
             let div = document.body.appendChild(document.createElement('div'));
