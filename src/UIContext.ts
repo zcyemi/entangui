@@ -186,6 +186,21 @@ export class UIContext{
         return id;
     }
 
+    public element(tag:string,text?:string):UIDrawCmdBuilder{
+        return this.pushCmd(UIDrawCmdType.Element,{
+            text:text,
+            tag:tag
+        });
+    }
+
+    public beginChildren():void{
+        this.pushCmd(UIDrawCmdType.BeginChildren);
+    }
+
+    public endChildren():void{
+        this.pushCmd(UIDrawCmdType.EndChildren);
+    }
+
     public button(text:string,click?:Function,theme:string ='primary'):UIDrawCmdBuilder{
         let id = this.genItemID(UIDrawCmdType.Button);
         if(click !=null){

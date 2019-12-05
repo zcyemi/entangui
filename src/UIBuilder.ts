@@ -332,6 +332,24 @@ export class UIBuilder {
         btn.text = options.text;
         this.pushNode(btn);
     }
+    public cmdElement(options:any){
+        let tag = options.tag;
+        let text =options.text;
+        if(tag == null) return;
+
+        let el = h(tag,{
+            class: this.buildClasses(...options.class),
+            style: options.style
+        },text);
+        this.pushNode(el);
+    }
+
+    public cmdBeginChildren(){
+        this.beginChildren();
+    }
+    public cmdEndChildren(){
+        this.endChildren();
+    }
 
     public cmdAlert(options: any) {
         let theme = options['theme'] || 'primary';

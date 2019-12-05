@@ -12,6 +12,7 @@ enum SampleGroup {
     Form,
     Actions,
     Alert,
+    Custom,
 }
 
 export class SampleUI extends UIContainer {
@@ -224,6 +225,31 @@ export class SampleUI extends UIContainer {
                 this.alert(`Alert with theme: ${element}`).theme(UITheme[element]);
             }
         }
+    }
+
+    private sampleCustom(){
+
+        this.text("Element");
+
+        this.element("div","Element with style").style({
+            width:'200px',
+            height:'25px',
+            'background-color':'#FF0033',
+        });
+
+        this.divider();
+
+        this.text("Element with Children");
+
+        this.element('div').style({
+            "background-color":'#777'            
+        });
+        this.beginChildren();
+        this.element('button',"Clickme");
+        this.element('p',"some text here");
+        this.endChildren();
+
+        this.divider();
     }
 }
 
