@@ -14,7 +14,7 @@ enum SampleGroup {
     Alert,
     Dynamic,
     Defines,
-    Complex,
+    Scripts,
 }
 
 export class SampleUI extends UIContainer {
@@ -308,9 +308,30 @@ export class SampleUI extends UIContainer {
         this.divider();
     }
 
+    private sampleScripts(){
+        this.button("eval alert",()=>{
+            this.evaluate("alert('hello world')");
+        });
 
-    private sampleComplex(){
+        this.divider();
 
+        this.button("do calculation 10+20",async ()=>{
+            let result = await this.evaluateRet(`
+                function testadd(a,b){return a+b;};
+                testadd(10,20);
+            `);
+            this.evaluate(`alert('${result}')`);
+        })
+
+        this.divider();
+
+        this.define(UIDefineType.script,"predef sin",`
+            function defsin(a){return Math.sin(a);};
+        `);
+        this.button("call defsin() with 10",async ()=>{
+            let ret = await this.evaluateRet('defsin(10)');
+            this.evaluate(`alert(${ret})`);
+        });
     }
 }
 

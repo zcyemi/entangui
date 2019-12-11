@@ -8,6 +8,7 @@ export class UISourceLocal extends UISource {
     public constructor(uicontainer: UIContainer) {
         super();
         this.m_container = uicontainer;
+        uicontainer.bindingSource = this;
 
         window.requestAnimationFrame(this.onUpdate.bind(this))
     }

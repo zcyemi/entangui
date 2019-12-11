@@ -6,7 +6,7 @@ import styleModule from 'snabbdom/modules/style';
 import toVNode from "snabbdom/tovnode";
 import { VNode } from "snabbdom/vnode";
 import { UIBuilder } from "./UIBuilder";
-import { UIActionData, UIActionType, UIDrawCmdType, UIEventData, UIFrameData, UIDefineData } from "./UIProtocol";
+import { UIActionData, UIActionType, UIDrawCmdType, UIEventData, UIFrameData, UIDefineData, UIEvalData, UIEvalRetData } from "./UIProtocol";
 import attributesModule from "snabbdom/modules/attributes";
 import datasetModule from "snabbdom/modules/dataset";
 
@@ -115,6 +115,19 @@ export class UIRenderer {
 
     public onUIDefine(data:UIDefineData[]){
         this.m_builder.defineUpdate(data,this.m_defienStyle,this.m_defineScript);
+    }
+
+    public onUIEval(data:UIEvalData):Promise<UIEvalRetData>{
+        if(data == null) return null;
+        var code =data.code;
+        if(code == null || code == "")return null;
+        var result= eval(code);
+        if(data.ret){
+            return new Promise(res=>{
+                res(new UIEvalRetData(data.id,result));
+            });
+        }
+        return null;
     }
 
     public onUIFrame(data: UIFrameData) {

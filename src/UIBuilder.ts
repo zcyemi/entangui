@@ -92,9 +92,7 @@ export class UIBuilder {
                     codeary.push(element);
                 }
             }
-
             var finaljs = codeary.join("\n");
-            console.log(finaljs);
             definejs.html(finaljs);
         }
     }

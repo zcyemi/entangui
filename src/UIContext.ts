@@ -1,4 +1,5 @@
-import { UIDrawCmdType, UIActionType, UIActionData, UIFrameData, UIEventListener, UIEventData, UIDrawCmd, UITheme, UIDefineData, UIDefineType } from "./UIProtocol";
+import { UIDrawCmdType, UIActionType, UIActionData, UIFrameData, UIEventListener, UIEventData, UIDrawCmd, UITheme, UIDefineData, UIDefineType, UIEvalData } from "./UIProtocol";
+import { UISource } from "./UISource";
 
 
 function MergeArray(tar:string[],src:string[]){
@@ -72,6 +73,8 @@ export class UIContext{
 
     public define_updateList:UIDefineData[] = [];
 
+    public bindingSource:UISource;
+
     public constructor(){
         for (const key in UIActionType) {
             if (UIActionType.hasOwnProperty(key)) {
@@ -115,6 +118,10 @@ export class UIContext{
 
     public pushAction(data:UIActionData){
         this.actions.push(data);
+    }
+
+    public pushEval(data:UIEvalData){
+
     }
 
     public pushDefine(data:UIDefineData){
@@ -226,6 +233,15 @@ export class UIContext{
     public define(type:UIDefineType,key:string,value:any){
         var data = new UIDefineData(type,key,value);
         this.pushDefine(data);
+    }
+
+    public evaluate(code:string){
+        this.bindingSource.MessageEvalEmit(new UIEvalData(0,code,false));
+    }
+    public async evaluateRet(code:string):Promise<any>{
+        let result = await this.bindingSource.MessageEvalEmit(new UIEvalData(0,code,true));
+        if(result==null) return null;
+        return result.ret;
     }
 
     public html(html:string):UIDrawCmdBuilder{

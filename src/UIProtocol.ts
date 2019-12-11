@@ -4,7 +4,7 @@ export enum UIMessageType{
     evt = 2,
     action =3,
     define = 4,
-    pref = 5,
+    eval =5,
 }
 
 export enum UITheme{
@@ -121,6 +121,26 @@ export class UIDefineData{
         this.key= key;
         this.type = type;
         this.value = value;
+    }
+}
+
+export class UIEvalData{
+    public id:number;
+    public code:string;
+    public ret:boolean;
+    public constructor(id:number,code:string,ret:boolean){
+        this.id = id;
+        this.code = code;
+        this.ret = ret;
+    }
+}
+
+export class UIEvalRetData{
+    public id:number;
+    public ret:any;
+    public constructor(id:number,ret:any){
+        this.id = id;
+        this.ret = ret;
     }
 }
 
