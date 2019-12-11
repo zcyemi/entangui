@@ -6,7 +6,7 @@ import styleModule from 'snabbdom/modules/style';
 import toVNode from "snabbdom/tovnode";
 import { VNode } from "snabbdom/vnode";
 import { UIBuilder } from "./UIBuilder";
-import { UIActionData, UIActionType, UIDrawCmdType, UIEventData, UIFrameData } from "./UIProtocol";
+import { UIActionData, UIActionType, UIDrawCmdType, UIEventData, UIFrameData, UIDefineData } from "./UIProtocol";
 import attributesModule from "snabbdom/modules/attributes";
 import datasetModule from "snabbdom/modules/dataset";
 
@@ -62,6 +62,9 @@ export class UIRenderer {
 
     private static s_cssInited:boolean = false;
 
+    private m_defienStyle:JQuery<HTMLStyleElement>;
+    private m_defineScript:JQuery<HTMLScriptElement>;
+
     private static initCSS(){
         if(UIRenderer.s_cssInited) return;
         UIRenderer.s_cssInited = true;
@@ -70,11 +73,17 @@ export class UIRenderer {
         .html(INTERNAL_CSS)
         .appendTo("head");
 
+
+
     }
 
     public constructor(html: HTMLElement) {
-
         UIRenderer.initCSS();
+        this.m_defienStyle = <JQuery<HTMLStyleElement>>$("<style>").prop("type", "text/css");
+        this.m_defineScript = <JQuery<HTMLScriptElement>>$("<script>").prop("type","text/javascript");
+
+        this.m_defienStyle.appendTo("head");
+        this.m_defineScript.appendTo("head");
 
         if(UIRenderer.s_internalDiv == null){
             let div = document.body.appendChild(document.createElement('div'));
@@ -102,6 +111,10 @@ export class UIRenderer {
         let builder = this.m_builder;
         var method = `action${UIActionType[data.action]}`;
         builder[method](data.id,data.data);
+    }
+
+    public onUIDefine(data:UIDefineData[]){
+        this.m_builder.defineUpdate(data,this.m_defienStyle,this.m_defineScript);
     }
 
     public onUIFrame(data: UIFrameData) {

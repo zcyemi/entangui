@@ -1,4 +1,4 @@
-import { UIDrawCmdType, UIActionType, UIActionData, UIFrameData, UIEventListener, UIEventData, UIDrawCmd, UITheme } from "./UIProtocol";
+import { UIDrawCmdType, UIActionType, UIActionData, UIFrameData, UIEventListener, UIEventData, UIDrawCmd, UITheme, UIDefineData, UIDefineType } from "./UIProtocol";
 
 
 function MergeArray(tar:string[],src:string[]){
@@ -68,6 +68,12 @@ export class UIContext{
 
     public actions:UIActionData[] = [];
 
+    private define_style:{[key:string]:any} = {};
+    private define_script:{[key:string]:any} = {};
+
+
+    public define_updateList:UIDefineData[] = [];
+
     public constructor(){
         for (const key in UIActionType) {
             if (UIActionType.hasOwnProperty(key)) {
@@ -111,6 +117,44 @@ export class UIContext{
 
     public pushAction(data:UIActionData){
         this.actions.push(data);
+    }
+
+    public pushDefine(data:UIDefineData){
+        if(data == null) return;
+        switch(data.type){
+            case UIDefineType.style:
+            {
+                const defineStyle = this.define_style;
+                if(defineStyle[data.key] == null){
+                    defineStyle[data.key] = data.value;
+                }
+                else{
+                    var curval = defineStyle[data.key];
+                    var newval = data.value;
+                    if(curval == newval) return;
+                    if(JSON.stringify(curval) == JSON.stringify(newval)){
+                        return;
+                    }
+                }
+            }
+            break;
+            case UIDefineType.script:
+            {
+                const defineScript = this.define_script;
+                if(defineScript[data.key] == null){
+                    defineScript[data.key] = data.value;
+                }else{
+                    var curval = defineScript[data.key];
+                    var newval = data.value;
+                    if(curval == newval) return;
+                    if(JSON.stringify(curval) == JSON.stringify(newval)){
+                        return;
+                    }
+                }
+            }
+            break;
+        }
+        this.define_updateList.push(data);
     }
 
     public pushEventListener(id:string,event:string,action:Function){
@@ -179,6 +223,11 @@ export class UIContext{
         }
         this.pushAction(data);
         return id;
+    }
+
+    public define(type:UIDefineType,key:string,value:object){
+        var data = new UIDefineData(type,key,value);
+        this.pushDefine(data);
     }
 
     public html(html:string):UIDrawCmdBuilder{

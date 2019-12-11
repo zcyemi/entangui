@@ -1,6 +1,6 @@
 import { h } from 'snabbdom';
 import { VNode } from 'snabbdom/vnode';
-import { UIEventData } from './UIProtocol';
+import { UIEventData, UIDefineData, UIDefineType } from './UIProtocol';
 import toVNode from 'snabbdom/tovnode';
 
 export class UIBuilder {
@@ -22,6 +22,9 @@ export class UIBuilder {
     private m_evtCallback: (evtdata: UIEventData) => void;
     private m_paramCache: Map<string, any> = new Map();
 
+    private m_defineStyle:{[key:string]:any} = {};
+    private m_defineScript:{[key:string]:any} = {};
+
 
     public constructor(eventCallback: (evtdata: UIEventData) => void, internalDiv?: HTMLDivElement) {
         
@@ -31,6 +34,55 @@ export class UIBuilder {
 
         this.m_evtCallback = eventCallback;
         this.resetRootNode();
+    }
+
+
+    public defineUpdate(data:UIDefineData[],definecss:JQuery<HTMLStyleElement>,definejs:JQuery<HTMLScriptElement>){
+        let scriptDirty =false;
+        let styleDirty = false;
+
+        data.forEach(d=>{
+            switch(d.type){
+                case UIDefineType.style:
+                    {
+                        styleDirty = true;
+                        this.m_defineStyle[d.key] = d.value;
+                    }
+                break;
+                case UIDefineType.script:
+                    {
+                        scriptDirty = true;
+                        this.m_defineScript[d.key] = d.value;
+                    }
+                break;
+            }
+        });
+
+        if(styleDirty){
+            let csspart:string[] = [];
+            const defienstyles = this.m_defineStyle;
+            for (const key in defienstyles) {
+                if (defienstyles.hasOwnProperty(key)) {
+                    const styledef = defienstyles[key];
+                    
+                    let stylestr:string[] = [];
+                    for (const csskey in styledef) {
+                        if (styledef.hasOwnProperty(csskey)) {
+                            const cassval = styledef[csskey];
+                            stylestr.push(`${csskey}: ${cassval};`);
+                        }
+                    }
+
+                    csspart.push(`${key}{
+                        ${stylestr.join("\n")}
+                    }`);
+                }
+            }
+
+            var finalcss = csspart.join("\n");
+            console.log(finalcss);
+            definecss.html(finalcss);
+        }
     }
 
     public resetRootNode() {

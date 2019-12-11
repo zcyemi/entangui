@@ -17,7 +17,7 @@ export class UISourceLocal extends UISource {
         let container = this.m_container;
 
         let actions = container.actions;
-        if(actions!=null){
+        if(actions!=null && actions.length >0){
             container.actions = [];
 
             let actioncb = this.MessageActionCallback;
@@ -25,6 +25,15 @@ export class UISourceLocal extends UISource {
                 actions.forEach(data=>{
                     actioncb(data);
                 })
+            }
+        }
+
+        let defines = container.define_updateList;
+        if(defines!=null && defines.length > 0){
+            container.define_updateList = [];
+            let actiondef = this.MessageDefineCallback;
+            if(actiondef != null){
+                actiondef(defines);
             }
         }
 

@@ -2,7 +2,7 @@ import { UIContainer } from "../UIContainer";
 import { UIRenderer } from "../UIRender";
 import { UISourceLocal } from "../UISourceLocal";
 import { UIRenderingBind } from "../UISource";
-import { UITheme } from "../UIProtocol";
+import { UITheme, UIDefineType } from "../UIProtocol";
 
 enum SampleGroup {
     Input,
@@ -13,6 +13,8 @@ enum SampleGroup {
     Actions,
     Alert,
     Dynamic,
+    StyleClass,
+    Complex,
 }
 
 export class SampleUI extends UIContainer {
@@ -285,6 +287,30 @@ export class SampleUI extends UIContainer {
             'align-items':'center',
             margin:'3px'
         });
+    }
+
+    private m_btnStyle:boolean = false;
+
+    private sampleStyleClass(){
+
+        this.button("button with class",()=>{
+            this.m_btnStyle = !this.m_btnStyle;
+            this.define(UIDefineType.style,".dynamic-style",this.m_btnStyle?{
+                "position":"relative",
+                "left":"0px",
+                "transition": "all 1s"
+            }:{
+                "position":"relative",
+                "left":"100px",
+                "transition": "all 1s"
+            });
+        }).classes("dynamic-style");
+ 
+    }
+
+
+    private sampleComplex(){
+
     }
 }
 

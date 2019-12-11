@@ -3,6 +3,8 @@ export enum UIMessageType{
     frame = 1,
     evt = 2,
     action =3,
+    define = 4,
+    pref = 5,
 }
 
 export enum UITheme{
@@ -75,6 +77,12 @@ export enum UIDrawCmdType{
 }
 
 
+export enum UIDefineType{
+    script = 0,
+    style = 1,
+}
+
+
 export enum UIActionType{
     Toast,
     Query,
@@ -102,6 +110,24 @@ export class UIActionData{
         this.action = action;
         this.data = data;
     }
+}
+
+export class UIDefineData{
+    public key:string;
+    public type:UIDefineType;
+    public value:any
+
+    public constructor(type:UIDefineType,key:string,value:any){
+        this.key= key;
+        this.type = type;
+        this.value = value;
+    }
+}
+
+export class UIPrefData{
+    public key:string;
+    public type:number;
+    public value:any;
 }
 
 export class UIDrawCmd{
