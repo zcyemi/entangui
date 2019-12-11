@@ -34,8 +34,6 @@ export class UIDrawCmdBuilder{
     public classes(... classdef:string[]){
         const cmd = this.cmd;
         cmd.parameters['class'] = MergeArray(cmd.parameters['class'],classdef);
-
-        console.log(cmd.parameters);
         return this;
     }
 
@@ -126,15 +124,15 @@ export class UIContext{
             {
                 const defineStyle = this.define_style;
                 if(defineStyle[data.key] == null){
-                    defineStyle[data.key] = data.value;
+                    defineStyle[data.key] = JSON.stringify(data.value);
                 }
                 else{
-                    var curval = defineStyle[data.key];
-                    var newval = data.value;
-                    if(curval == newval) return;
-                    if(JSON.stringify(curval) == JSON.stringify(newval)){
+                    let curval = defineStyle[data.key];
+                    let newval = JSON.stringify(data.value);
+                    if(curval == newval){
                         return;
                     }
+                    defineStyle[data.key] = newval;
                 }
             }
             break;
@@ -144,9 +142,9 @@ export class UIContext{
                 if(defineScript[data.key] == null){
                     defineScript[data.key] = data.value;
                 }else{
-                    var curval = defineScript[data.key];
-                    var newval = data.value;
-                    if(curval == newval) return;
+                    let curval = defineScript[data.key];
+                    let newval = data.value;
+                    
                     if(JSON.stringify(curval) == JSON.stringify(newval)){
                         return;
                     }
@@ -225,7 +223,7 @@ export class UIContext{
         return id;
     }
 
-    public define(type:UIDefineType,key:string,value:object){
+    public define(type:UIDefineType,key:string,value:any){
         var data = new UIDefineData(type,key,value);
         this.pushDefine(data);
     }

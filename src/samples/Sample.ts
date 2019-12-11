@@ -13,7 +13,7 @@ enum SampleGroup {
     Actions,
     Alert,
     Dynamic,
-    StyleClass,
+    Defines,
     Complex,
 }
 
@@ -291,21 +291,21 @@ export class SampleUI extends UIContainer {
 
     private m_btnStyle:boolean = false;
 
-    private sampleStyleClass(){
-
+    private sampleDefines(){
         this.button("button with class",()=>{
             this.m_btnStyle = !this.m_btnStyle;
             this.define(UIDefineType.style,".dynamic-style",this.m_btnStyle?{
                 "position":"relative",
-                "left":"0px",
+                "left":"100px",
                 "transition": "all 1s"
             }:{
                 "position":"relative",
-                "left":"100px",
+                "left":"0px",
                 "transition": "all 1s"
             });
         }).classes("dynamic-style");
- 
+
+        this.divider();
     }
 
 

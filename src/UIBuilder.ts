@@ -80,8 +80,22 @@ export class UIBuilder {
             }
 
             var finalcss = csspart.join("\n");
-            console.log(finalcss);
             definecss.html(finalcss);
+        }
+
+        if(scriptDirty){
+            let codeary:string[] = [];
+            const definescripts = this.m_defineScript;
+            for (const key in definescripts) {
+                if (definescripts.hasOwnProperty(key)) {
+                    const element = definescripts[key];
+                    codeary.push(element);
+                }
+            }
+
+            var finaljs = codeary.join("\n");
+            console.log(finaljs);
+            definejs.html(finaljs);
         }
     }
 
