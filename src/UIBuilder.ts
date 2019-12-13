@@ -386,7 +386,11 @@ export class UIBuilder {
         let rawclasses = options.class || [];
         let theme = options.theme;
         if(theme!=null){
-            rawclasses.push(`btn-${theme}`);
+
+            if(theme != 'none'){
+                rawclasses.push(`btn-${theme}`);
+            }
+            
         }
         else{
             rawclasses.push('btn-primary');

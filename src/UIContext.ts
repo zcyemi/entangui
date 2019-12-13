@@ -38,9 +38,9 @@ export class UIDrawCmdBuilder{
         return this;
     }
 
-    public theme(theme:UITheme){
+    public theme(theme:UITheme | string){
         const cmd = this.cmd;
-        cmd.parameters['theme'] = UITheme[theme];
+        cmd.parameters['theme'] = typeof(theme) === 'string'? theme: UITheme[theme];
         return this;
     }
 

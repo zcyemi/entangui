@@ -102,7 +102,8 @@ export class SampleUI extends UIContainer {
         'outline-warning',
         'outline-info',
         'outline-light',
-        'outline-dark'
+        'outline-dark',
+        'none',
     ];
 
     private sampleButtons() {
@@ -113,7 +114,7 @@ export class SampleUI extends UIContainer {
         this.divider();
 
         this.m_btnThemes.forEach(theme=>{
-            this.button(`Btn-${theme}`,null).theme(UITheme[theme]);
+            this.button(`Btn-${theme}`,null).theme(theme);
         })
 
         this.divider();
