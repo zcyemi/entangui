@@ -170,15 +170,19 @@ export class UISourceSocket extends UISource {
     }
 
     private cancelAutoConnect(){
-        if(this.m_enableAutoConn){
-            clearInterval(this.m_autoConnHandler);
+        let hander = this.m_autoConnHandler;
+        if(hander!=null){
+            clearInterval(hander);
             this.m_autoConnHandler = null;
         }
     }
 
     private startAutoConnect(){
-        if(!this.m_enableAutoConn){
-            this.m_autoConnHandler = setInterval(this.connect.bind(this),1000);
+        if(this.m_enableAutoConn){
+            let handler = this.m_autoConnHandler;
+            if(handler==null){
+                this.m_autoConnHandler = setInterval(this.connect.bind(this),1000);
+            }
         }
     }
 
