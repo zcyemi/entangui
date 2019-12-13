@@ -15,10 +15,14 @@ export class UISourceSocket extends UISource {
     private m_ip: string;
     public EventSocket: (evt: UISocketEvent, data: any) => void;
 
-    public constructor(ip: string, port: number) {
+    private m_enableAutoConn:boolean = false;
+    private m_autoConnHandler:any;
+
+    public constructor(ip: string, port: number,autoConnect:boolean =false) {
         super();
         this.m_ip = ip;
         this.m_port = port;
+        this.m_enableAutoConn = autoConnect;
     }
 
     public setIp(ip: string) {
@@ -30,6 +34,8 @@ export class UISourceSocket extends UISource {
         let socket = this.m_socket;
         if (socket != null) {
             if (socket.readyState == WebSocket.CONNECTING || socket.readyState == WebSocket.OPEN) {
+
+                this.cancelAutoConnect();
                 return;
             }
         }
@@ -76,7 +82,11 @@ export class UISourceSocket extends UISource {
         }
     }
 
+
+
     private onOpen(evt: Event) {
+        this.cancelAutoConnect();
+
         this.emitSocketEvent(UISocketEvent.open, evt);
         let msg = new UIMessage(UIMessageType.init, null);
         this.m_socket.send(JSON.stringify(msg));
@@ -153,7 +163,25 @@ export class UISourceSocket extends UISource {
 
     private onClose(evt: CloseEvent) {
         this.emitSocketEvent(UISocketEvent.close, { code: evt.code });
+
+        if(this.m_enableAutoConn){
+            this.startAutoConnect();
+        }
     }
+
+    private cancelAutoConnect(){
+        if(this.m_enableAutoConn){
+            clearInterval(this.m_autoConnHandler);
+            this.m_autoConnHandler = null;
+        }
+    }
+
+    private startAutoConnect(){
+        if(!this.m_enableAutoConn){
+            this.m_autoConnHandler = setInterval(this.connect.bind(this),1000);
+        }
+    }
+
 
     private onError(evt: Event) {
         this.emitSocketEvent(UISocketEvent.error, evt);
