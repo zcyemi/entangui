@@ -1,7 +1,7 @@
-import { UIActionData, UIEventData, UIFrameData, UIMessage, UIMessageType } from "./UIProtocol";
+import { UIActionData, UIEventData, UIFrameData, UIMessage, UIMessageType, UIDefineData, UIEvalRetData, UIEvalData } from "./UIProtocol";
 import { UISource } from "./UISource";
 
-export enum UISocketEvent{
+export enum UISocketEvent {
     open,
     close,
     error,
@@ -11,9 +11,9 @@ export enum UISocketEvent{
 export class UISourceSocket extends UISource {
     private m_socket: WebSocket;
     private m_pendingMsg: UIMessage[] = [];
-    private m_port:number;
-    private m_ip:string;
-    public EventSocket:(evt:UISocketEvent,data:any)=>void;
+    private m_port: number;
+    private m_ip: string;
+    public EventSocket: (evt: UISocketEvent, data: any) => void;
 
     public constructor(ip: string, port: number) {
         super();
@@ -21,7 +21,7 @@ export class UISourceSocket extends UISource {
         this.m_port = port;
     }
 
-    public setIp(ip:string){
+    public setIp(ip: string) {
         this.m_ip = ip;
     }
 
@@ -63,8 +63,21 @@ export class UISourceSocket extends UISource {
         }
     }
 
+    public sendUIEvalRet(data:UIEvalRetData){
+        if(data == null) return;
+        let msg = new UIMessage(UIMessageType.eval_ret,data);
+        msg.attachTs();
+        this.connect();
+        if(this.socketStatus == WebSocket.OPEN){
+            this.m_socket.send(JSON.stringify(msg));
+        }
+        else{
+            this.m_pendingMsg.push(msg);
+        }
+    }
+
     private onOpen(evt: Event) {
-        this.emitSocketEvent(UISocketEvent.open,evt);
+        this.emitSocketEvent(UISocketEvent.open, evt);
         let msg = new UIMessage(UIMessageType.init, null);
         this.m_socket.send(JSON.stringify(msg));
     }
@@ -77,42 +90,73 @@ export class UISourceSocket extends UISource {
             console.log("unprocess message: " + data);
             return;
         }
-        this.emitSocketEvent(UISocketEvent.message,{type:msg.type});
+        this.emitSocketEvent(UISocketEvent.message, { type: msg.type });
 
         switch (msg.type) {
             case UIMessageType.frame:
-                var framdata: UIFrameData = msg.data;
-                if (framdata == null) {
-                    console.error("ui framedata is null");
-                }
-                if (this.MessageFrameCallback != null) {
-                    this.MessageFrameCallback(framdata);
+                {
+                    var framdata: UIFrameData = msg.data;
+                    if (framdata == null) {
+                        console.error("ui framedata is null");
+                    }
+                    if (this.MessageFrameCallback != null) {
+                        this.MessageFrameCallback(framdata);
+                    }
                 }
                 break;
             case UIMessageType.action:
-                var actdata:UIActionData = msg.data;
-                if(actdata ==null){
-                    console.error("ui actiondata is null");
-                }
-                if (this.MessageActionCallback != null) {
-                    this.MessageActionCallback(actdata);
+                {
+                    var actdata: UIActionData = msg.data;
+                    if (actdata == null) {
+                        console.error("ui actiondata is null");
+                    }
+                    if (this.MessageActionCallback != null) {
+                        this.MessageActionCallback(actdata);
+                    }
                 }
                 break;
+            case UIMessageType.define:
+                {
+                    var defdata = msg.data;
+                    if(defdata == null){
+                        return;
+                    }
+                    if(this.MessageDefineCallback !=null){
+                        this.MessageDefineCallback(defdata);
+                    }
+                }
+                break;
+            case UIMessageType.eval:
+                {
+                    var evaldata:UIEvalData =msg.data;
+                    if(evaldata !=null){
+                        var code = evaldata.code;
+
+                        var result:any = null;
+                        if(code !=null){
+                            result = eval(code);
+                        }
+                        if(evaldata.ret){
+                            this.sendUIEvalRet(new UIEvalRetData(evaldata.id,JSON.stringify(result)));
+                        }
+                    }
+                }
+            break;
         }
     }
 
-    private emitSocketEvent(evt:UISocketEvent,data:any){
-        if(this.EventSocket == null) return;
+    private emitSocketEvent(evt: UISocketEvent, data: any) {
+        if (this.EventSocket == null) return;
         let cb = this.EventSocket;
-        cb(evt,data);
+        cb(evt, data);
     }
 
     private onClose(evt: CloseEvent) {
-        this.emitSocketEvent(UISocketEvent.close,{code:evt.code});
+        this.emitSocketEvent(UISocketEvent.close, { code: evt.code });
     }
 
     private onError(evt: Event) {
-        this.emitSocketEvent(UISocketEvent.error,evt);
+        this.emitSocketEvent(UISocketEvent.error, evt);
     }
 
     public Render() { }

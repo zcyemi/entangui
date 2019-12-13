@@ -63,8 +63,7 @@ export class UIBuilder {
             const defienstyles = this.m_defineStyle;
             for (const key in defienstyles) {
                 if (defienstyles.hasOwnProperty(key)) {
-                    const styledef = defienstyles[key];
-                    
+                    const styledef:UIDefineData = defienstyles[key];
                     let stylestr:string[] = [];
                     for (const csskey in styledef) {
                         if (styledef.hasOwnProperty(csskey)) {
@@ -384,8 +383,15 @@ export class UIBuilder {
             listeners.click = this.wrapEvent(options.id, 'click');
         }
 
-        let classes = this.buildClasses('btn',...(options.class || []));
-
+        let rawclasses = options.class || [];
+        let theme = options.theme;
+        if(theme!=null){
+            rawclasses.push(`btn-${theme}`);
+        }
+        else{
+            rawclasses.push('btn-primary');
+        }
+        let classes = this.buildClasses('btn',...(rawclasses));
         let btn = h('button',
             {
                 class: classes,

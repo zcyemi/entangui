@@ -5,6 +5,7 @@ export enum UIMessageType{
     action =3,
     define = 4,
     eval =5,
+    eval_ret = 6,
 }
 
 export enum UITheme{
@@ -74,6 +75,8 @@ export enum UIDrawCmdType{
     EndChildren,
 
     HTML,
+
+    Icon,
 }
 
 
@@ -115,7 +118,7 @@ export class UIActionData{
 export class UIDefineData{
     public key:string;
     public type:UIDefineType;
-    public value:any
+    public value:any;
 
     public constructor(type:UIDefineType,key:string,value:any){
         this.key= key;

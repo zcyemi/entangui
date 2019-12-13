@@ -113,7 +113,7 @@ export class SampleUI extends UIContainer {
         this.divider();
 
         this.m_btnThemes.forEach(theme=>{
-            this.button(`Btn-${theme}`,null,theme);
+            this.button(`Btn-${theme}`,null).theme(UITheme[theme]);
         })
 
         this.divider();

@@ -69,8 +69,6 @@ export class UIContext{
 
     private define_style:{[key:string]:any} = {};
     private define_script:{[key:string]:any} = {};
-
-
     public define_updateList:UIDefineData[] = [];
 
     public bindingSource:UISource;
@@ -118,10 +116,6 @@ export class UIContext{
 
     public pushAction(data:UIActionData){
         this.actions.push(data);
-    }
-
-    public pushEval(data:UIEvalData){
-
     }
 
     public pushDefine(data:UIDefineData){
@@ -265,7 +259,7 @@ export class UIContext{
         this.pushCmd(UIDrawCmdType.EndChildren);
     }
 
-    public button(text:string,click?:Function,theme:string ='primary'):UIDrawCmdBuilder{
+    public button(text:string,click?:Function):UIDrawCmdBuilder{
         let id = this.genItemID(UIDrawCmdType.Button);
         if(click !=null){
             this.pushEventListener(id,'click',click);
@@ -274,8 +268,7 @@ export class UIContext{
             text:text,
             click:click!=null,
             id:id,
-            class:[`btn-${theme}`]
-        }).style({})
+        }).style({});
     }
 
     public text(text:string,tag:string='p'):UIDrawCmdBuilder{
