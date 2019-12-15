@@ -28,8 +28,10 @@ function MergeObject(tar: any, src: any) {
 
 export class UIDrawCmdBuilder{
     public cmd:UIDrawCmd;
-    public constructor(cmd:UIDrawCmd){
+    private ctx:UIContext;
+    public constructor(cmd:UIDrawCmd,ctx:UIContext){
         this.cmd = cmd;
+        this.ctx = ctx;
     }
 
     public classes(... classdef:string[]){
@@ -53,6 +55,45 @@ export class UIDrawCmdBuilder{
     public property(key:string,val:any){
         const cmd = this.cmd;
         cmd.parameters[key] = val;
+        return this;
+    }
+
+    public id(id:string){
+        if(id == null) return;
+        this.cmd.parameters['id'] = id;
+        return this;
+    }
+
+    public on(evtname:string,cb?:Function,val?:any){
+
+        let id = this.cmd.parameters['id'];
+        if(id == null){
+            id = this.ctx.genItemID(UIDrawCmdType.Element);
+            this.cmd.parameters['id'] = id;
+        }
+
+        if(cb!=null){
+            this.ctx.pushEventListener(id,evtname,cb);
+        }
+
+        let on = this.cmd.parameters['on'];
+        if(on == null){
+            on = {};
+            this.cmd.parameters['on'] = on;
+        }
+        on[evtname] = val;
+        return this;
+    }
+
+    public attrs(attr:{[key:string]:any}){
+        if(attr == null) return;
+        this.cmd.parameters['attrs'] = attr;
+        return this;
+    }
+
+    public props(prop:{[key:string]:any}){
+        if(prop == null) return;
+        this.cmd.parameters['props'] = prop;
         return this;
     }
 }
@@ -111,7 +152,7 @@ export class UIContext{
         this.m_data.draw_commands.push(
             cmd
         )
-        return new UIDrawCmdBuilder(cmd);
+        return new UIDrawCmdBuilder(cmd,this);
     }
 
     public pushAction(data:UIActionData){

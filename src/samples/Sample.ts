@@ -240,6 +240,23 @@ export class SampleUI extends UIContainer {
             'background-color':'#FF0033',
         });
 
+
+        this.divider();
+
+        this.element("div","Element With Event").on('click',()=>{
+            console.log('click custom div');
+        })
+
+        this.divider();
+
+        this.element('div',"div with id").id('test-id');
+
+        this.divider();
+
+        this.element('div',"div with attr").attrs({
+            "data-pp":'xxxx'
+        });
+
         this.divider();
 
         this.text("Element with Children");

@@ -355,6 +355,17 @@ export class UIBuilder {
         }
     }
 
+    private buildEventListener(id:string,on:{[key:string]:string}):any{
+        let ret = {};
+        for (const key in on) {
+            if (on.hasOwnProperty(key)) {
+                const value = on[key];
+                ret[key] = this.wrapEvent(id,key,value);
+            }
+        }
+        return ret;
+    }
+
     private emitEvent(evt: UIEventData) {
         if (this.m_evtCallback != null) {
             this.m_evtCallback(evt);
@@ -407,15 +418,47 @@ export class UIBuilder {
         btn.text = options.text;
         this.pushNode(btn);
     }
+
     public cmdElement(options:any){
         let tag = options.tag;
         let text =options.text;
         if(tag == null) return;
 
-        let el = h(tag,{
+        let edata = {
             class: this.buildClasses(...(options.class || [])),
-            style: options.style
-        },text);
+            style: options.style,
+        };
+
+        
+
+        
+
+        if(options){
+
+            let props = options.props;
+            if(props){
+                edata['props'] = props;
+            }
+            else{
+                edata['props'] = {};
+            }
+
+            let id = options.id;
+            if(id){
+                edata['props'].id = id;
+                
+                let on = options.on;
+                if(on){
+                    edata['on'] = this.buildEventListener(id,on);
+                }
+            }
+            let attrs = options.attrs;
+            if(attrs){
+                edata['attrs'] = attrs;
+            }
+        }
+
+        let el = h(tag,edata,text);
         this.pushNode(el);
     }
 
@@ -431,7 +474,34 @@ export class UIBuilder {
         if(nodes == null || nodes.length == 0)return;
         let domnode = nodes[0];
         let vnode = toVNode(domnode);
-        vnode.data.style = this.mergeObject(vnode.data.style || {},option.style);
+
+
+        let vdata = vnode.data;
+
+        if(option){
+            let props = option.props;
+            if(props){
+                vdata.props = this.mergeObject(vdata.props || {},props);
+            }
+            else{
+                vdata.props = {};
+            }
+
+            let id = vdata.props.id;
+            if(!id){
+                id = option.id;
+                vdata.props.id = id;
+            }
+            if(id){
+                let on = option.on;
+                if(on){
+                    vdata.on = this.buildEventListener(id,on);
+                }
+            }
+
+        }
+
+        vdata.style = this.mergeObject(vdata.style || {},option.style);
         if(vnode == null) return;
         this.pushNode(vnode);
     }
