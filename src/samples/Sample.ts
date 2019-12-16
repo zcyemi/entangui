@@ -164,6 +164,7 @@ export class SampleUI extends UIContainer {
 
 
     private m_formInputEmail:string = "test@coconut.is";
+    private m_formInputDateTime:string = null;
     private sampleForm(){
         this.beginGroup();
         this.formBegin();
@@ -172,10 +173,14 @@ export class SampleUI extends UIContainer {
         })
 
         this.button("exec");
-
         this.formInput("Password","123",'password');
         this.formInput("Text","123",'text');
         this.formInput("number","123",'number');
+
+        this.formInput("Date",this.m_formInputDateTime,"datetime",val=>{
+            console.log(val);
+            this.m_formInputDateTime = val;
+        });
 
         this.formTextArea("Json","{}",5,val=>console.log(val));
 

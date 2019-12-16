@@ -467,7 +467,7 @@ export class UIContext{
         return this.pushCmd(UIDrawCmdType.FormEnd);
     }
 
-    public formInput(label:string,text:string,type:"email"|"password"|"text"|"number",finish?:(val:string)=>void){
+    public formInput(label:string,text:string,type:"email"|"password"|"text"|"number"|"datetime",finish?:(val:string)=>void){
         let id = this.genItemID(UIDrawCmdType.FormInput);
 
         this.pushEventListener(id,'finish',finish);

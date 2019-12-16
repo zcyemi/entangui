@@ -2,6 +2,7 @@ import { h } from 'snabbdom';
 import { VNode } from 'snabbdom/vnode';
 import { UIEventData, UIDefineData, UIDefineType } from './UIProtocol';
 import toVNode from 'snabbdom/tovnode';
+import { appendFile } from 'fs';
 
 export class UIBuilder {
 
@@ -782,27 +783,46 @@ export class UIBuilder {
         let finish = options.finish;
         let text = options.text;
 
+        let isDateTime = type == 'datetime';
         this.formGroupBegin(label,id);
         {
 
-            let onEvents = finish? {
-                focusout: this.wrapEventDelay(id, 'finish', () => {
+            let onEvents = {};
+            
+            if(!isDateTime){
+                onEvents['focusout'] = this.wrapEventDelay(id, 'finish', () => {
                     var val = $(`#${id}`).val();
                     return val;
-                })
-            }:null;
+                });
+            }
+            else{
+                // onEvents['click'] = this.wrapEventDelay(id,'click',()=>{
+                   
+                // });
+            }
 
             let input = h('input',{
                 props:{
                     type:type,
                     id:id,
                     placeholder: label,
-                    value:text
+                    value:text || "2020/1/1 12:00",
+                    'autocomplete':'off'
                 },
                 class:this.buildClasses('form-control'),
                 on: onEvents
             });
             this.pushNode(input);
+            setTimeout(()=>{
+                $(`#${id}`)['datetimepicker']({
+                    format:'Y/m/d h:m',
+                    onChangeDateTime:this.wrapEventDelay(id,"finish",()=>{
+                        var val = $(`#${id}`).val();
+                        return val;
+                    })
+                });
+            },100);
+
         }
         this.formGroupEnd();
 
