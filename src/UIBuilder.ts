@@ -796,9 +796,7 @@ export class UIBuilder {
                 });
             }
             else{
-                // onEvents['click'] = this.wrapEventDelay(id,'click',()=>{
-                   
-                // });
+                text = text || "2020/1/1 12:00";
             }
 
             let input = h('input',{
@@ -806,22 +804,30 @@ export class UIBuilder {
                     type:type,
                     id:id,
                     placeholder: label,
-                    value:text || "2020/1/1 12:00",
+                    value:text,
                     'autocomplete':'off'
                 },
                 class:this.buildClasses('form-control'),
                 on: onEvents
             });
             this.pushNode(input);
-            setTimeout(()=>{
-                $(`#${id}`)['datetimepicker']({
-                    format:'Y/m/d h:m',
-                    onChangeDateTime:this.wrapEventDelay(id,"finish",()=>{
-                        var val = $(`#${id}`).val();
-                        return val;
-                    })
-                });
-            },100);
+
+            if(isDateTime){
+                setTimeout(()=>{
+                    $(`#${id}`)['datetimepicker']({
+                        format:'Y/m/d h:m',
+                        onChangeDateTime:this.wrapEventDelay(id,"finish",()=>{
+                            var val = $(`#${id}`).val();
+                            return val;
+                        })
+                    });
+                },100);
+            }
+            else{
+                setTimeout(()=>{
+                    $(`#${id}`)['datetimepicker']("disable");
+                },100);
+            }
 
         }
         this.formGroupEnd();
