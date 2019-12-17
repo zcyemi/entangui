@@ -9,6 +9,8 @@ import { UIBuilder } from "./UIBuilder";
 import { UIActionData, UIActionType, UIDrawCmdType, UIEventData, UIFrameData, UIDefineData, UIEvalData, UIEvalRetData } from "./UIProtocol";
 import attributesModule from "snabbdom/modules/attributes";
 import datasetModule from "snabbdom/modules/dataset";
+import { UIContainer } from "./UIContainer";
+import { UIFrameBuilder } from "./UIFrameBuilder";
 
 
 const INTERNAL_CSS = `
@@ -49,6 +51,10 @@ var patchConfig = init([
     datasetModule,
 ]);
 
+export class UIRenderInitOptions{
+    public disconnPage?:boolean = false;
+}
+
 export class UIRenderer {
     private m_vnodePrev: VNode;
     private m_html: HTMLElement;
@@ -65,6 +71,12 @@ export class UIRenderer {
     private m_defienStyle:JQuery<HTMLStyleElement>;
     private m_defineScript:JQuery<HTMLScriptElement>;
 
+
+    private m_options:UIRenderInitOptions;
+    private m_onConn:boolean = false;
+
+    private m_disconnFrameData:UIFrameData;
+
     private static initCSS(){
         if(UIRenderer.s_cssInited) return;
         UIRenderer.s_cssInited = true;
@@ -72,12 +84,11 @@ export class UIRenderer {
         .prop("type", "text/css")
         .html(INTERNAL_CSS)
         .appendTo("head");
-
-
-
     }
 
-    public constructor(html: HTMLElement) {
+    public constructor(html: HTMLElement,options?:UIRenderInitOptions) {
+
+        this.m_options = options || new UIRenderInitOptions();
         UIRenderer.initCSS();
         this.m_defienStyle = <JQuery<HTMLStyleElement>>$("<style>").prop("type", "text/css");
         this.m_defineScript = <JQuery<HTMLScriptElement>>$("<script>").prop("type","text/javascript");
@@ -98,7 +109,6 @@ export class UIRenderer {
         this.m_builder = new UIBuilder(this.onMessageEvent.bind(this),UIRenderer.s_internalDiv);
     }
 
-
     private onMessageEvent(evt: UIEventData) {
         let cb = this.MessageEventCallback;
         if (cb != null) {
@@ -106,6 +116,29 @@ export class UIRenderer {
         }
     }
     
+    public onConnectionLost(){
+        this.m_onConn = false;
+        let builder = this.m_builder;
+        builder.beginChildren();
+
+        let framedata = this.m_disconnFrameData;
+        if(framedata!=null){
+            var drawcmd = framedata.draw_commands;
+            drawcmd.forEach(draw => {
+                var parameters = draw.parameters;
+                let method = `cmd${UIDrawCmdType[draw.cmd]}`;
+                builder[method](parameters);
+            });
+        }
+
+        builder.endChildren();
+        this.m_vnodePrev = patchConfig(this.m_vnodePrev, builder.rootNode);
+        builder.resetRootNode();
+    }
+
+    public setDisconnPage(data:UIFrameData){
+        this.m_disconnFrameData = data;
+    }
 
     public onUIAction(data:UIActionData){
         let builder = this.m_builder;
@@ -131,6 +164,7 @@ export class UIRenderer {
     }
 
     public onUIFrame(data: UIFrameData) {
+        this.m_onConn = true;
 
         let builder = this.m_builder;
         builder.beginChildren();
@@ -146,6 +180,7 @@ export class UIRenderer {
         this.m_vnodePrev = patchConfig(this.m_vnodePrev, builder.rootNode);
         builder.resetRootNode();
     }
+
 
     private static sharedUIinit(){
         let root = UIRenderer.s_internalDiv;

@@ -7,3 +7,4 @@ export * from './UISourceLocal';
 export * from './UISourceSocket';
 export * from './UIBuilder';
 export * from './UIContext';
+export * from './UIFrameBuilder';

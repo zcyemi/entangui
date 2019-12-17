@@ -98,8 +98,6 @@ export class UIDrawCmdBuilder{
     }
 }
 
-
-
 export class UIContext{
     private m_data:UIFrameData;
     private m_eventRegister:Map<String,Map<String,Function>> = new Map();
