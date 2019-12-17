@@ -204,6 +204,13 @@ export class SampleUI extends UIContainer {
         msg:'React is better than Vue?',
         title:'Question'
     }
+
+    private m_actNotifyData:any = {
+        title:"Notify",
+        msg:"message",
+        text_confirm:"OK"
+    };
+
     private sampleActions(){
         this.input('Toast Message',this.m_actToastMsg,(val)=>this.m_actToastMsg = val);
         this.button('Show Toast',()=>{
@@ -222,6 +229,19 @@ export class SampleUI extends UIContainer {
             this.actionQuery(querydata.title,querydata.msg,(res)=>{
                 console.log("query result:" + res);
             },querydata.text_confirm,querydata.text_cancel);
+        })
+
+        this.divider();
+
+        this.input('Notify Title',this.m_actNotifyData.title,val=>this.m_actNotifyData.title = val);
+        this.input('Notify Msg',this.m_actNotifyData.msg,val=>this.m_actNotifyData.msg = val);
+        this.input('Notify Text Confirm',this.m_actNotifyData.text_confirm,val=>this.m_actNotifyData.text_confirm = val);
+
+        this.button("Show Notify",()=>{
+            let data = this.m_actNotifyData;
+            this.actionNotify(data.title,data.msg,()=>{
+                this.actionToast("Info","notify closed");
+            },data.text_confirm);
         })
     }
 

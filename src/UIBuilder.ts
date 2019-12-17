@@ -209,8 +209,6 @@ export class UIBuilder {
             </div>
         </div>
         `);
-
-
         var resultSend = false;
         
         var modalobj: any = $(`#${id}`);
@@ -221,13 +219,63 @@ export class UIBuilder {
             }
             resultSend = true;
         });
-
-
         modalobj.on('hidden.bs.modal', (e) => {
             modalobj.modal('dispose');
             modalobj.remove();
             if(!resultSend){
                 this.wrapEvent(id,'result',false)(null);
+            }
+            resultSend =true;
+        })
+        modalobj.modal('show');
+    }
+
+    public actionNotify(id:string,options:any){
+     
+        let title = options.title;
+        let msg = options.msg;
+
+        let text_confirm = options.text_confirm || "OK";
+
+        let id_title= `${id}_title`;
+
+        let id_btn_ok = `${id}_btn_ok`;
+
+        $("#entangui-modalroot").append(`
+        <div class="modal fade" id="${id}" tabindex="-1" role="dialog" data-keyboard="false" data-backdrop="static" aria-labelledby="${id_title}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="${id_title}">${title}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" click>
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ${msg}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="${id_btn_ok}" class="btn btn-primary" style="width:100%">${text_confirm}</button>
+                </div>
+                </div>
+            </div>
+        </div>
+        `);
+        var resultSend = false;
+        
+        var modalobj: any = $(`#${id}`);
+        $(`#${id_btn_ok}`).click(()=>{
+            modalobj.modal('hide');
+            if(!resultSend){
+                this.wrapEvent(id,'finish')(null);
+            }
+            resultSend = true;
+        });
+        modalobj.on('hidden.bs.modal', (e) => {
+            modalobj.modal('dispose');
+            modalobj.remove();
+            if(!resultSend){
+                this.wrapEvent(id,'finish')(null);
             }
             resultSend =true;
         })

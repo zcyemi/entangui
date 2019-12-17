@@ -88,9 +88,9 @@ export enum UIDefineType{
 
 
 export enum UIActionType{
-    Toast,
-    Query,
-    Notification,
+    Toast = 0,
+    Query = 1,
+    Notify = 2,
 }
 
 export class UIFrameData{

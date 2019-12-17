@@ -263,6 +263,22 @@ export class UIContext{
         return id;
     }
 
+    public actionNotify(title:string,msg:string,finish?:Function,tex_confirm?:string){
+        let id = this.getActionId(UIActionType.Notify);
+        var data= new UIActionData(id,UIActionType.Notify,{
+            title:title,
+            msg:msg,
+            text_confirm: tex_confirm,
+            finish:finish!=null
+        });
+
+        if(finish){
+            this.pushEventListener(id,'finish',finish);
+        }
+        this.pushAction(data);
+        return id;
+    }
+
     public define(type:UIDefineType,key:string,value:any){
         var data = new UIDefineData(type,key,value);
         this.pushDefine(data);
