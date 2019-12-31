@@ -8,3 +8,4 @@ export * from './UISourceSocket';
 export * from './UIBuilder';
 export * from './UIContext';
 export * from './UIFrameBuilder';
+export * from './UIFactory';

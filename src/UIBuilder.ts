@@ -468,6 +468,8 @@ export class UIBuilder {
         this.pushNode(btn);
     }
 
+
+
     public cmdElement(options:any){
         let tag = options.tag;
         let text =options.text;
@@ -477,10 +479,6 @@ export class UIBuilder {
             class: this.buildClasses(...(options.class || [])),
             style: options.style,
         };
-
-        
-
-        
 
         if(options){
 
@@ -516,6 +514,13 @@ export class UIBuilder {
     }
     public cmdEndChildren(){
         this.endChildren();
+    }
+
+    public cmdJSX(option:any){
+        let element = option.element;
+        if(element == null) return;
+        let vnode = toVNode(element);
+        this.pushNode(vnode);
     }
 
     public cmdHTML(option?:any){

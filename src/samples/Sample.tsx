@@ -3,6 +3,9 @@ import { UIRenderer } from "../UIRender";
 import { UISourceLocal } from "../UISourceLocal";
 import { UIRenderingBind } from "../UISource";
 import { UITheme, UIDefineType } from "../UIProtocol";
+import { h } from "snabbdom";
+
+import {UIFactory} from '../UIFactory';
 
 enum SampleGroup {
     Input,
@@ -15,6 +18,7 @@ enum SampleGroup {
     Dynamic,
     Defines,
     Scripts,
+    JSX,
 }
 
 export class SampleUI extends UIContainer {
@@ -375,6 +379,16 @@ export class SampleUI extends UIContainer {
             let ret = await this.evaluateRet('defsin(10)');
             this.evaluate(`alert(${ret})`);
         });
+    }
+
+    private sampleJSX(){
+        var x = "test";
+        this.jsx((
+            <div id={x}>
+                <h>hello world: {x}</h>
+            </div>
+        ));
+
     }
 }
 

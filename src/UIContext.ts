@@ -326,6 +326,13 @@ export class UIContext{
         }).style({});
     }
 
+
+    public jsx(element:HTMLElement):UIDrawCmdBuilder{
+        return this.pushCmd(UIDrawCmdType.JSX,{
+            element:element
+        }).style({});
+    }
+
     public text(text:string,tag:string='p'):UIDrawCmdBuilder{
         return this.pushCmd(UIDrawCmdType.Text,{
             text:text,

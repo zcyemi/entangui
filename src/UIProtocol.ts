@@ -78,6 +78,8 @@ export enum UIDrawCmdType{
     HTML,
 
     Icon,
+
+    JSX,
 }
 
 
