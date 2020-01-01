@@ -98,7 +98,11 @@ export class UIBuilder {
     }
 
     public resetRootNode() {
-        let node = h("div");
+        let node = h("div",{
+            props:{
+                id:'entangui-root'
+            }
+        });
         this.m_rootNode = node;
         this.curNode = node;
     }
