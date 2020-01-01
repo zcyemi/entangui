@@ -431,6 +431,10 @@ export class UIBuilder {
         this.pushNode(text);
     }
 
+    public cmdIcon(options:any){
+
+    }
+
     public cmdBandage(options: any) {
         let bandage = h('span', {
             class: {
@@ -524,6 +528,30 @@ export class UIBuilder {
         let element = option.element;
         if(element == null) return;
         let vnode = toVNode(element);
+        if(vnode == null){
+            return;
+        }
+
+        let id = element.id;
+
+        if(id == null || id == ''){
+            id = option.id;
+            if(id !=null){
+                let vprops = vnode.data.props;
+                if(vprops == null){
+                    vnode.data.props = {id: id};
+                }else{
+                    vprops.id = id;
+                }
+            }
+        }
+        
+        if(id){
+            let on = option.on;
+            if(on){
+                vnode.data.on = this.buildEventListener(id,on);
+            }
+        }
         this.pushNode(vnode);
     }
 

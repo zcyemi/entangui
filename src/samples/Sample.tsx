@@ -19,6 +19,7 @@ enum SampleGroup {
     Defines,
     Scripts,
     JSX,
+    ICON,
 }
 
 export class SampleUI extends UIContainer {
@@ -382,13 +383,26 @@ export class SampleUI extends UIContainer {
     }
 
     private sampleJSX(){
-        var x = "test";
+        var x = "Test";
         this.jsx((
             <div id={x}>
-                <h>hello world: {x}</h>
+                <h>Simple JSX element: {x}</h>
             </div>
         ));
 
+        this.divider();
+
+        this.jsx((
+            <button class="btn btn-primary" id="test-jsx-item-id">
+                jsx button with event
+            </button>
+        )).on('click',()=>{
+            this.actionToast('btn click','jsxbutton clicked');
+        });
+
+    }
+
+    private sampleICON(){
     }
 }
 

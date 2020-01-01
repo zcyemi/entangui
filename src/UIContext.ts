@@ -284,6 +284,13 @@ export class UIContext{
         this.pushDefine(data);
     }
 
+    public js(key:string,value:string){
+        this.pushDefine(new UIDefineData(UIDefineType.script,key,value));
+    }
+    public css(sel:string,value:any){
+        this.pushDefine(new UIDefineData(UIDefineType.style,sel,value));
+    }
+
     public evaluate(code:string){
         this.bindingSource.MessageEvalEmit(new UIEvalData(0,code,false));
     }
@@ -328,9 +335,11 @@ export class UIContext{
 
 
     public jsx(element:HTMLElement):UIDrawCmdBuilder{
+        if(element == null) return;
+        let id = element.id || this.genItemID(UIDrawCmdType.JSX);
         return this.pushCmd(UIDrawCmdType.JSX,{
             element:element
-        }).style({});
+        }).style({}).id(id);
     }
 
     public text(text:string,tag:string='p'):UIDrawCmdBuilder{
