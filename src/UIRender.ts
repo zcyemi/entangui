@@ -6,7 +6,7 @@ import styleModule from 'snabbdom/modules/style';
 import toVNode from "snabbdom/tovnode";
 import { VNode } from "snabbdom/vnode";
 import { UIBuilder } from "./UIBuilder";
-import { UIActionData, UIActionType, UIDrawCmdType, UIEventData, UIFrameData, UIDefineData, UIEvalData, UIEvalRetData } from "./UIProtocol";
+import { UIActionData, UIActionType, UIDrawCmdType, UIEventData, UIFrameData, UIDefineData, UIEvalData, UIEvalRetData, UIDrawCmd } from "./UIProtocol";
 import attributesModule from "snabbdom/modules/attributes";
 import datasetModule from "snabbdom/modules/dataset";
 import { UIContainer } from "./UIContainer";
@@ -115,19 +115,19 @@ export class UIRenderer {
             cb(evt);
         }
     }
+
+    
     
     public onConnectionLost(){
         this.m_onConn = false;
-        let builder = this.m_builder;
+        const builder = this.m_builder;
         builder.beginChildren();
 
         let framedata = this.m_disconnFrameData;
         if(framedata!=null){
             var drawcmd = framedata.draw_commands;
             drawcmd.forEach(draw => {
-                var parameters = draw.parameters;
-                let method = `cmd${UIDrawCmdType[draw.cmd]}`;
-                builder[method](parameters);
+                builder.execCmd(draw)
             });
         }
 

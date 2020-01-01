@@ -1,5 +1,6 @@
 import { UIDrawCmdType, UIActionType, UIActionData, UIFrameData, UIEventListener, UIEventData, UIDrawCmd, UITheme, UIDefineData, UIDefineType, UIEvalData } from "./UIProtocol";
 import { UISource } from "./UISource";
+import { UIDomElement } from "./UIFactory";
 
 
 function MergeArray(tar:string[],src:string[]){
@@ -27,8 +28,12 @@ function MergeObject(tar: any, src: any) {
 }
 
 export class UIDrawCmdBuilder{
+
+
     public cmd:UIDrawCmd;
     private ctx:UIContext;
+    public consumed:boolean =false;
+
     public constructor(cmd:UIDrawCmd,ctx:UIContext){
         this.cmd = cmd;
         this.ctx = ctx;
@@ -123,6 +128,12 @@ export class UIContext{
         }
     }
 
+    private m_drawCmdBuffer:UIDrawCmdBuilder[] = [];
+
+    private emitDrawCommand(builder:UIDrawCmdBuilder){
+        this.m_drawCmdBuffer.push(builder);
+    }
+
     public dispatchEvent(evt:UIEventData):boolean{
         let registry = this.m_eventRegister;
         let idmap = registry.get(evt.id);
@@ -147,10 +158,10 @@ export class UIContext{
             parameter.class = parameter.class || [];
         }
         cmd.parameters =parameter;
-        this.m_data.draw_commands.push(
-            cmd
-        )
-        return new UIDrawCmdBuilder(cmd,this);
+
+        let builder = new UIDrawCmdBuilder(cmd,this);
+        this.emitDrawCommand(builder);
+        return builder;
     }
 
     public pushAction(data:UIActionData){
@@ -234,9 +245,23 @@ export class UIContext{
     public beginFrame(){
         this.m_data =new UIFrameData();
         this.m_idbuilder = {};
+        this.m_drawCmdBuffer =[];
         return this;
     }
     public endFrame():UIFrameData{
+        let cmdbuffer= this.m_drawCmdBuffer;
+        let drawcmds = this.m_data.draw_commands;
+        if(cmdbuffer!=null){
+            let len = cmdbuffer.length;
+            for(let t=0;t<len;t++){
+                let builder = cmdbuffer[t];
+                if(!builder.consumed){
+                    drawcmds.push(builder.cmd);
+                }
+            }
+
+        }
+
         return this.m_data;
     }
 
@@ -334,12 +359,18 @@ export class UIContext{
     }
 
 
-    public jsx(element:HTMLElement):UIDrawCmdBuilder{
+    public jsx(element:UIDomElement):UIDrawCmdBuilder{
         if(element == null) return;
         let id = element.id || this.genItemID(UIDrawCmdType.JSX);
         return this.pushCmd(UIDrawCmdType.JSX,{
-            element:element
+            dom:element
         }).style({}).id(id);
+    }
+
+    public icon(type:string){
+        return this.pushCmd(UIDrawCmdType.Icon,{
+            icon:type
+        });
     }
 
     public text(text:string,tag:string='p'):UIDrawCmdBuilder{

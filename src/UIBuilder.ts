@@ -1,8 +1,9 @@
-import { h } from 'snabbdom';
+import { h, thunk } from 'snabbdom';
 import { VNode } from 'snabbdom/vnode';
-import { UIEventData, UIDefineData, UIDefineType } from './UIProtocol';
+import { UIEventData, UIDefineData, UIDefineType, UIDrawCmd, UIDrawCmdType } from './UIProtocol';
 import toVNode from 'snabbdom/tovnode';
 import { appendFile } from 'fs';
+import { UIDomElement } from './UIFactory';
 
 export class UIBuilder {
 
@@ -35,6 +36,12 @@ export class UIBuilder {
 
         this.m_evtCallback = eventCallback;
         this.resetRootNode();
+    }
+
+    public execCmd(draw: UIDrawCmd) {
+        var parameters = draw.parameters;
+        const method = `cmd${UIDrawCmdType[draw.cmd]}`;
+        this[method](parameters);
     }
 
 
@@ -107,12 +114,14 @@ export class UIBuilder {
         this.curNode = node;
     }
 
-    public pushNode(n: VNode) {
-        this.curNode = n;
+    public pushNode(n: string | VNode) {
+        if(typeof n !== 'string'){
+            this.curNode = n;
+        }
         this.pushChildren(n);
     }
 
-    private pushChildren(c: VNode) {
+    private pushChildren(c: string| VNode) {
         this.curChidrenList.push(c);
     }
 
@@ -168,7 +177,6 @@ export class UIBuilder {
                 </div>
             </div>
         `);
-
 
         var toastObj: any = $(`#${id}`);
         toastObj.on('hidden.bs.toast', () => {
@@ -432,7 +440,10 @@ export class UIBuilder {
     }
 
     public cmdIcon(options:any){
-
+        let icon = h('i',{
+            class:this.buildClasses('fa',`fa-${options.icon}`,"fa-large")
+        });
+        this.pushNode(icon);
     }
 
     public cmdBandage(options: any) {
@@ -524,35 +535,86 @@ export class UIBuilder {
         this.endChildren();
     }
 
+    
+
     public cmdJSX(option:any){
-        let element = option.element;
-        if(element == null) return;
-        let vnode = toVNode(element);
-        if(vnode == null){
-            return;
-        }
+        let dom:UIDomElement = option.dom;
+        this.pushUIDomElement(dom,option);
+    }
 
-        let id = element.id;
+    private pushUIDomElement(dom:UIDomElement,option:any = null){
 
-        if(id == null || id == ''){
-            id = option.id;
-            if(id !=null){
-                let vprops = vnode.data.props;
-                if(vprops == null){
-                    vnode.data.props = {id: id};
-                }else{
-                    vprops.id = id;
+
+
+
+        if(dom == null) return;
+
+        const element = document.createElement(dom.tag);
+        const attributes = dom.attrs;
+        if(attributes){
+            for (const key of Object.keys(attributes)) {
+                const attributeValue = attributes[key];
+
+                if (key === "className") { // JSX does not allow class as a valid name
+                    element.setAttribute("class", attributeValue);
+                } else if (key.startsWith("on") && typeof attributes[key] === "function") {
+                    element.addEventListener(key.substring(2), attributeValue);
+                } else {
+                    // <input disable />      { disable: true }
+                    // <input type="text" />  { type: "text"}
+                    if (typeof attributeValue === "boolean" && attributeValue) {
+                        element.setAttribute(key, "");
+                    } else {
+                        element.setAttribute(key, attributeValue);
+                    }
                 }
             }
         }
-        
-        if(id){
-            let on = option.on;
-            if(on){
-                vnode.data.on = this.buildEventListener(id,on);
+
+        if(dom.text!=null){
+            element.innerText = dom.text;
+        }
+
+        let vnode = toVNode(element);
+        if(option!=null){
+            let id = element.id;
+            if(id == null || id == ''){
+                id = option.id;
+                if(id !=null){
+                    let vprops = vnode.data.props;
+                    if(vprops == null){
+                        vnode.data.props = {id: id};
+                    }else{
+                        vprops.id = id;
+                    }
+                }
+            }
+            
+            if(id){
+                let on = option.on;
+                if(on){
+                    vnode.data.on = this.buildEventListener(id,on);
+                }
             }
         }
+
         this.pushNode(vnode);
+        let children = dom.children;
+        if(children !=null && children.length > 0){
+            this.beginChildren();
+            children.forEach(c=>{
+                if(c instanceof UIDomElement){
+                    this.pushUIDomElement(c);
+                }else if(typeof c === 'string'){
+                    this.pushNode(<VNode>{text:c});
+                }
+                else if(c instanceof UIDrawCmd){
+                    this.execCmd(c);
+                }
+            })
+            this.endChildren()
+        }
+
     }
 
     public cmdHTML(option?:any){

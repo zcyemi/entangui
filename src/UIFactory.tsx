@@ -1,59 +1,72 @@
+import { UIDrawCmd } from "./UIProtocol";
+import { UIDrawCmdBuilder } from "./UIContext";
 
+export class UIDomElement{
+    public tag:string;
+    public attrs:any;
+    public children:(UIDomElement| UIDrawCmd| string)[];
+    public text?:string;
+
+    public get id():string|null{
+        if(this.attrs == null) return null;
+        return this.attrs.id;
+    }
+}
 
 export class UIFactory{
     public static Fragment = "<></>";
-
-    public static createElement(tagName: string, attributes: any | null, ...children: any[]): Element | DocumentFragment {
+    public static createElement(tagName:string,attributes:any | null, ...children:any[]):UIDomElement | DocumentFragment{
         if (tagName === UIFactory.Fragment) {
             return document.createDocumentFragment();
         }
 
-        const element = document.createElement(tagName);
-        if (attributes) {
-            for (const key of Object.keys(attributes)) {
-                const attributeValue = attributes[key];
+        let element = new UIDomElement();
+        element.tag = tagName;
+        element.attrs = attributes;
 
-                if (key === "className") { // JSX does not allow class as a valid name
-                    element.setAttribute("class", attributeValue);
-                } else if (key.startsWith("on") && typeof attributes[key] === "function") {
-                    element.addEventListener(key.substring(2), attributeValue);
-                } else {
-                    // <input disable />      { disable: true }
-                    // <input type="text" />  { type: "text"}
-                    if (typeof attributeValue === "boolean" && attributeValue) {
-                        element.setAttribute(key, "");
-                    } else {
-                        element.setAttribute(key, attributeValue);
+        if(children!=null && children.length >0){
+            let ret = [];
+            let strret = [];
+            if(UIFactory.parseChildren(children,ret,strret)){
+                element.text = strret.join('');
+            }
+            else{
+                element.children = ret;
+            }
+        }
+        return element;
+    }
+
+    private static parseChildren(children:any[],ret:any[],strret:string[]):boolean{
+        
+        let allstr = true;
+
+        if(children == null) return;
+        for(let t=0;t<children.length;t++){
+            let c = children[t];
+            if(c ==null) continue;
+            if(Array.isArray(c)){
+                allstr = UIFactory.parseChildren(c,ret,strret);
+            }
+            else{
+                
+                if(c instanceof UIDrawCmdBuilder){
+                    ret.push(c.cmd);
+                    c.consumed = true;
+                    allstr = false;
+                }
+                else if(typeof c !== 'string'){
+                    ret.push(c);
+                    allstr = false;
+                }
+                else{
+                    ret.push(c);
+                    if(allstr){
+                        strret.push(c);
                     }
                 }
             }
         }
-
-        for (const child of children) {
-            UIFactory.appendChild(element, child);
-        }
-
-        return element;
-    }
-
-    public static appendChild(parent: Node, child: any) {
-        if (typeof child === "undefined" || child === null) {
-            return;
-        }
-
-        if (Array.isArray(child)) {
-            for (const value of child) {
-                UIFactory.appendChild(parent, value);
-            }
-        } else if (typeof child === "string") {
-            parent.appendChild(document.createTextNode(child));
-        } else if (child instanceof Node) {
-            parent.appendChild(child);
-        } else if (typeof child === "boolean") {
-            // <>{condition && <a>Display when condition is true</a>}</>
-            // if condition is false, the child is a boolean, but we don't want to display anything
-        } else {
-            parent.appendChild(document.createTextNode(String(child)));
-        }
+        return allstr;
     }
 }
