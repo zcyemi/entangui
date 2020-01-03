@@ -29,6 +29,10 @@ export class UISourceSocket extends UISource {
         this.m_ip = ip;
     }
 
+    public setPort(port:number){
+        this.m_port = port;
+    }
+
     public connect() {
 
         let socket = this.m_socket;
@@ -81,8 +85,6 @@ export class UISourceSocket extends UISource {
             this.m_pendingMsg.push(msg);
         }
     }
-
-
 
     private onOpen(evt: Event) {
         this.cancelAutoConnect();
