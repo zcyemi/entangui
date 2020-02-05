@@ -11,6 +11,8 @@ import attributesModule from "snabbdom/modules/attributes";
 import datasetModule from "snabbdom/modules/dataset";
 import { UIContainer } from "./UIContainer";
 import { UIFrameBuilder } from "./UIFrameBuilder";
+import { IUITheme } from "./UITheme";
+import { UIThemeBootstrap } from "./UIThemeBootstrap";
 
 
 const INTERNAL_CSS = `
@@ -53,6 +55,38 @@ var patchConfig = init([
 
 export class UIRenderInitOptions{
     public disconnPage?:boolean = false;
+    public theme?:IUITheme = new UIThemeBootstrap();
+
+    public cdn_jquery_datetimepicker_js:string = "https://cdn.bootcss.com/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js";
+    public cdn_jquery_datetimepicker_css:string = "https://cdn.bootcss.com/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css";
+    public cdn_font_awesome_css:string = "https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css";
+}
+
+export class UIHTMLDepLoader{
+
+    private static s_cssMap:Map<string,JQuery<HTMLElement>> = new Map();
+    private static s_jsMap:Map<string,HTMLElement> = new Map();
+
+    public static loadJs(url:string,esm:boolean =false){
+
+        if(url == null || url === '') return;
+        if(UIHTMLDepLoader.s_jsMap.has(url)) return;
+        var element = document.createElement('script');
+        element.type = esm ? "module" : "text/javascript";
+        element.src = url;
+
+        UIHTMLDepLoader.s_jsMap.set(url,element);
+        document.getElementsByTagName('head')[0].appendChild(element);
+
+    }
+
+    public static loadCss(url:string){
+        if(url == null || url === '') return;
+        if(UIHTMLDepLoader.s_cssMap.has(url)) return;
+        var element = $('<link>').prop('href',url).prop('rel','stylesheet');
+        UIHTMLDepLoader.s_cssMap.set(url,element);
+        element.appendTo('head');
+    }
 }
 
 export class UIRenderer {
@@ -77,19 +111,34 @@ export class UIRenderer {
 
     private m_disconnFrameData:UIFrameData;
 
-    private static initCSS(){
+    private static initDepResources(options:UIRenderInitOptions){
         if(UIRenderer.s_cssInited) return;
         UIRenderer.s_cssInited = true;
+        UIHTMLDepLoader.loadCss(options.cdn_font_awesome_css);
+
+        UIHTMLDepLoader.loadCss(options.cdn_jquery_datetimepicker_css);
+        UIHTMLDepLoader.loadJs(options.cdn_jquery_datetimepicker_js);
+
+        var theme = options.theme;
+        theme.LoadDepStyleSheet();
+        theme.LoadDepScript();
+
+
         $("<style>")
         .prop("type", "text/css")
         .html(INTERNAL_CSS)
         .appendTo("head");
     }
 
-    public constructor(html: HTMLElement,options?:UIRenderInitOptions) {
 
-        this.m_options = options || new UIRenderInitOptions();
-        UIRenderer.initCSS();
+    public constructor(html: HTMLElement,options?:UIRenderInitOptions) {
+        options = options || new UIRenderInitOptions();
+        if(options.theme == null){
+            options.theme = new UIThemeBootstrap();
+        }
+        this.m_options = options;
+
+        UIRenderer.initDepResources(this.m_options);
         this.m_defienStyle = <JQuery<HTMLStyleElement>>$("<style>").prop("type", "text/css");
         this.m_defineScript = <JQuery<HTMLScriptElement>>$("<script>").prop("type","text/javascript");
 

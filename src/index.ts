@@ -9,3 +9,5 @@ export * from './UIBuilder';
 export * from './UIContext';
 export * from './UIFrameBuilder';
 export * from './UIFactory';
+export * from './UITheme';
+export * from './UIThemeBootstrap';
