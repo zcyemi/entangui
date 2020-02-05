@@ -405,6 +405,7 @@ export class SampleUI extends UIContainer {
     }
 
     private sampleICON() {
+        this.icon('address-book');
     }
 }
 
