@@ -1,15 +1,18 @@
 import { UIContainer } from "../UIContainer";
-import { UIRenderer } from "../UIRender";
+import { UIRenderer, UIRenderInitOptions } from "../UIRender";
 import { UISourceLocal } from "../UISourceLocal";
 import { UIRenderingBind } from "../UISource";
 import { UITheme, UIDefineType } from "../UIProtocol";
 import { h } from "snabbdom";
 
 import { UIFactory } from '../UIFactory';
+import { UIThemeBootstrap } from "../UIThemeBootstrap";
+import { UIThemeDefault } from "../UIThemeDefault";
 
 enum SampleGroup {
     Input,
     Buttons,
+    Layout,
     Tabs,
     Collapse,
     Form,
@@ -36,6 +39,9 @@ export class SampleUI extends UIContainer {
                 }
             }
         }
+
+        this.m_groupId = "Actions";
+
     }
 
     protected OnGUI() {
@@ -53,7 +59,7 @@ export class SampleUI extends UIContainer {
     }
 
     private drawNavBar() {
-        this.sidebarBegin('menubar', 'DebugTool', (item) => { this.m_groupId = item });
+        this.sidebarBegin('mainmenu', 'DebugTool', (item) => { this.m_groupId = item });
 
         this.m_groupMap.forEach(item => {
             this.sidebarItem(item, item);
@@ -75,6 +81,25 @@ export class SampleUI extends UIContainer {
 
     private m_inputA: string;
     private m_inputB: string;
+    private m_inputC:string;
+
+    private sampleLayout(){
+
+        this.cardBegin("TestCard");
+
+        this.input('InputA', this.m_inputA, (val) => {
+            this.m_inputA = val;
+        });
+        this.input('InputB', this.m_inputB, (val) => {
+            this.m_inputB = val;
+        });
+        this.button("TestButton");
+        this.cardEnd();
+
+        this.cardBegin("Another Card");
+        this.button("TestBtn").theme(UITheme.primary);
+        this.cardEnd();
+    }
 
     private sampleInput() {
         this.input('InputA', this.m_inputA, (val) => {
@@ -84,9 +109,9 @@ export class SampleUI extends UIContainer {
             this.m_inputB = val;
         });
 
-        this.inputComplex('InputComplex', this.m_inputA, "Clear Content", val => this.m_inputA = val, () => {
+        this.inputComplex('InputComplex', this.m_inputC, "Clear Content", val => this.m_inputC = val, () => {
             console.log("clear");
-            this.m_inputA = "";
+            this.m_inputC = "";
         })
     }
 
@@ -138,12 +163,23 @@ export class SampleUI extends UIContainer {
         });
 
         this.divider();
+
+        this.buttonGroupBegin();
+        {
+            this.button("Btn1");
+            this.button("Btn2");
+            this.button("Btn3");
+        }
+        this.buttonGroupEnd();
+
     }
 
     private m_tabInd: number = 0;
     private sampleTabs() {
         this.tabBegin(['TabA', 'TabB', 'TabC'], ind => this.m_tabInd = ind);
         this.text('select tab:' + this.m_tabInd);
+
+        this.tabEnd();
     }
 
     private sampleCollapse() {
@@ -171,7 +207,6 @@ export class SampleUI extends UIContainer {
     private m_formInputEmail: string = "test@coconut.is";
     private m_formInputDateTime: string = null;
     private sampleForm() {
-        this.beginGroup();
         this.formBegin();
         this.formInput("Email", this.m_formInputEmail, "email", (val) => {
             this.m_formInputEmail = val;
@@ -181,6 +216,8 @@ export class SampleUI extends UIContainer {
         this.formInput("Password", "123", 'password');
         this.formInput("Text", "123", 'text');
         this.formInput("number", "123", 'number');
+
+        this.input("TestInput",`Hello`);
 
         this.formInput("Date", this.m_formInputDateTime, "datetime", val => {
             console.log(val);
@@ -196,9 +233,8 @@ export class SampleUI extends UIContainer {
         }, (sel) => {
             this.actionToast('Select', "you selection: " + sel);
         })
-
+        
         this.formEnd();
-        this.endGroup();
     }
 
 
@@ -405,12 +441,15 @@ export class SampleUI extends UIContainer {
     }
 
     private sampleICON() {
+        this.icon('address-book');
     }
 }
 
 
 export function InitSample() {
-    var render = new UIRenderer(document.getElementById('container'));
+    let opt: UIRenderInitOptions = new UIRenderInitOptions();
+    opt.theme = new UIThemeDefault();
+    var render = new UIRenderer(document.getElementById('container'),opt);
     var source = new UISourceLocal(new SampleUI());
     UIRenderingBind(source, render);
 }

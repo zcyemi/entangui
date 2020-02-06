@@ -5,12 +5,15 @@ import propsModule from 'snabbdom/modules/props';
 import styleModule from 'snabbdom/modules/style';
 import toVNode from "snabbdom/tovnode";
 import { VNode } from "snabbdom/vnode";
-import { UIBuilder } from "./UIBuilder";
+import { UIBaseBuilder } from "./UIBuilder";
 import { UIActionData, UIActionType, UIDrawCmdType, UIEventData, UIFrameData, UIDefineData, UIEvalData, UIEvalRetData, UIDrawCmd } from "./UIProtocol";
 import attributesModule from "snabbdom/modules/attributes";
 import datasetModule from "snabbdom/modules/dataset";
 import { UIContainer } from "./UIContainer";
 import { UIFrameBuilder } from "./UIFrameBuilder";
+import { IUITheme } from "./UITheme";
+import { UIThemeBootstrap } from "./UIThemeBootstrap";
+import { UIThemeDefault } from "./UIThemeDefault";
 
 
 const INTERNAL_CSS = `
@@ -33,9 +36,9 @@ const INTERNAL_CSS = `
     -webkit-overflow-scrolling: touch;
 }
 #entangui-toastroot{
-    position: absolute;
+    position: fixed;
     top: 50vh;
-    right: 20px;
+    right: 0px;
 }
 .toast{
     min-width: 250px;
@@ -53,13 +56,59 @@ var patchConfig = init([
 
 export class UIRenderInitOptions{
     public disconnPage?:boolean = false;
+    public theme?:IUITheme = new UIThemeDefault();
+
+    public cdn_jquery_datetimepicker_js?:string = "https://cdn.bootcss.com/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js";
+    public cdn_jquery_datetimepicker_css?:string = "https://cdn.bootcss.com/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css";
+    public cdn_font_awesome_css?:string = "https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css";
+}
+
+export class UIHTMLDepLoader{
+
+    private static s_cssMap:Map<string,JQuery<HTMLElement>> = new Map();
+    private static s_jsMap:Map<string,HTMLElement> = new Map();
+
+    public static loadJs(url:string,esm:boolean =false){
+
+        if(url == null || url === '') return;
+        if(UIHTMLDepLoader.s_jsMap.has(url)) return;
+        var element = document.createElement('script');
+        element.type = esm ? "module" : "text/javascript";
+        element.src = url;
+
+        UIHTMLDepLoader.s_jsMap.set(url,element);
+        document.getElementsByTagName('head')[0].appendChild(element);
+
+    }
+
+    public static loadCss(url:string){
+        if(url == null || url === '') return;
+        if(UIHTMLDepLoader.s_cssMap.has(url)) return;
+        var element = $('<link>').prop('href',url).prop('rel','stylesheet');
+        UIHTMLDepLoader.s_cssMap.set(url,element);
+        element.appendTo('head');
+    }
+
+    public static addCSS(name:string,css:string){
+        let style= $("<style>")
+        .prop("type", "text/css")
+        .html(css);
+        style.appendTo("head");
+
+        UIHTMLDepLoader.s_cssMap.set(name,style);
+    }
+
+    public static removeCSS(name:string){
+        let style = UIHTMLDepLoader.s_cssMap.get(name);
+        if(style!=null) style.remove();
+    }
 }
 
 export class UIRenderer {
     private m_vnodePrev: VNode;
     private m_html: HTMLElement;
 
-    private m_builder: UIBuilder;
+    private m_builder: UIBaseBuilder;
 
     private static s_internalDiv:HTMLDivElement;
 
@@ -77,19 +126,31 @@ export class UIRenderer {
 
     private m_disconnFrameData:UIFrameData;
 
-    private static initCSS(){
+    private static initDepResources(options:UIRenderInitOptions){
         if(UIRenderer.s_cssInited) return;
         UIRenderer.s_cssInited = true;
-        $("<style>")
-        .prop("type", "text/css")
-        .html(INTERNAL_CSS)
-        .appendTo("head");
+        UIHTMLDepLoader.loadCss(options.cdn_font_awesome_css);
+
+        UIHTMLDepLoader.loadCss(options.cdn_jquery_datetimepicker_css);
+        UIHTMLDepLoader.loadJs(options.cdn_jquery_datetimepicker_js);
+
+        var theme = options.theme;
+        theme.LoadDepStyleSheet();
+        theme.LoadDepScript();
+
+
+        UIHTMLDepLoader.addCSS('internal_css',INTERNAL_CSS);
     }
 
-    public constructor(html: HTMLElement,options?:UIRenderInitOptions) {
 
-        this.m_options = options || new UIRenderInitOptions();
-        UIRenderer.initCSS();
+    public constructor(html: HTMLElement,options?:UIRenderInitOptions) {
+        options = options || new UIRenderInitOptions();
+        if(options.theme == null){
+            options.theme = new UIThemeBootstrap();
+        }
+        this.m_options = options;
+
+        UIRenderer.initDepResources(this.m_options);
         this.m_defienStyle = <JQuery<HTMLStyleElement>>$("<style>").prop("type", "text/css");
         this.m_defineScript = <JQuery<HTMLScriptElement>>$("<script>").prop("type","text/javascript");
 
@@ -106,7 +167,7 @@ export class UIRenderer {
         this.m_html = html;
         this.m_vnodePrev = toVNode(html);
 
-        this.m_builder = new UIBuilder(this.onMessageEvent.bind(this),UIRenderer.s_internalDiv);
+        this.m_builder = this.m_options.theme.GetUIBuilder(this.onMessageEvent.bind(this),UIRenderer.s_internalDiv);
     }
 
     private onMessageEvent(evt: UIEventData) {
@@ -209,9 +270,8 @@ export class UIRenderer {
         UIRenderer.sharedUIPushDom(id,dom);
     }
 
-
     public static buildDom(xmlstr:string):HTMLElement{
-        return <HTMLElement>(new DOMParser().parseFromString(xmlstr, "text/xml").firstElementChild);
+        return $(xmlstr).get(0);
     }
     
 }

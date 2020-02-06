@@ -358,6 +358,13 @@ export class UIContext{
         }).style({});
     }
 
+    public buttonGroupBegin(){
+        return this.pushCmd(UIDrawCmdType.ButtonGroupBegin);
+    }
+
+    public buttonGroupEnd(){
+        return this.pushCmd(UIDrawCmdType.ButtonGroupEnd);
+    }
 
     public jsx(element:UIDomElement):UIDrawCmdBuilder{
         if(element == null) return;
@@ -447,7 +454,6 @@ export class UIContext{
         });
     }
 
-
     public sidebarEnd(){
         return this.pushCmd(UIDrawCmdType.SidebarEnd);
     }
@@ -512,7 +518,7 @@ export class UIContext{
 
 
     public collapseBegin(title:string){
-        let id = this.genItemID(UIDrawCmdType.CardBegin);
+        let id = this.genItemID(UIDrawCmdType.CollapseBegin);
         return this.pushCmd(UIDrawCmdType.CollapseBegin,{title:title,id:id});
     }
 
