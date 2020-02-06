@@ -1,6 +1,6 @@
 *{
   font-family: Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;
-  font-size: 1em;
+  font-size: 14px;
   font-weight: 400;
 }
 
@@ -220,11 +220,6 @@ p{
     margin-right: -10px;
     content: '\e838';
   }
-  
-
-  .form-group{
-    background-color: #252525;
-  }
 
 
 .input-wrap{
@@ -243,6 +238,7 @@ p{
 
 .input-wrap > input{
   flex: 1;
+  padding: 0 5px 0 5px;
 }
 .input-wrap > button{
   max-width: 200px;
@@ -253,16 +249,32 @@ p{
 
 input{
   background-color: rgb(65,65,65);
-  border: 1px solid #222;
+  border: 1px solid #292929;
   padding: 1px;
   margin: 1px;
   box-sizing: border-box;
   height: 20px;
   color: rgb(180, 180, 180);
-  
 }
 input::placeholder{
   color: #C0C0C0;
+}
+
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+textarea{
+  background-color: rgb(65,65,65);
+  border: 1px solid #292929;
+  padding: 1px;
+  margin: 1px;
+  box-sizing: border-box;
+  color: rgb(180, 180, 180);
+  min-height: 26px;
 }
 
 button{
@@ -573,4 +585,49 @@ hr{
 
 .collapse > button.active{
   background: #595959 !important;
+}
+
+form{
+  background: #383838;
+  border: 1px solid #292929;
+  margin: 2px;
+}
+
+div.form-group{
+  display: flex;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 2px 0 2px 0;
+}
+
+
+div.form-group > label{
+  color: rgb(189, 189, 189);
+  max-width: 200px;
+  min-width: 100px;
+  width: 36%;
+}
+
+div.form-group > input{
+  flex: 1;
+  padding: 0 5px 0 5px;
+}
+
+
+div.form-group > textarea{
+  flex: 1;
+}
+
+div.form-group > select{
+  flex: 1;
+}
+
+select{
+  background-color: rgb(65,65,65);
+  border: 1px solid #292929;
+  padding: 1px;
+  margin: 1px;
+  box-sizing: border-box;
+  height: 20px;
+  color: rgb(180, 180, 180);
 }

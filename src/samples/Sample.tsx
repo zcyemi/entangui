@@ -38,7 +38,7 @@ export class SampleUI extends UIContainer {
             }
         }
 
-        this.m_groupId = "Collapse";
+        this.m_groupId = "Form";
 
     }
 
@@ -205,7 +205,6 @@ export class SampleUI extends UIContainer {
     private m_formInputEmail: string = "test@coconut.is";
     private m_formInputDateTime: string = null;
     private sampleForm() {
-        this.beginGroup();
         this.formBegin();
         this.formInput("Email", this.m_formInputEmail, "email", (val) => {
             this.m_formInputEmail = val;
@@ -215,6 +214,8 @@ export class SampleUI extends UIContainer {
         this.formInput("Password", "123", 'password');
         this.formInput("Text", "123", 'text');
         this.formInput("number", "123", 'number');
+
+        this.input("TestInput",`Hello`);
 
         this.formInput("Date", this.m_formInputDateTime, "datetime", val => {
             console.log(val);
@@ -230,9 +231,8 @@ export class SampleUI extends UIContainer {
         }, (sel) => {
             this.actionToast('Select', "you selection: " + sel);
         })
-
+        
         this.formEnd();
-        this.endGroup();
     }
 
 

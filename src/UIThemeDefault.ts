@@ -157,7 +157,6 @@ class UIBuilderDefault extends UIBaseBuilder{
                 props:{
                     type:type,
                     id:id,
-                    placeholder: label,
                     value:text,
                     'autocomplete':'off'
                 },
@@ -347,6 +346,8 @@ class UIBuilderDefault extends UIBaseBuilder{
         this.endChildren();
         this.endChildren();
     }
+
+    
 
     
 }
