@@ -447,7 +447,6 @@ export class UIContext{
         });
     }
 
-
     public sidebarEnd(){
         return this.pushCmd(UIDrawCmdType.SidebarEnd);
     }

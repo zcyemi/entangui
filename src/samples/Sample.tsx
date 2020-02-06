@@ -1,5 +1,5 @@
 import { UIContainer } from "../UIContainer";
-import { UIRenderer } from "../UIRender";
+import { UIRenderer, UIRenderInitOptions } from "../UIRender";
 import { UISourceLocal } from "../UISourceLocal";
 import { UIRenderingBind } from "../UISource";
 import { UITheme, UIDefineType } from "../UIProtocol";
@@ -36,6 +36,10 @@ export class SampleUI extends UIContainer {
                 }
             }
         }
+
+        this.m_groupId = "Buttons";
+
+
     }
 
     protected OnGUI() {
@@ -53,7 +57,7 @@ export class SampleUI extends UIContainer {
     }
 
     private drawNavBar() {
-        this.sidebarBegin('menubar', 'DebugTool', (item) => { this.m_groupId = item });
+        this.sidebarBegin('mainmenu', 'DebugTool', (item) => { this.m_groupId = item });
 
         this.m_groupMap.forEach(item => {
             this.sidebarItem(item, item);
@@ -75,6 +79,7 @@ export class SampleUI extends UIContainer {
 
     private m_inputA: string;
     private m_inputB: string;
+    private m_inputC:string;
 
     private sampleInput() {
         this.input('InputA', this.m_inputA, (val) => {
@@ -84,9 +89,9 @@ export class SampleUI extends UIContainer {
             this.m_inputB = val;
         });
 
-        this.inputComplex('InputComplex', this.m_inputA, "Clear Content", val => this.m_inputA = val, () => {
+        this.inputComplex('InputComplex', this.m_inputC, "Clear Content", val => this.m_inputC = val, () => {
             console.log("clear");
-            this.m_inputA = "";
+            this.m_inputC = "";
         })
     }
 

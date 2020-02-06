@@ -5,28 +5,39 @@ import toVNode from 'snabbdom/tovnode';
 import { appendFile } from 'fs';
 import { UIDomElement } from './UIFactory';
 
-export class UIBuilder {
 
-    private m_rootNode: VNode;
+type CmdFunc = (option?:any)=>void;
+type ActionFunc = (id: string, options: any)=>void;
 
-    private m_internalDiv: HTMLDivElement;
-
+export class UIBaseBuilder {
+    protected m_rootNode: VNode;
+    protected m_internalDiv: HTMLDivElement;
     public get rootNode(): VNode { return this.m_rootNode; }
 
-    private m_parentNodeStack: VNode[] = [];
-    private m_childrenNodeStack: (VNode | string)[][] = [];
+    protected m_parentNodeStack: VNode[] = [];
+    protected m_childrenNodeStack: (VNode | string)[][] = [];
 
-    private curNode: VNode;
-    private curPnode: VNode;
+    protected curNode: VNode;
+    protected curPnode: VNode;
 
-    private curChidrenList: (VNode | string)[];
+    protected curChidrenList: (VNode | string)[];
 
-    private m_evtCallback: (evtdata: UIEventData) => void;
-    private m_paramCache: Map<string, any> = new Map();
+    protected m_evtCallback: (evtdata: UIEventData) => void;
+    protected m_paramCache: Map<string, any> = new Map();
 
-    private m_defineStyle:{[key:string]:any} = {};
-    private m_defineScript:{[key:string]:any} = {};
+    protected m_defineStyle:{[key:string]:any} = {};
+    protected m_defineScript:{[key:string]:any} = {};
 
+    protected m_cmdList:{[cmd:string]:CmdFunc} = {};
+    protected m_actList:{[act:string]:ActionFunc} = {};
+
+    public registerCmd(name:UIDrawCmdType,func:CmdFunc){
+        this.m_cmdList[UIDrawCmdType[name]] = func;
+    }
+
+    public registerAction(name:string,func:ActionFunc){
+        this.m_actList[name] = func;
+    }
 
     public constructor(eventCallback: (evtdata: UIEventData) => void, internalDiv?: HTMLDivElement) {
         
@@ -34,16 +45,26 @@ export class UIBuilder {
         if (internalDiv != null) {
         }
 
+        this.onRegisterFunctions();
+
         this.m_evtCallback = eventCallback;
         this.resetRootNode();
     }
 
+
+
     public execCmd(draw: UIDrawCmd) {
         var parameters = draw.parameters;
-        const method = `cmd${UIDrawCmdType[draw.cmd]}`;
-        this[method](parameters);
-    }
 
+        let f = this.m_cmdList[UIDrawCmdType[draw.cmd]];
+        if(f == null){
+            console.log('method not register',UIDrawCmdType[draw.cmd]);
+            return;
+        }
+        else{
+            f(parameters);
+        }
+    }
 
     public defineUpdate(data:UIDefineData[],definecss:JQuery<HTMLStyleElement>,definejs:JQuery<HTMLScriptElement>){
         let scriptDirty =false;
@@ -153,7 +174,7 @@ export class UIBuilder {
         return Object.assign(tar, src);
     }
 
-    private buildClasses(...cls: string[]) {
+    protected buildClasses(...cls: string[]) {
         let ret = {};
         cls.forEach(c => {
             ret[c] = true
@@ -189,7 +210,7 @@ export class UIBuilder {
     }
 
     public actionQuery(id:string,options:any){
-     
+    
         let title = options.title;
         let msg = options.msg;
 
@@ -296,6 +317,26 @@ export class UIBuilder {
 
     //widgets
 
+    public onRegisterFunctions(){
+        this.registerCmd(UIDrawCmdType.BeginGroup,this.cmdBeginGroup);
+        this.registerCmd(UIDrawCmdType.EndGroup,this.cmdEndGroup);
+
+        this.registerCmd(UIDrawCmdType.Input,this.cmdInput);
+
+        this.registerCmd(UIDrawCmdType.SidebarBegin,this.cmdSidebarBegin);
+        this.registerCmd(UIDrawCmdType.SidebarEnd,this.cmdSidebarEnd);
+        this.registerCmd(UIDrawCmdType.SidebarItem,this.cmdSidebarItem);
+
+
+        this.registerCmd(UIDrawCmdType.FormInput,this.cmdFormInput);
+
+        this.registerCmd(UIDrawCmdType.Input,this.cmdInput);
+
+        this.registerCmd(UIDrawCmdType.BeginGroup,this.cmdBeginGroup);
+        this.registerCmd(UIDrawCmdType.EndGroup,this.cmdEndGroup);
+        this.registerCmd(UIDrawCmdType.FlexBegin,this.cmdFlexBegin);
+    }
+
     public cmdBeginGroup(options?: any) {
         let padding = "3px";
         if (options && options.padding) {
@@ -356,7 +397,6 @@ export class UIBuilder {
             if(click){
                 btnListener.click = this.wrapEvent(btnid,'click');
             }
-            
 
             append = h('div',{
                 class:this.buildClasses('input-group-append')
@@ -396,7 +436,7 @@ export class UIBuilder {
         this.pushNode(input);
     }
 
-    private wrapEvent(id: string, event: string, data?: any): (p: any) => void {
+    protected wrapEvent(id: string, event: string, data?: any): (p: any) => void {
         var evt = new UIEventData();
         evt.id = id;
         evt.evt = event;
@@ -405,7 +445,7 @@ export class UIBuilder {
     }
 
 
-    private wrapEventDelay(id: string, event: string, datafunc: (val?:any) => any): (p: any) => void {
+    protected wrapEventDelay(id: string, event: string, datafunc: (val?:any) => any): (p: any) => void {
         return (val) => {
             var dataf = datafunc;
             var evt = new UIEventData();
@@ -465,14 +505,13 @@ export class UIBuilder {
         let rawclasses = options.class || [];
         let theme = options.theme;
         if(theme!=null){
-
             if(theme != 'none'){
                 rawclasses.push(`btn-${theme}`);
             }
             
         }
         else{
-            rawclasses.push('btn-primary');
+            rawclasses.push('btn-none');
         }
         let classes = this.buildClasses('btn',...(rawclasses));
         let btn = h('button',
@@ -978,7 +1017,6 @@ export class UIBuilder {
 
         }
         this.formGroupEnd();
-
     }
 
     public cmdFormTextArea(options:any){
@@ -1059,7 +1097,7 @@ export class UIBuilder {
 
     }
 
-    private formGroupBegin(label?:string,id?:string){
+    protected formGroupBegin(label?:string,id?:string){
         let group = h('div',{
             class:this.buildClasses('form-group')
         });
@@ -1076,9 +1114,9 @@ export class UIBuilder {
         }
     }
 
-    private formGroupEnd(){
+    protected formGroupEnd(){
         this.endChildren();
     }
-
+    
 
 }

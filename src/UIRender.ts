@@ -5,7 +5,7 @@ import propsModule from 'snabbdom/modules/props';
 import styleModule from 'snabbdom/modules/style';
 import toVNode from "snabbdom/tovnode";
 import { VNode } from "snabbdom/vnode";
-import { UIBuilder } from "./UIBuilder";
+import { UIBaseBuilder } from "./UIBuilder";
 import { UIActionData, UIActionType, UIDrawCmdType, UIEventData, UIFrameData, UIDefineData, UIEvalData, UIEvalRetData, UIDrawCmd } from "./UIProtocol";
 import attributesModule from "snabbdom/modules/attributes";
 import datasetModule from "snabbdom/modules/dataset";
@@ -13,6 +13,7 @@ import { UIContainer } from "./UIContainer";
 import { UIFrameBuilder } from "./UIFrameBuilder";
 import { IUITheme } from "./UITheme";
 import { UIThemeBootstrap } from "./UIThemeBootstrap";
+import { UIThemeDefault } from "./UIThemeDefault";
 
 
 const INTERNAL_CSS = `
@@ -55,7 +56,7 @@ var patchConfig = init([
 
 export class UIRenderInitOptions{
     public disconnPage?:boolean = false;
-    public theme?:IUITheme = new UIThemeBootstrap();
+    public theme?:IUITheme = new UIThemeDefault();
 
     public cdn_jquery_datetimepicker_js:string = "https://cdn.bootcss.com/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js";
     public cdn_jquery_datetimepicker_css:string = "https://cdn.bootcss.com/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css";
@@ -93,7 +94,7 @@ export class UIRenderer {
     private m_vnodePrev: VNode;
     private m_html: HTMLElement;
 
-    private m_builder: UIBuilder;
+    private m_builder: UIBaseBuilder;
 
     private static s_internalDiv:HTMLDivElement;
 
@@ -155,7 +156,7 @@ export class UIRenderer {
         this.m_html = html;
         this.m_vnodePrev = toVNode(html);
 
-        this.m_builder = new UIBuilder(this.onMessageEvent.bind(this),UIRenderer.s_internalDiv);
+        this.m_builder = this.m_options.theme.GetUIBuilder(this.onMessageEvent.bind(this),UIRenderer.s_internalDiv);
     }
 
     private onMessageEvent(evt: UIEventData) {
