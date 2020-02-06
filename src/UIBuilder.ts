@@ -49,6 +49,8 @@ export class UIBaseBuilder {
 
         this.m_evtCallback = eventCallback;
         this.resetRootNode();
+
+        this.m_modalRoot = $('div#entangui-modalroot');
     }
 
 
@@ -200,6 +202,8 @@ export class UIBaseBuilder {
         `);
 
         var toastObj: any = $(`#${id}`);
+
+        console.log(toastObj);
         toastObj.on('hidden.bs.toast', () => {
             toastObj.remove();
         })
@@ -221,7 +225,7 @@ export class UIBaseBuilder {
 
         let id_btn_ok = `${id}_btn_ok`;
 
-        $("#entangui-modalroot").append(`
+        $(".entangui-modalroot").append(`
         <div class="modal fade" id="${id}" tabindex="-1" role="dialog" data-keyboard="false" data-backdrop="static" aria-labelledby="${id_title}" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
@@ -274,7 +278,7 @@ export class UIBaseBuilder {
 
         let id_btn_ok = `${id}_btn_ok`;
 
-        $("#entangui-modalroot").append(`
+        $(".entangui-modalroot").append(`
         <div class="modal fade" id="${id}" tabindex="-1" role="dialog" data-keyboard="false" data-backdrop="static" aria-labelledby="${id_title}" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
@@ -1125,5 +1129,32 @@ export class UIBaseBuilder {
         this.endChildren();
     }
     
+
+    protected m_modalRoot:JQuery<HTMLElement>;
+
+    private m_modalShowCount= 0;
+
+    protected modalRootShow(){
+        if(this.m_modalShowCount == 0){
+            this.m_modalRoot.animate({
+                opacity:1,
+            },500);
+            this.m_modalRoot.css('display','block');
+        }
+
+        this.m_modalShowCount++;
+    }
+
+    protected modalRootHide(){
+
+        if(this.m_modalShowCount == 1){
+            this.m_modalRoot.animate({
+                opacity:0,
+            },500,null,()=>{
+                this.m_modalRoot.css('display','none');
+            });
+        }
+        this.m_modalShowCount--;
+    }
 
 }

@@ -36,9 +36,9 @@ const INTERNAL_CSS = `
     -webkit-overflow-scrolling: touch;
 }
 #entangui-toastroot{
-    position: absolute;
+    position: fixed;
     top: 50vh;
-    right: 20px;
+    right: 0px;
 }
 .toast{
     min-width: 250px;
@@ -259,9 +259,8 @@ export class UIRenderer {
         UIRenderer.sharedUIPushDom(id,dom);
     }
 
-
     public static buildDom(xmlstr:string):HTMLElement{
-        return <HTMLElement>(new DOMParser().parseFromString(xmlstr, "text/xml").firstElementChild);
+        return $(xmlstr).get(0);
     }
     
 }

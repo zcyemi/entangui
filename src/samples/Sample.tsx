@@ -38,7 +38,7 @@ export class SampleUI extends UIContainer {
             }
         }
 
-        this.m_groupId = "Form";
+        this.m_groupId = "Actions";
 
     }
 

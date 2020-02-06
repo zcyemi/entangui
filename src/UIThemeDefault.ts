@@ -347,7 +347,120 @@ class UIBuilderDefault extends UIBaseBuilder{
         this.endChildren();
     }
 
-    
+    public actionToast(id: string, options: any) {
+        let title = options.title;
+        let msg = options.msg;
+
+        $('#entangui-toastroot').append(`
+            <div id="${id}" class="toast">
+                <div class="toast-header">
+                    ${title}
+                </div>
+                <div class="toast-body">
+                    ${msg}
+                </div>
+            </div>
+        `);
+        var toastObj: JQuery<HTMLElement> = $(`#${id}`);
+        toastObj.addClass('toast-on');
+
+        setTimeout(() => {
+            toastObj.removeClass('toast-on');
+        }, 2000);
+        
+        setTimeout(() => {
+            toastObj.remove();
+        }, 2500);
+    }
+
+    public actionNotify(id:string,options:any){
+        let root = this.m_modalRoot;
+        this.modalRootShow();
+        let title = options.title;
+        let msg = options.msg;
+        let text_confirm = options.text_confirm || "OK";
+        let id_btn_ok = `${id}_btn_ok`;
+
+        root.append(`
+        <div class="modal" id="${id}">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    ${title}
+                </div>
+                <div class="modal-body">
+                    ${msg}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="${id_btn_ok}" class="btn">${text_confirm}</button>
+                </div>
+            </div>
+        </div>
+        `);
+
+        var resultSend = false;
+        
+        var modalobj: any = $(`#${id}`);
+        $(`#${id_btn_ok}`).click(()=>{
+            modalobj.remove();
+            if(!resultSend){
+                this.wrapEvent(id,'finish')(null);
+            }
+            resultSend = true;
+            this.modalRootHide();
+        });
+    }
+
+    public actionQuery(id:string,options:any){
+        const root = this.m_modalRoot;
+        let title = options.title;
+        let msg = options.msg;
+
+        let text_confirm = options.text_confirm || "Confirm";
+        let text_cancel = options.text_cancel || "Cancel";
+
+        let id_btn_ok = `${id}_btn_ok`;
+        let id_btn_close = `${id}_btn_close`
+
+        root.append(`
+        <div class="modal" id="${id}">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    ${title}
+                </div>
+                <div class="modal-body">
+                    ${msg}
+                </div>
+                <div class="modal-footer">
+                <button type="button" id="${id_btn_close}">${text_cancel}</button>
+                <button type="button" id="${id_btn_ok}">${text_confirm}</button>
+                </div>
+            </div>
+        </div>
+        `);
+
+        this.modalRootShow();
+
+        var resultSend = false;
+
+        var modalobj: any = $(`#${id}`);
+        $(`#${id_btn_close}`).click(()=>{
+            modalobj.remove();
+            if(!resultSend){
+                this.wrapEvent(id,'result',false)(null);
+            }
+            resultSend = true;
+            this.modalRootHide();
+        });
+        
+        $(`#${id_btn_ok}`).click(()=>{
+            modalobj.remove();
+            if(!resultSend){
+                this.wrapEvent(id,'result',true)(null);
+            }
+            resultSend = true;
+            this.modalRootHide();
+        });
+    }
 
     
 }
