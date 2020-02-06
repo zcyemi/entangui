@@ -548,7 +548,29 @@ hr{
 .tab > .tab-content{
   border: 1px solid #292929;
   border-top:0px;
-  background-color: rgb(56,56,56);
+  background-color: #383838;
   padding: 3px;
   box-sizing: border-box;
+}
+
+.collapse{
+  border: 1px solid #292929;
+  margin: 2px;
+}
+
+.collapse > button.btn-collapse{
+  width: 100%;
+  border: 0px;
+  border-bottom: 1px solid #292929;
+}
+
+
+.collapse > div.collapse-content{
+  padding: 3px;
+  box-sizing: border-box;
+  background: #383838;
+}
+
+.collapse > button.active{
+  background: #595959 !important;
 }

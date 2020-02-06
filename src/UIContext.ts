@@ -518,7 +518,7 @@ export class UIContext{
 
 
     public collapseBegin(title:string){
-        let id = this.genItemID(UIDrawCmdType.CardBegin);
+        let id = this.genItemID(UIDrawCmdType.CollapseBegin);
         return this.pushCmd(UIDrawCmdType.CollapseBegin,{title:title,id:id});
     }
 

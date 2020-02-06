@@ -289,5 +289,64 @@ class UIBuilderDefault extends UIBaseBuilder{
         this.cmdEndGroup();
     }
 
+
+    public cmdCollapseBegin(options:any){
+        let id = options.id;
+        let title = options.title;
+       
+        let div = h('div',{
+            props:{
+                id:id,
+            },
+            class:this.buildClasses('collapse')
+        });
+        this.pushNode(div);
+        this.beginChildren();
+
+        let collkey = `collapse#${id}`;
+
+        let status = this.m_paramCache.get(collkey);
+        if(status == undefined){
+            status = 1;
+            this.m_paramCache.set(collkey,status);
+        }
+
+
+        var funcClick = this.wrapEventDelay(id, 'click', () => {
+            let s = this.m_paramCache.get(collkey);
+            let ret = (s +1) %2;
+            this.m_paramCache.set(collkey,ret);
+
+            
+            let btnitem = $(`div#${id}`).children('.btn-collapse');
+            let cnt = $(`div#${id}`).children('.collapse-content');
+            if(ret == 1){
+                cnt.show();
+                btnitem.addClass('active');
+            }
+            else{
+                cnt.hide();
+                btnitem.removeClass('active');
+            }
+            return ret;
+        });
+
+        let btn = h('button',{
+            class:this.buildClasses('btn-collapse','active'),
+            on:{
+                click: funcClick
+            }
+        },title);
+        this.pushNode(btn);
+
+        this.pushNode(h('div',{class:{'collapse-content':true}}));
+        this.beginChildren();
+    }
+
+    public cmdCollapseEnd(){
+        this.endChildren();
+        this.endChildren();
+    }
+
     
 }

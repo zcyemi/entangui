@@ -169,7 +169,7 @@ export class UIBaseBuilder {
 
     }
 
-    private mergeObject(tar: any, src: any) {
+    protected mergeObject(tar: any, src: any) {
         if (src == null) return tar;
         return Object.assign(tar, src);
     }
