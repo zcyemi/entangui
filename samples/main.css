@@ -9,7 +9,7 @@
     padding: 0;
 
     color: #E4E2E4;
-    background-color: rgb(49, 49, 49);
+    background-color: rgb(49,49,49);
     display: flex;
     flex-flow: column;
     height: 100%;
@@ -528,7 +528,7 @@ button:active{
 
 .sidebar{
   display: block;
-  background-color: rgb(57, 57, 57);
+  background-color: #393939;
   border: 1px solid #292929;
 }
 
@@ -563,3 +563,23 @@ hr{
   margin: 4px 2px 4px 2px;
 }
 
+.card{
+  border: 1px solid #292929;
+  background-color: #393939;
+  border-radius: 2px 2px 0px 0px !important;
+}
+
+.card > .card-header{
+  border: none;
+  background-color: #494949;
+  padding: 2px 4px 2px 4px;
+  border-bottom: 1px solid #292929;
+  color: rgb(207, 207, 207);
+  height: 18px;
+}
+
+.card > .card-body{
+  box-sizing: border-box;
+  border: none;
+  padding: 2px;
+}

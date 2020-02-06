@@ -10,6 +10,7 @@ import { UIFactory } from '../UIFactory';
 enum SampleGroup {
     Input,
     Buttons,
+    Layout,
     Tabs,
     Collapse,
     Form,
@@ -81,6 +82,24 @@ export class SampleUI extends UIContainer {
     private m_inputB: string;
     private m_inputC:string;
 
+    private sampleLayout(){
+
+        this.cardBegin("TestCard");
+
+        this.input('InputA', this.m_inputA, (val) => {
+            this.m_inputA = val;
+        });
+        this.input('InputB', this.m_inputB, (val) => {
+            this.m_inputB = val;
+        });
+        this.button("TestButton");
+        this.cardEnd();
+
+        this.cardBegin("Another Card");
+        this.button("TestBtn").theme(UITheme.primary);
+        this.cardEnd();
+    }
+
     private sampleInput() {
         this.input('InputA', this.m_inputA, (val) => {
             this.m_inputA = val;
@@ -143,6 +162,8 @@ export class SampleUI extends UIContainer {
         });
 
         this.divider();
+
+        
     }
 
     private m_tabInd: number = 0;
