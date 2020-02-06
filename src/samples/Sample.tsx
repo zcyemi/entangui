@@ -163,7 +163,14 @@ export class SampleUI extends UIContainer {
 
         this.divider();
 
-        
+        this.buttonGroupBegin();
+        {
+            this.button("Btn1");
+            this.button("Btn2");
+            this.button("Btn3");
+        }
+        this.buttonGroupEnd();
+
     }
 
     private m_tabInd: number = 0;

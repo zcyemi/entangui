@@ -259,4 +259,16 @@ class UIBuilderDefault extends UIBaseBuilder{
         this.pushNode(flex);
         this.beginChildren();
     }
+
+    public cmdButtonGroupBegin(options:any){
+
+        this.pushNode(h('div',{
+            class:{'btn-group':true}
+        }));
+        this.beginChildren();
+    }
+
+    public cmdButtonGroupEnd(options:any){
+        this.cmdEndGroup();
+    }
 }

@@ -358,6 +358,13 @@ export class UIContext{
         }).style({});
     }
 
+    public buttonGroupBegin(){
+        return this.pushCmd(UIDrawCmdType.ButtonGroupBegin);
+    }
+
+    public buttonGroupEnd(){
+        return this.pushCmd(UIDrawCmdType.ButtonGroupEnd);
+    }
 
     public jsx(element:UIDomElement):UIDrawCmdBuilder{
         if(element == null) return;

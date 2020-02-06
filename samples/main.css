@@ -93,93 +93,6 @@
     visibility: hidden;
   }
   
-  /* Traffic Light Buttons */
-  
-  .buttons {
-    margin-left: 8px;
-    position: relative;
-    top: 1px;
-    z-index: 2;
-  }
-  
-  .buttons button {
-    min-width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    border: none;
-    margin-left: 4px;
-    left: -4px;
-    position: relative;
-  }
-  
-  .buttons button:active {
-    filter: brightness(0.75);
-  }
-  
-  .buttons button:nth-child(1) {
-    background: #FC615D;
-  }
-  
-  .buttons button:nth-child(2) {
-    background: #FDBE41;
-  }
-  
-  .buttons button:nth-child(3) {
-    background: #34C749;
-  }
-  
-  .buttons button:before, .buttons button:after {
-    opacity: 0;
-    content: '';
-    position: absolute;
-    border-radius: 1px;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    margin: auto;
-  }
-  
-  .buttons button:nth-child(1):before, .buttons button:nth-child(1):after {
-    background-color: #4D0000;
-    min-width: 8px;
-    height: 1px;
-  }
-  
-  .buttons button:nth-child(1):before {
-    transform: rotate(45deg);
-  }
-  
-  .buttons button:nth-child(1):after {
-    transform: rotate(-45deg);
-  }
-  
-  .buttons:hover > button:before, .buttons:hover > button:after {
-    opacity: 1;
-  }
-  
-  /* Yellow Minimise */
-  
-  .buttons button:nth-child(2):before {
-    background-color: #995700;
-    min-width: 8px;
-    height: 1px;
-  }
-  
-  /* Green Maximise */
-  
-  .buttons button:nth-child(3):before {
-    background-color: #006500;
-    min-width: 6px;
-    height: 6px;
-  }
-  
-  .buttons button:nth-child(3):after {
-    background-color: #28C941;
-    min-width: 10px;
-    height: 2px;
-    transform: rotate(45deg);
-  }
   
   /* Title */
   
@@ -359,14 +272,14 @@ button{
 
 button:hover{
   background: linear-gradient(#555555,#484848);
-  color: #bdbdbd;
-  border-color:#bdbdbd;
+  color: #858585;
+  border-color:#858585;
 }
 
 button:active{
   background: linear-gradient(#404040,#3f3f3f);
-  color: #9c9c9c;
-  border-color:#9c9c9c;
+  color: #5e5e5e;
+  border-color:#5e5e5e;
 }
 
 .alert{
@@ -582,4 +495,31 @@ hr{
   box-sizing: border-box;
   border: none;
   padding: 2px;
+}
+
+.btn-group{
+  margin: 2px;
+  display: flex;
+}
+
+.btn-group > button{
+  background: linear-gradient(#535353,#484848,#3f3f3f);
+  margin: 0px !important;
+  border: 0px;
+  border-top: 1px solid #292929;
+  border-bottom: 1px solid #292929;
+  border-radius: 0px;
+  border-right: 1px solid #292929;
+  flex: 1;
+}
+
+
+.btn-group > button:first-of-type{
+  border: 1px solid #292929 !important;
+  border-radius: 2px 0 0 2px;
+}
+
+.btn-group > button:last-of-type{
+  border-right: 1px solid #292929 !important;
+  border-radius: 0 2px 2px 0;
 }

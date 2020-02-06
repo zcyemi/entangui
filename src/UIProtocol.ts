@@ -80,6 +80,8 @@ export enum UIDrawCmdType{
     Icon,
 
     JSX,
+    ButtonGroupBegin,
+    ButtonGroupEnd,
 }
 
 

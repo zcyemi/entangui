@@ -335,6 +335,9 @@ export class UIBaseBuilder {
         this.registerCmd(UIDrawCmdType.BeginGroup,this.cmdBeginGroup);
         this.registerCmd(UIDrawCmdType.EndGroup,this.cmdEndGroup);
         this.registerCmd(UIDrawCmdType.FlexBegin,this.cmdFlexBegin);
+
+        this.registerCmd(UIDrawCmdType.ButtonGroupBegin,this.cmdButtonGroupBegin);
+        this.registerCmd(UIDrawCmdType.ButtonGroupEnd,this.cmdButtonGroupEnd);
     }
 
     public cmdBeginGroup(options?: any) {
@@ -574,7 +577,9 @@ export class UIBaseBuilder {
         this.endChildren();
     }
 
-    
+
+    public cmdButtonGroupBegin(option:any){}
+    public cmdButtonGroupEnd(option:any){}
 
     public cmdJSX(option:any){
         let dom:UIDomElement = option.dom;
