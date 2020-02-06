@@ -4,12 +4,16 @@
   font-weight: 400;
 }
 
-  body, html {
+.active{
+  color: rgb(244, 244, 244);
+}
+
+body, html {
     margin: 0;
     padding: 0;
 
-    color: #E4E2E4;
-    background-color: rgb(49,49,49);
+    color: rgb(180, 180, 180);
+    background-color: rgb(48,48,48);
     display: flex;
     flex-flow: column;
     height: 100%;
@@ -19,6 +23,10 @@
       cursor: default;
     line-height: 20px;
   }
+
+p{
+  margin: 0px;
+}
   
   /* Top Bar */
   
@@ -462,7 +470,7 @@ button:active{
 }
 
 .items > .active{
-  background-color: #2c88f1;
+  background-color: #595959;
 }
 
 .flex{
@@ -522,4 +530,25 @@ hr{
 .btn-group > button:last-of-type{
   border-right: 1px solid #292929 !important;
   border-radius: 0 2px 2px 0;
+}
+
+.btn-group > .active{
+  background: #595959 !important;
+  color: rgb(244, 244, 244);
+}
+
+
+.tab > .btn-group{
+  margin: 0px;
+}
+
+.tab{
+  padding: 0px;
+}
+.tab > .tab-content{
+  border: 1px solid #292929;
+  border-top:0px;
+  background-color: rgb(56,56,56);
+  padding: 3px;
+  box-sizing: border-box;
 }

@@ -38,8 +38,7 @@ export class SampleUI extends UIContainer {
             }
         }
 
-        this.m_groupId = "Buttons";
-
+        this.m_groupId = "Tabs";
 
     }
 
@@ -177,6 +176,8 @@ export class SampleUI extends UIContainer {
     private sampleTabs() {
         this.tabBegin(['TabA', 'TabB', 'TabC'], ind => this.m_tabInd = ind);
         this.text('select tab:' + this.m_tabInd);
+
+        this.tabEnd();
     }
 
     private sampleCollapse() {

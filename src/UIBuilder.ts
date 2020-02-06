@@ -338,6 +338,9 @@ export class UIBaseBuilder {
 
         this.registerCmd(UIDrawCmdType.ButtonGroupBegin,this.cmdButtonGroupBegin);
         this.registerCmd(UIDrawCmdType.ButtonGroupEnd,this.cmdButtonGroupEnd);
+
+        this.registerCmd(UIDrawCmdType.TabBegin,this.cmdTabBegin);
+        this.registerCmd(UIDrawCmdType.TabEnd,this.cmdTabEnd);
     }
 
     public cmdBeginGroup(options?: any) {
@@ -977,7 +980,6 @@ export class UIBaseBuilder {
         let isDateTime = type == 'datetime';
         this.formGroupBegin(label,id);
         {
-
             let onEvents = {};
             
             if(!isDateTime){

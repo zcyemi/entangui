@@ -85,10 +85,17 @@ class UIBuilderDefault extends UIBaseBuilder{
 
         if (tabs == null) return;
 
-        this.cmdBeginGroup();
+        const tabkey = `tabs#${id}`;
+
+        let tabsel =  this.m_paramCache.get(tabkey) || 0;
+
+        this.pushNode(h('div',{
+            class:{'tab':true}
+        }));
+        this.beginChildren();
 
         let tabroot = h('div', {
-            class: this.buildClasses("tabs"),
+            class: this.buildClasses("btn-group"),
             props: { id: id},
         }, []);
         this.pushNode(tabroot);
@@ -96,10 +103,11 @@ class UIBuilderDefault extends UIBaseBuilder{
         tabs.forEach((tabname, t) => {
             var itemid = `${id}-${t}`;
             var funcClick = this.wrapEventDelay(id, 'click', () => {
+                this.m_paramCache.set(tabkey,t);
                 return t;
             });
-            let tab = h('div', {
-                class: t ==0 ? this.buildClasses('tab','active') : this.buildClasses('tab'),
+            let tab = h('button', {
+                class: t ==tabsel ? this.buildClasses('tab','active') : this.buildClasses('tab'),
                 props: {
                     id: itemid,
                     href: '#',
@@ -110,6 +118,15 @@ class UIBuilderDefault extends UIBaseBuilder{
             }, tabname)
             tabroot.children.push(tab);
         });
+        this.endChildren();
+
+        this.pushNode(h('div',{class:{'tab-content':true}}));
+        this.beginChildren();
+        
+    }
+
+    public cmdTabEnd() {
+        this.endChildren();
         this.endChildren();
     }
     
@@ -271,4 +288,6 @@ class UIBuilderDefault extends UIBaseBuilder{
     public cmdButtonGroupEnd(options:any){
         this.cmdEndGroup();
     }
+
+    
 }
