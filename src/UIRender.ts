@@ -58,9 +58,9 @@ export class UIRenderInitOptions{
     public disconnPage?:boolean = false;
     public theme?:IUITheme = new UIThemeDefault();
 
-    public cdn_jquery_datetimepicker_js:string = "https://cdn.bootcss.com/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js";
-    public cdn_jquery_datetimepicker_css:string = "https://cdn.bootcss.com/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css";
-    public cdn_font_awesome_css:string = "https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css";
+    public cdn_jquery_datetimepicker_js?:string = "https://cdn.bootcss.com/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js";
+    public cdn_jquery_datetimepicker_css?:string = "https://cdn.bootcss.com/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css";
+    public cdn_font_awesome_css?:string = "https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css";
 }
 
 export class UIHTMLDepLoader{
@@ -87,6 +87,20 @@ export class UIHTMLDepLoader{
         var element = $('<link>').prop('href',url).prop('rel','stylesheet');
         UIHTMLDepLoader.s_cssMap.set(url,element);
         element.appendTo('head');
+    }
+
+    public static addCSS(name:string,css:string){
+        let style= $("<style>")
+        .prop("type", "text/css")
+        .html(css);
+        style.appendTo("head");
+
+        UIHTMLDepLoader.s_cssMap.set(name,style);
+    }
+
+    public static removeCSS(name:string){
+        let style = UIHTMLDepLoader.s_cssMap.get(name);
+        if(style!=null) style.remove();
     }
 }
 
@@ -125,10 +139,7 @@ export class UIRenderer {
         theme.LoadDepScript();
 
 
-        $("<style>")
-        .prop("type", "text/css")
-        .html(INTERNAL_CSS)
-        .appendTo("head");
+        UIHTMLDepLoader.addCSS('internal_css',INTERNAL_CSS);
     }
 
 

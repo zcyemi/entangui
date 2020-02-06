@@ -345,6 +345,7 @@ export class UIBaseBuilder {
 
         this.registerCmd(UIDrawCmdType.TabBegin,this.cmdTabBegin);
         this.registerCmd(UIDrawCmdType.TabEnd,this.cmdTabEnd);
+
     }
 
     public cmdBeginGroup(options?: any) {
@@ -521,7 +522,7 @@ export class UIBaseBuilder {
             
         }
         else{
-            rawclasses.push('btn-none');
+            rawclasses.push('btn-primary');
         }
         let classes = this.buildClasses('btn',...(rawclasses));
         let btn = h('button',

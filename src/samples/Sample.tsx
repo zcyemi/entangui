@@ -6,6 +6,8 @@ import { UITheme, UIDefineType } from "../UIProtocol";
 import { h } from "snabbdom";
 
 import { UIFactory } from '../UIFactory';
+import { UIThemeBootstrap } from "../UIThemeBootstrap";
+import { UIThemeDefault } from "../UIThemeDefault";
 
 enum SampleGroup {
     Input,
@@ -445,7 +447,9 @@ export class SampleUI extends UIContainer {
 
 
 export function InitSample() {
-    var render = new UIRenderer(document.getElementById('container'));
+    let opt: UIRenderInitOptions = new UIRenderInitOptions();
+    opt.theme = new UIThemeDefault();
+    var render = new UIRenderer(document.getElementById('container'),opt);
     var source = new UISourceLocal(new SampleUI());
     UIRenderingBind(source, render);
 }
