@@ -4,7 +4,7 @@ import eventListenersModule from 'snabbdom/modules/eventlisteners';
 import propsModule from 'snabbdom/modules/props';
 import styleModule from 'snabbdom/modules/style';
 import toVNode from "snabbdom/tovnode";
-import { VNode } from "snabbdom/vnode";
+import vnode, { VNode } from "snabbdom/vnode";
 import { UIBaseBuilder } from "./UIBuilder";
 import { UIActionData, UIActionType, UIDrawCmdType, UIEventData, UIFrameData, UIDefineData, UIEvalData, UIEvalRetData, UIDrawCmd } from "./UIProtocol";
 import attributesModule from "snabbdom/modules/attributes";
@@ -14,6 +14,7 @@ import { UIFrameBuilder } from "./UIFrameBuilder";
 import { IUITheme } from "./UITheme";
 import { UIThemeBootstrap } from "./UIThemeBootstrap";
 import { UIThemeDefault } from "./UIThemeDefault";
+import { UIVirtualDom } from "./UIVirtualDom";
 
 
 const INTERNAL_CSS = `
@@ -45,7 +46,7 @@ const INTERNAL_CSS = `
 }
 `;
 
-var patchConfig = init([
+const patchConfig = init([
     propsModule,
     classModule,
     styleModule,
@@ -110,8 +111,6 @@ export class UIRenderer {
 
     private m_builder: UIBaseBuilder;
 
-    private static s_internalDiv:HTMLDivElement;
-
     public MessageEventCallback: (evt: UIEventData) => void;
 
 
@@ -120,11 +119,14 @@ export class UIRenderer {
     private m_defienStyle:JQuery<HTMLStyleElement>;
     private m_defineScript:JQuery<HTMLScriptElement>;
 
+    public static patchNodeFunc:(oldn:VNode,newn:VNode)=>VNode = patchConfig;
 
     private m_options:UIRenderInitOptions;
     private m_onConn:boolean = false;
 
     private m_disconnFrameData:UIFrameData;
+
+    private m_virtualDom:UIVirtualDom;
 
     private static initDepResources(options:UIRenderInitOptions){
         if(UIRenderer.s_cssInited) return;
@@ -138,10 +140,8 @@ export class UIRenderer {
         theme.LoadDepStyleSheet();
         theme.LoadDepScript();
 
-
         UIHTMLDepLoader.addCSS('internal_css',INTERNAL_CSS);
     }
-
 
     public constructor(html: HTMLElement,options?:UIRenderInitOptions) {
         options = options || new UIRenderInitOptions();
@@ -157,17 +157,13 @@ export class UIRenderer {
         this.m_defienStyle.appendTo("head");
         this.m_defineScript.appendTo("head");
 
-        if(UIRenderer.s_internalDiv == null){
-            let div = document.body.appendChild(document.createElement('div'));
-            div.id = "entangui-div";
-            UIRenderer.s_internalDiv = div;
-            UIRenderer.sharedUIinit();
-        }
+        this.m_virtualDom = new UIVirtualDom(html);
 
         this.m_html = html;
         this.m_vnodePrev = toVNode(html);
 
-        this.m_builder = this.m_options.theme.GetUIBuilder(this.onMessageEvent.bind(this),UIRenderer.s_internalDiv);
+
+        this.m_builder = this.m_options.theme.GetUIBuilder(this.onMessageEvent.bind(this),this.m_virtualDom.internalDiv);
     }
 
     private onMessageEvent(evt: UIEventData) {
@@ -176,25 +172,23 @@ export class UIRenderer {
             cb(evt);
         }
     }
-
-    
     
     public onConnectionLost(){
         this.m_onConn = false;
-        const builder = this.m_builder;
-        builder.beginChildren();
+        // const builder = this.m_builder;
+        // builder.beginChildren();
 
-        let framedata = this.m_disconnFrameData;
-        if(framedata!=null){
-            var drawcmd = framedata.draw_commands;
-            drawcmd.forEach(draw => {
-                builder.execCmd(draw)
-            });
-        }
+        // let framedata = this.m_disconnFrameData;
+        // if(framedata!=null){
+        //     var drawcmd = framedata.draw_commands;
+        //     drawcmd.forEach(draw => {
+        //         builder.execCmd(draw)
+        //     });
+        // }
 
-        builder.endChildren();
-        this.m_vnodePrev = patchConfig(this.m_vnodePrev, builder.rootNode);
-        builder.resetRootNode();
+        // builder.endChildren();
+        // this.m_vnodePrev = patchConfig(this.m_vnodePrev, builder.rootNode);
+        // builder.resetRootNode();
     }
 
     public setDisconnPage(data:UIFrameData){
@@ -204,6 +198,8 @@ export class UIRenderer {
     public onUIAction(data:UIActionData){
         let builder = this.m_builder;
         var method = `action${UIActionType[data.action]}`;
+
+        console.log("on ui action");
         builder[method](data.id,data.data);
     }
 
@@ -225,33 +221,16 @@ export class UIRenderer {
     }
 
     public onUIFrame(data: UIFrameData) {
+
+        console.log("frame");
         this.m_onConn = true;
 
-        let builder = this.m_builder;
-        builder.beginChildren();
+        const builder = this.m_builder;
+        const virtualDom = this.m_virtualDom;
 
-        var drawcmd = data.draw_commands;
-        drawcmd.forEach(draw => {
-            var parameters = draw.parameters;
-            let method = `cmd${UIDrawCmdType[draw.cmd]}`;
-            builder[method](parameters);
-        });
-
-        builder.endChildren();
-        this.m_vnodePrev = patchConfig(this.m_vnodePrev, builder.rootNode);
-        builder.resetRootNode();
-    }
-
-
-    private static sharedUIinit(){
-        let root = UIRenderer.s_internalDiv;
-
-        let toastroot = `<div id="entangui-toastroot" aria-live="polite" aria-atomic="true"></div>`;
-        root.appendChild(UIRenderer.buildDom(toastroot));
-        
-
-        let modalroot = `<div id="entangui-modalroot"></div>`
-        root.appendChild(UIRenderer.buildDom(modalroot));
+        virtualDom.beginFrame(builder);
+        builder.execFrameData(data);
+        virtualDom.endFrame(builder);
     }
 
     public static sharedUIPushDom(id:string|HTMLElement,html:HTMLElement){

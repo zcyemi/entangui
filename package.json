@@ -10,6 +10,7 @@
     "@babel/core": "^7.7.7",
     "@betit/rollup-plugin-rename-extensions": "^0.1.0",
     "@types/jquery": "^3.3.31",
+    "@types/webgl2": "^0.0.5",
     "browser-sync": "^2.26.7",
     "gulp": "^4.0.2",
     "rollup": "^1.23.1",
