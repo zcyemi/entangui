@@ -570,9 +570,10 @@ export class UIContext{
         });
     }
 
-    public contextBegin(ctxid:string){
+    public contextBegin(ctxid:string,theme?:'none' | 'overlay' | 'mask'){
         this.pushCmd(UIDrawCmdType.ContextBegin,{
-            id:ctxid
+            id:ctxid,
+            theme:theme
         });
     }
 

@@ -92,14 +92,21 @@ export class UIBaseBuilder {
     public cmdContextBegin(option:any){
         let ctxid = option.id;
 
+        let theme = option.theme;
+
+        let isMask = theme =='mask';
 
         this.pushNode(h('div',{
+            class:{
+                overlay:theme == 'overlay',
+                mask:isMask,
+            },
             props:{
                 id: `poster-${ctxid}`
             }
         }));
 
-        this.m_currentDomCtx = this.m_virtualDom.enterContext(ctxid);
+        this.m_currentDomCtx = this.m_virtualDom.enterContext(ctxid,{maxsize:isMask});
     }
 
     public cmdContextEnd(option:any){
@@ -193,7 +200,8 @@ export class UIBaseBuilder {
     protected buildClasses(...cls: string[]) {
         let ret = {};
         cls.forEach(c => {
-            ret[c] = true
+            if(c == null || c === '') return;
+            ret[c] = true;
         });
         return ret;
     }
@@ -830,10 +838,9 @@ export class UIBaseBuilder {
     }
 
     public cmdCardBegin(options: any) {
+        let classes = this.buildClasses(...options.class,'card');
         let card = h('div', {
-            class: {
-                'card': true,
-            },
+            class: classes,
             style: {
                 'margin': '3px'
             }

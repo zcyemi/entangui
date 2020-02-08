@@ -91,6 +91,8 @@ export class SampleUI extends UIContainer {
     private m_inputB: string;
     private m_inputC:string;
 
+    private m_showOverlay:boolean = false;
+
     private sampleLayout(){
 
         this.cardBegin("TestCard");
@@ -107,6 +109,22 @@ export class SampleUI extends UIContainer {
         this.cardBegin("Another Card");
         this.button("TestBtn").theme(UITheme.primary);
         this.cardEnd();
+
+
+        this.divider();
+
+        this.button('toggle overlay',()=>this.m_showOverlay = !this.m_showOverlay);
+
+        if(this.m_showOverlay){
+            this.contextBegin('overlay-test','mask');
+
+            this.cardBegin('Overlay Card').classes('center');
+            this.button('close me',()=>this.m_showOverlay = false).theme('outline-primary');
+            this.cardEnd();
+
+            this.contextEnd('overlay-text');
+        }
+
     }
 
     private sampleInput() {
@@ -445,7 +463,6 @@ export class SampleUI extends UIContainer {
         )).on('click',()=>{
             this.actionToast('btn click','jsxbutton clicked');
         });
-
     }
 
     private sampleICON() {
@@ -454,6 +471,9 @@ export class SampleUI extends UIContainer {
 
     private m_canvasInited:Boolean = false;
     private sampleCanvas(){
+
+        this.contextBegin('canvas-test');
+
         this.jsx((
             <canvas id="mainCanvas" width="400" height="300">
             </canvas>
@@ -469,8 +489,9 @@ export class SampleUI extends UIContainer {
 
             gl.clearColor(1,0,0,1);
             gl.clear(gl.COLOR_BUFFER_BIT);
-            console.log(gl);
         });
+
+        this.contextEnd('canvas-ctx');
     }
 }
 

@@ -639,6 +639,36 @@ box-sizing: border-box;
 .modal-footer > button{
 min-width: 100px;
 }
+
+.overlay{
+    position:fixed;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+}
+
+.mask{
+    position:fixed;
+    width:100%;
+    height:100%;
+    top:0;
+    left:0;
+    background:#000000aa;
+}
+
+.center{
+    position:relative;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    display:inline-block;
+}
+
+.maxsize{
+    width:100%;
+    height:100%;
+}
+
 `;
 
 export class UIThemeDefault implements IUITheme{

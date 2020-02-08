@@ -95,13 +95,13 @@ export class UIVirtualDom{
         }
     }
 
-    public enterContext(ctxid:string):UIDomContext{
+    public enterContext(ctxid:string,options?:any):UIDomContext{
 
         this.m_subContextStack.push(this.m_curContext);
         let curctx = this.getContext(ctxid);
         this.m_curContext = curctx;
 
-        curctx.beginContextChange();
+        curctx.beginContextChange(options);
         curctx.beginChildren();
 
         return curctx;
@@ -163,8 +163,13 @@ export class UIDomContext{
         this.beginContextChange();
     }
 
-    public beginContextChange(){
+    public beginContextChange(options?:any){
+
+        let maxsize = options!=null && options.maxsize;
         let node = h("div",{
+            class:{
+                maxsize:maxsize
+            },
             props:{
                 id:`ctx-${this.ctxid}`
             }
@@ -172,6 +177,7 @@ export class UIDomContext{
         this.curNode = node;
         this.curWorkingNode = node;
     }
+
 
     public applyContextChange(){
         this.realNode = UIRenderer.patchNodeFunc(this.realNode,this.curWorkingNode);
