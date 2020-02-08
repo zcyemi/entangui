@@ -71,15 +71,20 @@ export class SampleUI extends UIContainer {
     }
 
     private drawContent() {
-        if (!this.m_groupId) return;
 
-        let funcName = `sample${this.m_groupId}`;
+
+        const groupdId = this.m_groupId;
+        if (!groupdId) return;
+
+        let funcName = `sample${groupdId}`;
         let func: Function = this[funcName];
         if (!func) return;
 
+        this.contextBegin(groupdId);
         this.beginGroup();
         func.call(this);
         this.endGroup();
+        this.contextEnd(groupdId);
     }
 
     private m_inputA: string;
@@ -449,7 +454,6 @@ export class SampleUI extends UIContainer {
 
     private m_canvasInited:Boolean = false;
     private sampleCanvas(){
-
         this.jsx((
             <canvas id="mainCanvas" width="400" height="300">
             </canvas>

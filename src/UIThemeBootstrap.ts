@@ -1,6 +1,7 @@
 import { IUITheme } from "./UITheme";
 import { UIHTMLDepLoader } from "./UIRender";
 import { UIBaseBuilder } from "./UIBuilder";
+import { UIVirtualDom } from "./UIVirtualDom";
 
 export class UIThemeBootstrap implements IUITheme{
 
@@ -17,8 +18,8 @@ export class UIThemeBootstrap implements IUITheme{
         UIHTMLDepLoader.loadJs(this.JS_BOOTSTRAP);
     }
 
-    GetUIBuilder(eventCallback: (evtdata: import("./UIProtocol").UIEventData) => void, internalDiv?: HTMLDivElement): UIBaseBuilder {
-        return new UIBaseBuilder(eventCallback,internalDiv);
+    GetUIBuilder(eventCallback: (evtdata: import("./UIProtocol").UIEventData) => void,virtualDom:UIVirtualDom): UIBaseBuilder {
+        return new UIBaseBuilder(eventCallback,virtualDom);
     }
 
 }

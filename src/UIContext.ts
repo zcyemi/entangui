@@ -570,4 +570,16 @@ export class UIContext{
         });
     }
 
+    public contextBegin(ctxid:string){
+        this.pushCmd(UIDrawCmdType.ContextBegin,{
+            id:ctxid
+        });
+    }
+
+    public contextEnd(ctxid:string){
+        this.pushCmd(UIDrawCmdType.ContextEnd,{
+            id:ctxid
+        });
+    }
+
 }

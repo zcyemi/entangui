@@ -163,7 +163,7 @@ export class UIRenderer {
         this.m_vnodePrev = toVNode(html);
 
 
-        this.m_builder = this.m_options.theme.GetUIBuilder(this.onMessageEvent.bind(this),this.m_virtualDom.internalDiv);
+        this.m_builder = this.m_options.theme.GetUIBuilder(this.onMessageEvent.bind(this),this.m_virtualDom);
     }
 
     private onMessageEvent(evt: UIEventData) {
@@ -221,8 +221,6 @@ export class UIRenderer {
     }
 
     public onUIFrame(data: UIFrameData) {
-
-        console.log("frame");
         this.m_onConn = true;
 
         const builder = this.m_builder;

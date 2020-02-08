@@ -4,7 +4,7 @@ import { UIEventData, UIDefineData, UIDefineType, UIDrawCmd, UIDrawCmdType, UIFr
 import toVNode from 'snabbdom/tovnode';
 import { appendFile } from 'fs';
 import { UIDomElement } from './UIFactory';
-import { UIDomContext } from './UIVirtualDom';
+import { UIDomContext, UIVirtualDom } from './UIVirtualDom';
 
 
 type CmdFunc = (option?:any)=>void;
@@ -27,6 +27,7 @@ export class UIBaseBuilder {
     protected m_actList:{[act:string]:ActionFunc} = {};
 
     private m_currentDomCtx:UIDomContext;
+    private m_virtualDom:UIVirtualDom;
 
     public registerCmd(name:UIDrawCmdType,func:CmdFunc){
         this.m_cmdList[UIDrawCmdType[name]] = func;
@@ -36,11 +37,9 @@ export class UIBaseBuilder {
         this.m_actList[name] = func;
     }
 
-    public constructor(eventCallback: (evtdata: UIEventData) => void, internalDiv?: HTMLDivElement) {
-        
-        this.m_internalDiv = internalDiv;
-        if (internalDiv != null) {
-        }
+    public constructor(eventCallback: (evtdata: UIEventData) => void, virtualDom:UIVirtualDom) {
+        this.m_internalDiv = virtualDom.internalDiv;
+        this.m_virtualDom = virtualDom;
 
         this.onRegisterFunctions();
 
@@ -87,6 +86,25 @@ export class UIBaseBuilder {
         else{
             f(parameters);
         }
+    }
+
+
+    public cmdContextBegin(option:any){
+        let ctxid = option.id;
+
+
+        this.pushNode(h('div',{
+            props:{
+                id: `poster-${ctxid}`
+            }
+        }));
+
+        this.m_currentDomCtx = this.m_virtualDom.enterContext(ctxid);
+    }
+
+    public cmdContextEnd(option:any){
+        let ctxid = option.id;
+        this.m_currentDomCtx = this.m_virtualDom.leaveContext(this.m_currentDomCtx);
     }
 
     public defineUpdate(data:UIDefineData[],definecss:JQuery<HTMLStyleElement>,definejs:JQuery<HTMLScriptElement>){

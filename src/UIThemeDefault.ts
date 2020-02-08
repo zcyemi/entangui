@@ -7,6 +7,7 @@ import toVNode from 'snabbdom/tovnode';
 import { appendFile } from 'fs';
 import { UIDomElement } from './UIFactory';
 import { UIHTMLDepLoader } from "./UIRender";
+import { UIVirtualDom } from "./UIVirtualDom";
 
 const DEFAULT_CSS = `
 *{
@@ -647,8 +648,8 @@ export class UIThemeDefault implements IUITheme{
     LoadDepScript() {
     }
 
-    GetUIBuilder(eventCallback: (evtdata: UIEventData) => void, internalDiv?: HTMLDivElement):UIBaseBuilder{
-        return new UIBuilderDefault(eventCallback,internalDiv);
+    GetUIBuilder(eventCallback: (evtdata: UIEventData) => void, virtualDom:UIVirtualDom):UIBaseBuilder{
+        return new UIBuilderDefault(eventCallback,virtualDom);
     }
 }
 

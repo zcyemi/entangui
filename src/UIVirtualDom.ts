@@ -14,13 +14,16 @@ export class UIVirtualDom{
 
     public internalDiv:HTMLDivElement;
 
-    private m_rootContext:UIDomContext;
+    private mainContext:UIDomContext;
 
     private m_subContexts:Map<string,UIDomContext> = new Map();
+    private m_subContextStack:UIDomContext[] = [];
+    private m_curContext:UIDomContext;
 
     public constructor(rootNode:HTMLElement){
 
-        this.m_rootContext = new UIDomContext('_root_',toVNode(rootNode));
+        this.mainContext = new UIDomContext('_root_',toVNode(rootNode));
+        this.m_curContext = this.mainContext;
 
         let internalDiv = <HTMLDivElement>document.getElementById('entangui-div');
         if(internalDiv == null){
@@ -56,28 +59,85 @@ export class UIVirtualDom{
     }
 
     public beginFrame(uibuilder:UIBaseBuilder){
+        uibuilder.beginFrame(this.mainContext);
 
-        uibuilder.beginFrame(this.m_rootContext);
-
-        let subcontxts = this.m_subContexts;
-        subcontxts.forEach(ctx=>{
-            this.transferContext(ctx);
-        });
+        this.m_subContexts.forEach(ctx=>this.transferDom(ctx));
     }
 
     public endFrame(uibuilder:UIBaseBuilder){
 
-        uibuilder.endFrame(this.m_rootContext);
-    }
+        uibuilder.endFrame(this.mainContext);
 
-    public applyContext(ctx:UIDomContext){
+        //place context dom
 
+        this.m_subContexts.forEach(ctx=>this.placeDom(ctx));
     }
 
     public transferContext(ctx:UIDomContext){
         let ctxid = ctx.ctxid;
         let ctxObj = $(`#${ctxid}`).children().get(0);
         this.m_contextRoot.appendChild(ctxObj);
+    }
+
+    private getContext(ctxid:string):UIDomContext{
+        const subctxs = this.m_subContexts;
+        if(subctxs.has(ctxid)){
+            return subctxs.get(ctxid);
+        }
+        else{
+            let slot:HTMLDivElement = document.createElement('div');
+            slot.id = `ctx-${ctxid}`;
+            this.m_contextRoot.appendChild(slot);
+
+            let ctx = new UIDomContext(ctxid,toVNode(slot));
+            subctxs.set(ctxid,ctx);
+            return ctx;
+        }
+    }
+
+    public enterContext(ctxid:string):UIDomContext{
+
+        this.m_subContextStack.push(this.m_curContext);
+        let curctx = this.getContext(ctxid);
+        this.m_curContext = curctx;
+
+        curctx.beginContextChange();
+        curctx.beginChildren();
+
+        return curctx;
+    }
+
+    public leaveContext(uictx:UIDomContext):UIDomContext{
+        if(uictx !=this.m_curContext) throw new Error('invalid context processing');
+        uictx.endChildren();
+        uictx.applyContextChange();
+        this.m_curContext = this.m_subContextStack.pop();
+        return this.m_curContext;
+    }
+
+
+    public placeDom(ctx:UIDomContext){
+        const ctxid = ctx.ctxid;
+        const postID = `poster-${ctxid}`;
+        const domID = `ctx-${ctxid}`;
+
+        let poster = document.getElementById(postID);
+        if(poster == null) return;
+        let dom = document.getElementById(domID);
+        if(domID == null) return;
+        poster.appendChild(dom);
+    }
+
+    public transferDom(ctx:UIDomContext){
+        const ctxid = ctx.ctxid;
+        const postID = `poster-${ctxid}`;
+        const domID = `ctx-${ctxid}`;
+
+        let poster = document.getElementById(postID);
+        if(poster == null) return;
+        let dom = document.getElementById(domID);
+        if(domID == null) return;
+        this.m_contextRoot.appendChild(dom);
     }
 
 }
@@ -106,7 +166,7 @@ export class UIDomContext{
     public beginContextChange(){
         let node = h("div",{
             props:{
-                id:'entangui-root'
+                id:`ctx-${this.ctxid}`
             }
         });
         this.curNode = node;
@@ -149,5 +209,8 @@ export class UIDomContext{
     public pushChildren(c: string| VNode) {
         this.curChidrenList.push(c);
     }
+
+
+
 
 }
