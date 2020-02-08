@@ -654,11 +654,7 @@ export class UIThemeDefault implements IUITheme{
 }
 
 class UIBuilderDefault extends UIBaseBuilder{
-
-
-
     public cmdSidebarBegin(options: any) {
-
         let id = options['id'];
         this.m_paramCache.set('sidebar', id);
 
@@ -668,7 +664,8 @@ class UIBuilderDefault extends UIBaseBuilder{
             },
             id: id,
             style:{
-                height: '100vh'
+                height: '100vh',
+                'box-sizing':'border-box',
             }
         })
         this.pushNode(nav);

@@ -47,7 +47,7 @@ export class SampleUI extends UIContainer {
 
     protected OnGUI() {
         this.flexBegin();
-        this.FlexItemBegin('250px');
+        this.FlexItemBegin('150px');
         this.drawNavBar();
         this.flexItemEnd();
 

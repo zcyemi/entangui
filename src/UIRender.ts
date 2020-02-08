@@ -22,8 +22,6 @@ const INTERNAL_CSS = `
     overflow: hidden;
 }
 .sidebar{
-    max-width: 250px;
-    min-width: 250px;
     height: 100%;
     z-index: 999;
     transition: all 0.3s;
