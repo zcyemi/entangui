@@ -3,16 +3,6 @@ import commonjs from 'rollup-plugin-commonjs'
 import typescript from 'rollup-plugin-typescript2';
 import babel from 'rollup-plugin-babel';
 import { DEFAULT_EXTENSIONS } from '@babel/core';
-import renameExtensions from '@betit/rollup-plugin-rename-extensions';
-
-
-// const renameExtensionsConfig = {
-//     include: ['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx'],
-//     mappings: {
-//       '.ts': '.js',
-//       '.tsx': '.js'
-//     }
-//   };
 
 export default {
     input: `src/index.ts`,
@@ -22,8 +12,7 @@ export default {
     external: [],
     plugins: [
         resolve({
-            jsnext: true,
-            extensions: ['.ts', '.js','.tsx']
+            extensions: ['.ts', '.js','.tsx'],
         }),
         
         typescript({

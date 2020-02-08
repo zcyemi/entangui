@@ -10,8 +10,7 @@ gulp.task("start",()=>{
         files: "./dist/**/**.*"
     });
 })
-gulp.task("build",()=>{
-    childprocess.exec("tsc && rollup -c rollup.config.ts");
+gulp.task("syncfile",()=>{
     return gulp.src('./samples/**').pipe(gulp.dest('./dist'));
 });
 

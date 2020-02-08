@@ -1,6 +1,6 @@
 {
   "name": "@zcyemi/entangui",
-  "version": "0.0.33",
+  "version": "0.0.34",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "repository": "git@github.com:zcyemi/entangui.git",
@@ -8,9 +8,7 @@
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.7.7",
-    "@betit/rollup-plugin-rename-extensions": "^0.1.0",
     "@types/jquery": "^3.3.31",
-    "@types/webgl2": "^0.0.5",
     "browser-sync": "^2.26.7",
     "gulp": "^4.0.2",
     "rollup": "^1.23.1",
@@ -29,7 +27,7 @@
   },
   "scripts": {
     "start": "gulp start",
-    "build": "gulp build",
+    "build": "tsc && rollup -c rollup.config.ts && gulp syncfile",
     "watch": "gulp watch"
   },
   "files": [
