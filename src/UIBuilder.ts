@@ -1,9 +1,10 @@
 import { h, thunk } from 'snabbdom';
 import { VNode } from 'snabbdom/vnode';
-import { UIEventData, UIDefineData, UIDefineType, UIDrawCmd, UIDrawCmdType } from './UIProtocol';
+import { UIEventData, UIDefineData, UIDefineType, UIDrawCmd, UIDrawCmdType, UIFrameData } from './UIProtocol';
 import toVNode from 'snabbdom/tovnode';
 import { appendFile } from 'fs';
 import { UIDomElement } from './UIFactory';
+import { UIDomContext, UIVirtualDom } from './UIVirtualDom';
 
 
 type CmdFunc = (option?:any)=>void;
@@ -14,13 +15,7 @@ export class UIBaseBuilder {
     protected m_internalDiv: HTMLDivElement;
     public get rootNode(): VNode { return this.m_rootNode; }
 
-    protected m_parentNodeStack: VNode[] = [];
-    protected m_childrenNodeStack: (VNode | string)[][] = [];
 
-    protected curNode: VNode;
-    protected curPnode: VNode;
-
-    protected curChidrenList: (VNode | string)[];
 
     protected m_evtCallback: (evtdata: UIEventData) => void;
     protected m_paramCache: Map<string, any> = new Map();
@@ -31,6 +26,9 @@ export class UIBaseBuilder {
     protected m_cmdList:{[cmd:string]:CmdFunc} = {};
     protected m_actList:{[act:string]:ActionFunc} = {};
 
+    private m_currentDomCtx:UIDomContext;
+    private m_virtualDom:UIVirtualDom;
+
     public registerCmd(name:UIDrawCmdType,func:CmdFunc){
         this.m_cmdList[UIDrawCmdType[name]] = func;
     }
@@ -39,25 +37,47 @@ export class UIBaseBuilder {
         this.m_actList[name] = func;
     }
 
-    public constructor(eventCallback: (evtdata: UIEventData) => void, internalDiv?: HTMLDivElement) {
-        
-        this.m_internalDiv = internalDiv;
-        if (internalDiv != null) {
-        }
+    public constructor(eventCallback: (evtdata: UIEventData) => void, virtualDom:UIVirtualDom) {
+        this.m_internalDiv = virtualDom.internalDiv;
+        this.m_virtualDom = virtualDom;
 
         this.onRegisterFunctions();
 
         this.m_evtCallback = eventCallback;
-        this.resetRootNode();
+        // this.resetRootNode();
 
         this.m_modalRoot = $('div#entangui-modalroot');
     }
 
+    public beginFrame(domctx:UIDomContext){
+        domctx.beginContextChange();
+        this.m_currentDomCtx = domctx;
+    }
 
+    public endFrame(domctx:UIDomContext){
+        if(domctx!=this.m_currentDomCtx){
+            throw new Error('dom context inconsistant');
+        }
+
+        this.m_currentDomCtx.applyContextChange();
+    }
+
+    public execFrameData(data:UIFrameData){
+
+        this.beginChildren();
+
+        var drawcmd = data.draw_commands;
+        drawcmd.forEach(draw => {
+            var parameters = draw.parameters;
+            let method = `cmd${UIDrawCmdType[draw.cmd]}`;
+            this[method](parameters);
+        });
+
+        this.endChildren();
+    }
 
     public execCmd(draw: UIDrawCmd) {
         var parameters = draw.parameters;
-
         let f = this.m_cmdList[UIDrawCmdType[draw.cmd]];
         if(f == null){
             console.log('method not register',UIDrawCmdType[draw.cmd]);
@@ -66,6 +86,25 @@ export class UIBaseBuilder {
         else{
             f(parameters);
         }
+    }
+
+
+    public cmdContextBegin(option:any){
+        let ctxid = option.id;
+
+
+        this.pushNode(h('div',{
+            props:{
+                id: `poster-${ctxid}`
+            }
+        }));
+
+        this.m_currentDomCtx = this.m_virtualDom.enterContext(ctxid);
+    }
+
+    public cmdContextEnd(option:any){
+        let ctxid = option.id;
+        this.m_currentDomCtx = this.m_virtualDom.leaveContext(this.m_currentDomCtx);
     }
 
     public defineUpdate(data:UIDefineData[],definecss:JQuery<HTMLStyleElement>,definejs:JQuery<HTMLScriptElement>){
@@ -127,48 +166,23 @@ export class UIBaseBuilder {
         }
     }
 
-    public resetRootNode() {
-        let node = h("div",{
-            props:{
-                id:'entangui-root'
-            }
-        });
-        this.m_rootNode = node;
-        this.curNode = node;
-    }
-
     public pushNode(n: string | VNode) {
-        if(typeof n !== 'string'){
-            this.curNode = n;
-        }
-        this.pushChildren(n);
+
+        this.m_currentDomCtx.pushNode(n);
     }
 
     private pushChildren(c: string| VNode) {
-        this.curChidrenList.push(c);
+        this.m_currentDomCtx.pushChildren(c);
     }
 
     public beginChildren() {
-        let pnode = this.curPnode;
-        if (pnode != null) {
-            this.m_parentNodeStack.push(pnode);
-            this.m_childrenNodeStack.push(this.curChidrenList);
-        }
 
-        let curnode = this.curNode;
-
-        curnode.children = [];
-        this.curChidrenList = curnode.children;
-        this.curPnode = this.curNode;
+        this.m_currentDomCtx.beginChildren();
+       
     }
 
     public endChildren() {
-
-        this.curPnode.children = this.curChidrenList;
-        this.curNode = this.curPnode;
-        this.curPnode = this.m_parentNodeStack.pop();
-        this.curChidrenList = this.m_childrenNodeStack.pop();
-
+        this.m_currentDomCtx.endChildren();
     }
 
     protected mergeObject(tar: any, src: any) {
@@ -538,7 +552,6 @@ export class UIBaseBuilder {
     }
 
 
-
     public cmdElement(options:any){
         let tag = options.tag;
         let text =options.text;
@@ -595,10 +608,6 @@ export class UIBaseBuilder {
     }
 
     private pushUIDomElement(dom:UIDomElement,option:any = null){
-
-
-
-
         if(dom == null) return;
 
         const element = document.createElement(dom.tag);
@@ -927,7 +936,6 @@ export class UIBaseBuilder {
         this.endChildren();
     }
 
-
     public cmdTabEnd() {
         this.cmdEndGroup();
     }
@@ -1129,7 +1137,6 @@ export class UIBaseBuilder {
     protected formGroupEnd(){
         this.endChildren();
     }
-    
 
     protected m_modalRoot:JQuery<HTMLElement>;
 

@@ -23,6 +23,7 @@ enum SampleGroup {
     Scripts,
     JSX,
     ICON,
+    Canvas,
 }
 
 export class SampleUI extends UIContainer {
@@ -59,7 +60,9 @@ export class SampleUI extends UIContainer {
     }
 
     private drawNavBar() {
-        this.sidebarBegin('mainmenu', 'DebugTool', (item) => { this.m_groupId = item });
+        this.sidebarBegin('mainmenu', 'DebugTool', (item) => {
+            this.m_groupId = item;
+         });
 
         this.m_groupMap.forEach(item => {
             this.sidebarItem(item, item);
@@ -68,15 +71,20 @@ export class SampleUI extends UIContainer {
     }
 
     private drawContent() {
-        if (!this.m_groupId) return;
 
-        let funcName = `sample${this.m_groupId}`;
+
+        const groupdId = this.m_groupId;
+        if (!groupdId) return;
+
+        let funcName = `sample${groupdId}`;
         let func: Function = this[funcName];
         if (!func) return;
 
+        this.contextBegin(groupdId);
         this.beginGroup();
         func.call(this);
         this.endGroup();
+        this.contextEnd(groupdId);
     }
 
     private m_inputA: string;
@@ -442,6 +450,27 @@ export class SampleUI extends UIContainer {
 
     private sampleICON() {
         this.icon('address-book');
+    }
+
+    private m_canvasInited:Boolean = false;
+    private sampleCanvas(){
+        this.jsx((
+            <canvas id="mainCanvas" width="400" height="300">
+            </canvas>
+        ));
+
+        this.button("InitCanvas",()=>{
+            if(this.m_canvasInited) return;
+
+            this.m_canvasInited= true;
+
+            let canvas:any =document.getElementById('mainCanvas');
+            let gl:WebGL2RenderingContext = canvas.getContext('webgl2');
+
+            gl.clearColor(1,0,0,1);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            console.log(gl);
+        });
     }
 }
 

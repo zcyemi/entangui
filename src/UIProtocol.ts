@@ -82,6 +82,9 @@ export enum UIDrawCmdType{
     JSX,
     ButtonGroupBegin,
     ButtonGroupEnd,
+
+    ContextBegin,
+    ContextEnd,
 }
 
 
