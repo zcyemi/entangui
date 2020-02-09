@@ -16,6 +16,24 @@ font-size: 14px;
 font-weight: 400;
 }
 
+::-webkit-scrollbar {
+    width: 6px;
+    height: 10px;
+    background-color: rgb(65,65,65);
+  }
+::-webkit-scrollbar-thumb {
+    background-color: rgb(90, 90, 90);
+}
+
+::-webkit-scrollbar-thumb:active{
+    background-color: #f4f4f4;
+}
+
+::-webkit-scrollbar-thumb:hover{
+    background-color: #f4f4f4;
+}
+  
+
 .active{
 color: #f4f4f4;
 }
@@ -428,6 +446,9 @@ margin: 4px 2px 4px 2px;
 border: 1px solid #292929;
 background-color: #393939;
 border-radius: 2px 2px 0px 0px !important;
+display:flex;
+position:relative;
+flex-direction:column;
 }
 
 .card > .card-header{
@@ -436,13 +457,17 @@ background-color: #494949;
 padding: 2px 4px 2px 4px;
 border-bottom: 1px solid #292929;
 color: rgb(207, 207, 207);
-height: 18px;
+height: 22px;
+width:100%;
+box-sizing:border-box;
 }
 
 .card > .card-body{
+flex:1;
 box-sizing: border-box;
 border: none;
 padding: 2px;
+overflow-y:auto;
 }
 
 .btn-group{

@@ -841,9 +841,7 @@ export class UIBaseBuilder {
         let classes = this.buildClasses(...options.class,'card');
         let card = h('div', {
             class: classes,
-            style: {
-                'margin': '3px'
-            }
+            style: options.style
         });
         this.pushNode(card);
         this.beginChildren();
@@ -908,7 +906,7 @@ export class UIBaseBuilder {
     }
 
     public cmdTreeEnd(){
-        
+
     }
 
     public cmdTabBegin(options: any) {

@@ -43,7 +43,7 @@ export class SampleUI extends UIContainer {
             }
         }
 
-        this.m_groupId = "List";
+        this.m_groupId = "Layout";
 
     }
 
@@ -126,6 +126,14 @@ export class SampleUI extends UIContainer {
 
             this.contextEnd('overlay-text');
         }
+
+        this.divider();
+
+        this.cardBegin('Card ScrollView').style({height:'200px'});
+
+        this.formTextArea('Test','',50);
+
+        this.cardEnd();
 
     }
 
