@@ -669,6 +669,95 @@ min-width: 100px;
     height:100%;
 }
 
+.bandage{
+    background:rgb(57,57,57);
+    border: 1px solid #292929;
+    border-radius:5px;
+    padding:0px 5px 0px 5px;
+    display:inline-block;
+    margin: 1px 3px 1px 3px;
+    box-sizing:border-box;
+    color:#222;
+}
+
+.bandage-primary{
+    background:#2c88f1;
+}
+
+.bandage-success{
+    background: #60c525;
+}
+
+.bandage-secondary{
+    background:#999999;
+}
+
+.bandage-danger{
+    background:#FC615D;
+}
+
+.bandage-warning{
+    background:#ec930c;
+}
+
+.bandage-info{
+    background:#9655ff;
+}
+
+.bandage-light{
+    background:#f5f5dc77;
+}
+
+.bandage-dark{
+    background:#182a64;
+    color:#b1b1b1;
+}
+
+.bandage-outline-primary{
+    color:#2c8cfa;
+    border-color:#2c8cfa;
+}
+
+.bandage-outline-secondary{
+    color:#999999;
+    border-color:#999999;
+}
+
+.bandage-outline-success{
+    color:#60c525;
+    border-color:#60c525;
+}
+.bandage-outline-danger{
+    color:#FC615D;
+    border-color:#FC615D;
+}
+
+.bandage-outline-warning{
+    color:#ec930c;
+    border-color:#ec930c;
+}
+
+.bandage-outline-info{
+    color:#9655ff;
+    border-color:#9655ff;
+}
+
+.bandage-outline-light{
+    color:#f5f5dc;
+    border-color:#f5f5dc;
+}
+
+.bandage-outline-dark{
+    color:#b1b1b1;
+    border-color:#b1b1b1;
+    background:#182a64;
+}
+
+.bandage-none{
+    color:#b4b4b4;
+    border-color:#b4b4b4;
+}
+
 `;
 
 export class UIThemeDefault implements IUITheme{
@@ -1036,6 +1125,17 @@ class UIBuilderDefault extends UIBaseBuilder{
     public cmdCollapseEnd(){
         this.endChildren();
         this.endChildren();
+    }
+
+
+    public cmdBandage(options: any) {
+        let theme = options.theme || 'none';
+
+        console.log(theme);
+        let bandage = h('span', {
+            class: this.buildClasses('bandage',`bandage-${theme}`)
+        }, options['text']);
+        this.pushNode(bandage);
     }
 
     public actionToast(id: string, options: any) {

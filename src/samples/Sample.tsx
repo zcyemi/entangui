@@ -12,6 +12,7 @@ import { UIThemeDefault } from "../UIThemeDefault";
 enum SampleGroup {
     Input,
     Buttons,
+    Bandage,
     Layout,
     Tabs,
     Collapse,
@@ -41,7 +42,7 @@ export class SampleUI extends UIContainer {
             }
         }
 
-        this.m_groupId = "Actions";
+        this.m_groupId = "Bandage";
 
     }
 
@@ -467,6 +468,14 @@ export class SampleUI extends UIContainer {
 
     private sampleICON() {
         this.icon('address-book');
+    }
+
+    private sampleBandage(){
+        this.m_btnThemes.forEach(theme => {
+            this.bandage(`Btn-${theme}`).theme(theme);
+        })
+
+        this.text('Test Text','span');
     }
 
     private m_canvasInited:Boolean = false;
