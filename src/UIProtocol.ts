@@ -85,6 +85,9 @@ export enum UIDrawCmdType{
 
     ContextBegin,
     ContextEnd,
+
+    TreeBegin,
+    TreeEnd,
 }
 
 

@@ -13,6 +13,7 @@ enum SampleGroup {
     Input,
     Buttons,
     Bandage,
+    List,
     Layout,
     Tabs,
     Collapse,
@@ -42,7 +43,7 @@ export class SampleUI extends UIContainer {
             }
         }
 
-        this.m_groupId = "Bandage";
+        this.m_groupId = "List";
 
     }
 
@@ -142,7 +143,6 @@ export class SampleUI extends UIContainer {
         })
     }
 
-
     private m_btnThemes: string[] = [
         'primary',
         'secondary',
@@ -162,6 +162,49 @@ export class SampleUI extends UIContainer {
         'outline-dark',
         'none',
     ];
+
+    private m_listItems:string[] = [
+        'item1','item2','item3','item4','item5','item6'
+    ];
+
+    private sampleList(){
+        this.text('Simple List');
+        this.listBegin(false);
+
+        this.m_listItems.forEach(item=>{
+            this.text(item,'p');
+            this.listItemNext();
+        });
+
+        this.listEnd();
+
+        this.divider();
+
+        this.text('Tree Sample');
+
+
+        this.treeBegin('Tree1');
+            this.listBegin(false);
+            this.m_listItems.forEach(item=>{
+                this.text(item,'p');
+                this.listItemNext();
+            });
+
+            this.treeBegin('Tree1');
+            this.listBegin(false);
+            this.m_listItems.forEach(item=>{
+                this.text(item,'p');
+                this.listItemNext();
+            });
+            this.listEnd();
+        this.treeEnd();
+
+            this.listEnd();
+
+
+
+        this.treeEnd();
+    }
 
     private sampleButtons() {
         this.button('show toast', () => {

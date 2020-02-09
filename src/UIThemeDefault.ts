@@ -758,6 +758,33 @@ min-width: 100px;
     border-color:#b4b4b4;
 }
 
+.tree{
+
+}
+
+
+.tree > .tree-head{
+    
+}
+
+.tree-head > .fa{
+    width:8px;
+}
+
+.tree-head:hover{
+    color:#f4f4f4;
+}
+
+
+.tree > .tree-list{
+    margin: 1px 3px 1px 10px;
+    display: none;
+}
+
+.tree-on{
+    display: block !important;
+}
+
 `;
 
 export class UIThemeDefault implements IUITheme{
@@ -1128,10 +1155,60 @@ class UIBuilderDefault extends UIBaseBuilder{
     }
 
 
+    public cmdTreeBegin(options:any){
+        let label = options.label;
+        this.pushNode(h('div',{
+            class:{tree:true},
+        }));
+        this.beginChildren();
+
+        let head_c =[
+            h('i',{
+                class:{'fa':true,'fa-caret-right':true},
+            })
+            ,label
+        ];
+        this.pushNode(h('p',{
+            class:{'tree-head':true},
+            on:{
+                click:(evt:any)=>{
+                    let tar:HTMLElement = evt.target;
+                    if(tar.tagName == 'I') tar = tar.parentElement;
+                    let tarlist = tar.classList;
+                    let treelist = tar.parentElement.children[1];
+                    let icon = tar.children[0];
+                    if(tarlist.contains('active')){
+                        tarlist.remove('active');
+                        treelist.classList.remove('tree-on');
+
+                        icon.classList.remove('fa-caret-down');
+                        icon.classList.add('fa-caret-right');
+                    }
+                    else{
+                        tarlist.add('active');
+                        treelist.classList.add('tree-on');
+
+                        icon.classList.add('fa-caret-down');
+                        icon.classList.remove('fa-caret-right');
+                    }
+                }
+            }
+        },head_c));
+        this.pushNode(h('div',{class:{'tree-list':true}}));
+        this.beginChildren();
+
+        
+
+    }
+
+    public cmdTreeEnd(){
+        this.endChildren();
+        this.endChildren();        
+    }
+
+
     public cmdBandage(options: any) {
         let theme = options.theme || 'none';
-
-        console.log(theme);
         let bandage = h('span', {
             class: this.buildClasses('bandage',`bandage-${theme}`)
         }, options['text']);

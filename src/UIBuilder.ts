@@ -903,6 +903,14 @@ export class UIBaseBuilder {
         this.endChildren();
     }
 
+    public cmdTreeBegin(options:any){
+        let label = options.label;
+    }
+
+    public cmdTreeEnd(){
+        
+    }
+
     public cmdTabBegin(options: any) {
         let id = options.id;
         let tabs: string[] = options.tabs;

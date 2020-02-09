@@ -502,6 +502,16 @@ export class UIContext{
         return this.pushCmd(UIDrawCmdType.ListEnd);
     }
 
+    public treeBegin(label:string){
+        return this.pushCmd(UIDrawCmdType.TreeBegin,{
+            label:label
+        });
+    }
+
+    public treeEnd(){
+        return this.pushCmd(UIDrawCmdType.TreeEnd);
+    }
+
     public tabBegin(tabs:string[],click?:(index:number)=>void){
         let id = this.genItemID(UIDrawCmdType.TabBegin);
 
