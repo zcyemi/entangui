@@ -406,9 +406,10 @@ color: #ec930c;
 }
 
 .sidebar{
-display: block;
+display: flex;
 background-color: #393939;
 border: 1px solid #292929;
+flex-direction:column;
 }
 
 .sidebar > .heading{
@@ -416,6 +417,11 @@ height: 32px;
 box-sizing: border-box;
 padding: 5px;
 border-bottom: 1px solid #202020;
+}
+
+.sidebar > .items{
+    flex:1;
+    overflow-y:auto;
 }
 
 .items > .item{

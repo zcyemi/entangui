@@ -48,7 +48,8 @@ export class SampleUI extends UIContainer {
     }
 
     protected OnGUI() {
-        this.flexBegin();
+
+        this.flexBegin().style({height:'100%'});
         this.FlexItemBegin('150px');
         this.drawNavBar();
         this.flexItemEnd();
@@ -82,7 +83,7 @@ export class SampleUI extends UIContainer {
         let func: Function = this[funcName];
         if (!func) return;
 
-        this.contextBegin(groupdId);
+        this.contextBegin(groupdId).style({height:'100%'});
         this.beginGroup();
         func.call(this);
         this.endGroup();

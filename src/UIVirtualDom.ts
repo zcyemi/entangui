@@ -170,6 +170,7 @@ export class UIDomContext{
             class:{
                 maxsize:maxsize
             },
+            style:{height:'100%'},
             props:{
                 id:`ctx-${this.ctxid}`
             }

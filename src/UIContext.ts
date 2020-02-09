@@ -41,36 +41,55 @@ export class UIDrawCmdBuilder{
 
     public classes(... classdef:string[]){
         const cmd = this.cmd;
-        cmd.parameters['class'] = MergeArray(cmd.parameters['class'],classdef);
+        let parameters = cmd.parameters;
+        if(parameters){
+            cmd.parameters['class'] = MergeArray(cmd.parameters['class'],classdef);
+        }
+        else{
+            cmd.parameters = {class:classdef};
+        }
         return this;
     }
 
     public theme(theme:UITheme | string){
         const cmd = this.cmd;
-        cmd.parameters['theme'] = typeof(theme) === 'string'? theme: UITheme[theme];
+        let parameters = cmd.parameters;
+        if(parameters){
+            cmd.parameters['theme'] = typeof(theme) === 'string'? theme: UITheme[theme];
+        }else{
+            cmd.parameters = {theme:typeof(theme) === 'string'? theme: UITheme[theme]};
+        }
         return this;
     }
 
     public style(style:any){
         const cmd = this.cmd;
-        cmd.parameters['style'] = MergeObject(cmd.parameters['style'],style);
+        let parameters = cmd.parameters;
+        if(parameters){
+            cmd.parameters['style'] = MergeObject(parameters['style'],style);
+        }
+        else{
+            cmd.parameters  ={style:style};
+        }
         return this;
     }
 
     public property(key:string,val:any){
         const cmd = this.cmd;
+        if(this.cmd.parameters == null) this.cmd.parameters = {};
         cmd.parameters[key] = val;
         return this;
     }
 
     public id(id:string){
         if(id == null) return;
+        if(this.cmd.parameters == null) this.cmd.parameters = {};
         this.cmd.parameters['id'] = id;
         return this;
     }
 
     public on(evtname:string,cb?:Function,val?:any){
-
+        if(this.cmd.parameters == null) this.cmd.parameters = {};
         let id = this.cmd.parameters['id'];
         if(id == null){
             id = this.ctx.genItemID(UIDrawCmdType.Element);
@@ -92,12 +111,14 @@ export class UIDrawCmdBuilder{
 
     public attrs(attr:{[key:string]:any}){
         if(attr == null) return;
+        if(this.cmd.parameters == null) this.cmd.parameters = {};
         this.cmd.parameters['attrs'] = attr;
         return this;
     }
 
     public props(prop:{[key:string]:any}){
         if(prop == null) return;
+        if(this.cmd.parameters == null) this.cmd.parameters = {};
         this.cmd.parameters['props'] = prop;
         return this;
     }
@@ -581,7 +602,7 @@ export class UIContext{
     }
 
     public contextBegin(ctxid:string,theme?:'none' | 'overlay' | 'mask'){
-        this.pushCmd(UIDrawCmdType.ContextBegin,{
+        return this.pushCmd(UIDrawCmdType.ContextBegin,{
             id:ctxid,
             theme:theme
         });

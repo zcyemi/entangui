@@ -101,6 +101,7 @@ export class UIBaseBuilder {
                 overlay:theme == 'overlay',
                 mask:isMask,
             },
+            style:option.style,
             props:{
                 id: `poster-${ctxid}`
             }
@@ -799,7 +800,8 @@ export class UIBaseBuilder {
         let flex = h('div', {
             class: {
                 'd-flex': true
-            }
+            },
+            style:options.style
         });
         this.pushNode(flex);
         this.beginChildren();
