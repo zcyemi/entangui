@@ -679,6 +679,7 @@ min-width: 100px;
     top:0;
     left:0;
     background:#000000aa;
+    z-index:1000;
 }
 
 .center{
