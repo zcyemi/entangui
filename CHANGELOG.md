@@ -2,6 +2,10 @@
 
 ---
 
+- 0.0.35
+    + Add bandage.
+    + Add TreeList.
+    + Add Scrollview style.
 - 0.0.34
     + Fix build process and add missing index.es.js
 
