@@ -2,6 +2,9 @@
 
 ---
 
+- 0.0.37
+    + Support Form submit
+
 - 0.0.36
     + Fix sidebar overflow.
     + Fix styles which attached to flex / context widgets.
