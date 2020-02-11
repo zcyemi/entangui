@@ -2,6 +2,9 @@
 
 ---
 
+- 0.0.38
+    + BugFix: button inside form automatically submit the form data.
+
 - 0.0.37
     + Support Form submit
 

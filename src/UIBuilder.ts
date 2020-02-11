@@ -972,6 +972,7 @@ export class UIBaseBuilder {
                 toggle:'collapse',
                 target:`#${id}`,
             },
+            props:{type:'button'},
             style:style
         },title);
         this.pushNode(btn);

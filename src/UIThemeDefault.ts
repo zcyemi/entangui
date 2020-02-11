@@ -934,6 +934,7 @@ class UIBuilderDefault extends UIBaseBuilder{
                 props: {
                     id: itemid,
                     href: '#',
+                    type:'button'
                 },
                 on: {
                     click: funcClick
@@ -1188,6 +1189,9 @@ class UIBuilderDefault extends UIBaseBuilder{
 
         let btn = h('button',{
             class:this.buildClasses('btn-collapse','active'),
+            props:{
+                type:'button'
+            },
             on:{
                 click: funcClick
             }
