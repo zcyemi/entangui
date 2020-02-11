@@ -27,6 +27,18 @@ function MergeObject(tar: any, src: any) {
     return Object.assign(tar, src);
 }
 
+export class UIFormOptions{
+    public action:string;
+    public enctype:string = "multipart/form-data";
+    public method:string = "POST";
+
+    public constructor(method?:"POST" | "GET" | string,action?:string,enctype?:string){
+        if(method!=null) this.method = method;
+        if(action !=null) this.action = action;
+        if(enctype!=null) this.enctype = enctype;
+    }
+}
+
 export class UIDrawCmdBuilder{
 
 
@@ -379,6 +391,21 @@ export class UIContext{
         }).style({});
     }
 
+    public formSubmitAjsx(formid:string,success:(data)=>void,failed:(err)=>void){
+        var form = $(`form#${formid}`);
+            var formData =new FormData(form.get(0) as HTMLFormElement);
+                $.ajax({
+                    type:'POST',
+                    url:form.attr('action'),
+                    data:formData,
+                    cache:false,
+                    processData:false,
+                    contentType:false,
+                    success:success,
+                    error:failed,
+                });
+    }
+
     public buttonGroupBegin(){
         return this.pushCmd(UIDrawCmdType.ButtonGroupBegin);
     }
@@ -557,15 +584,18 @@ export class UIContext{
         return this.pushCmd(UIDrawCmdType.CollapseEnd);
     }
 
-    public formBegin(){
-        return this.pushCmd(UIDrawCmdType.FormBegin);
+    public formBegin(id?:string,formOpts?:UIFormOptions){
+        if(id == null){
+            id = this.genItemID(UIDrawCmdType.FormBegin);
+        }
+        return this.pushCmd(UIDrawCmdType.FormBegin).props(formOpts).id(id);
     }
 
     public formEnd(){
         return this.pushCmd(UIDrawCmdType.FormEnd);
     }
 
-    public formInput(label:string,text:string,type:"email"|"password"|"text"|"number"|"datetime",finish?:(val:string)=>void){
+    public formInput(label:string,text:string,type:"email"|"password"|"text"|"number"|"datetime"| "file",name?:string,finish?:(val:string)=>void){
         let id = this.genItemID(UIDrawCmdType.FormInput);
 
         this.pushEventListener(id,'finish',finish);
@@ -574,7 +604,18 @@ export class UIContext{
             text:text,
             type:type,
             id:id,
-            finish:finish!=null
+            finish:finish!=null,
+            name:name
+        });
+    }
+
+    public formButton(label:string,click?:(formid:string)=>void){
+        let id = this.genItemID(UIDrawCmdType.FormButton);
+        this.pushEventListener(id,"click",click);
+        return this.pushCmd(UIDrawCmdType.FormButton,{
+            label:label,
+            id:id,
+            click:click!=null
         });
     }
 

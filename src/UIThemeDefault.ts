@@ -199,7 +199,7 @@ border: 1px solid #292929;
 padding: 1px;
 margin: 1px;
 box-sizing: border-box;
-height: 20px;
+height: 24px;
 color: rgb(180, 180, 180);
 }
 input::placeholder{
@@ -817,6 +817,20 @@ min-width: 100px;
     display: block !important;
 }
 
+input[type="file"]{
+    padding-left:2px;
+}
+
+input[type="file"]::-webkit-file-upload-button { 
+    background:none;
+    margin:0px;
+    border:0px;
+    border-right: 1px solid #292929;
+    background: linear-gradient(#484848,#3f3f3f);
+    color: rgb(180, 180, 180);
+    outline:none !important;
+}
+
 `;
 
 export class UIThemeDefault implements IUITheme{
@@ -946,6 +960,7 @@ class UIBuilderDefault extends UIBaseBuilder{
         let type = options.type || 'text';
         let finish = options.finish;
         let text = options.text;
+        let name = options.name;
 
         let isDateTime = type == 'datetime';
         this.formGroupBegin(label,id);
@@ -967,7 +982,8 @@ class UIBuilderDefault extends UIBaseBuilder{
                     type:type,
                     id:id,
                     value:text,
-                    'autocomplete':'off'
+                    'autocomplete':'off',
+                    name:name
                 },
                 class:this.buildClasses('form-control'),
                 on: onEvents
@@ -1088,7 +1104,7 @@ class UIBuilderDefault extends UIBaseBuilder{
     public cmdButton(options: any) {
         var listeners: any = {};
         if (options.click) {
-            listeners.click = this.wrapEvent(options.id, 'click');
+            listeners.click = this.wrapEvent(options.id, 'click',this.m_curFormId);
         }
 
         let rawclasses = options.class || [];
@@ -1107,6 +1123,7 @@ class UIBuilderDefault extends UIBaseBuilder{
             {
                 class: classes,
                 on: listeners,
+                props:{type:'button'},
                 style:this.mergeObject({
                     margin: '3px'
                 },options.style)

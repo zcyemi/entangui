@@ -8,6 +8,7 @@ import { h } from "snabbdom";
 import { UIFactory } from '../UIFactory';
 import { UIThemeBootstrap } from "../UIThemeBootstrap";
 import { UIThemeDefault } from "../UIThemeDefault";
+import { UIFormOptions } from "../UIContext";
 
 enum SampleGroup {
     Input,
@@ -43,7 +44,7 @@ export class SampleUI extends UIContainer {
             }
         }
 
-        this.m_groupId = "Layout";
+        this.m_groupId = "Form";
 
     }
 
@@ -286,8 +287,8 @@ export class SampleUI extends UIContainer {
     private m_formInputEmail: string = "test@coconut.is";
     private m_formInputDateTime: string = null;
     private sampleForm() {
-        this.formBegin();
-        this.formInput("Email", this.m_formInputEmail, "email", (val) => {
+        this.formBegin(null,null);
+        this.formInput("Email", this.m_formInputEmail, "email",'email', (val) => {
             this.m_formInputEmail = val;
         })
 
@@ -298,7 +299,7 @@ export class SampleUI extends UIContainer {
 
         this.input("TestInput",`Hello`);
 
-        this.formInput("Date", this.m_formInputDateTime, "datetime", val => {
+        this.formInput("Date", this.m_formInputDateTime, "datetime",null, val => {
             console.log(val);
             this.m_formInputDateTime = val;
         });
@@ -311,7 +312,17 @@ export class SampleUI extends UIContainer {
             CCCC: 'CCCC',
         }, (sel) => {
             this.actionToast('Select', "you selection: " + sel);
-        })
+        });
+
+
+        this.formInput('File',null,'file',"pkg");
+        this.button('Submit',formid=>{
+            this.formSubmitAjsx(formid,data=>{
+                console.log(data);
+            },err=>{
+                console.log(err);
+            });
+        });
         
         this.formEnd();
     }

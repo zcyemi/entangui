@@ -532,8 +532,9 @@ export class UIBaseBuilder {
 
     public cmdButton(options: any) {
         var listeners: any = {};
+
         if (options.click) {
-            listeners.click = this.wrapEvent(options.id, 'click');
+            listeners.click = this.wrapEvent(options.id, 'click',this.m_curFormId);
         }
 
         let rawclasses = options.class || [];
@@ -542,7 +543,6 @@ export class UIBaseBuilder {
             if(theme != 'none'){
                 rawclasses.push(`btn-${theme}`);
             }
-            
         }
         else{
             rawclasses.push('btn-primary');
@@ -552,6 +552,7 @@ export class UIBaseBuilder {
             {
                 class: classes,
                 on: listeners,
+                props:{type:'button'},
                 style:this.mergeObject({
                     margin: '3px'
                 },options.style)
@@ -988,14 +989,56 @@ export class UIBaseBuilder {
         this.endChildren();
     }
 
+    protected m_curFormId:string;
+
     public cmdFormBegin(options:any){
-        let form = h('form');
+
+        let formid = options.id;
+        let form = h('form',{
+            props: this.mergeObject({id:formid},options.props)
+        });
+
+        this.m_curFormId= formid;
+
         this.pushNode(form);
         this.beginChildren();
     }
 
     public cmdFormEnd(){
         this.endChildren();
+
+        this.m_curFormId=  null;
+    }
+
+    public cmdFormButton(options:any){
+        var curFormId = this.m_curFormId;
+        var listeners: any = {};
+        if (options.click) {
+            listeners.click = this.wrapEvent(options.id, 'click',curFormId);
+        }
+
+        let rawclasses = options.class || [];
+        let theme = options.theme;
+        if(theme!=null){
+            if(theme != 'none'){
+                rawclasses.push(`btn-${theme}`);
+            }
+            
+        }
+        else{
+            rawclasses.push('btn-primary');
+        }
+        let classes = this.buildClasses('btn',...(rawclasses));
+        let btn = h('button',
+            {
+                class: classes,
+                on: listeners,
+                style:this.mergeObject({
+                    margin: '3px'
+                },options.style)
+            });
+        btn.text = options.text;
+        this.pushNode(btn);
     }
 
     public cmdFormInput(options:any){
@@ -1004,6 +1047,8 @@ export class UIBaseBuilder {
         let type = options.type || 'text';
         let finish = options.finish;
         let text = options.text;
+        let name = options.name;
+
 
         let isDateTime = type == 'datetime';
         this.formGroupBegin(label,id);
@@ -1026,7 +1071,8 @@ export class UIBaseBuilder {
                     id:id,
                     placeholder: label,
                     value:text,
-                    'autocomplete':'off'
+                    'autocomplete':'off',
+                    name:name,
                 },
                 class:this.buildClasses('form-control'),
                 on: onEvents
