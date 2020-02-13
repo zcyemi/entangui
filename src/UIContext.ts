@@ -54,35 +54,23 @@ export class UIDrawCmdBuilder{
     public classes(... classdef:string[]){
         const cmd = this.cmd;
         let parameters = cmd.parameters;
-        if(parameters){
-            cmd.parameters['class'] = MergeArray(cmd.parameters['class'],classdef);
-        }
-        else{
-            cmd.parameters = {class:classdef};
-        }
+        if(cmd.parameters == null) cmd.parameters = {};
+        cmd.parameters['class'] = MergeArray(cmd.parameters['class'],classdef);
         return this;
     }
 
     public theme(theme:UITheme | string){
         const cmd = this.cmd;
-        let parameters = cmd.parameters;
-        if(parameters){
-            cmd.parameters['theme'] = typeof(theme) === 'string'? theme: UITheme[theme];
-        }else{
-            cmd.parameters = {theme:typeof(theme) === 'string'? theme: UITheme[theme]};
-        }
+        if(this.cmd.parameters == null) this.cmd.parameters = {};
+        cmd.parameters['theme'] = typeof(theme) === 'string'? theme: UITheme[theme];
         return this;
     }
 
     public style(style:any){
         const cmd = this.cmd;
+        if(cmd.parameters == null) cmd.parameters = {};
         let parameters = cmd.parameters;
-        if(parameters){
-            cmd.parameters['style'] = MergeObject(parameters['style'],style);
-        }
-        else{
-            cmd.parameters  ={style:style};
-        }
+        cmd.parameters['style'] = MergeObject(parameters['style'],style);
         return this;
     }
 
@@ -94,18 +82,19 @@ export class UIDrawCmdBuilder{
     }
 
     public id(id:string){
-        if(id == null) return;
+        if(id == null) return this;
         if(this.cmd.parameters == null) this.cmd.parameters = {};
         this.cmd.parameters['id'] = id;
         return this;
     }
 
     public on(evtname:string,cb?:Function,val?:any){
-        if(this.cmd.parameters == null) this.cmd.parameters = {};
-        let id = this.cmd.parameters['id'];
+        let cmd = this.cmd;
+        if(cmd.parameters == null) cmd.parameters = {};
+        let id = cmd.parameters['id'];
         if(id == null){
             id = this.ctx.genItemID(UIDrawCmdType.Element);
-            this.cmd.parameters['id'] = id;
+            cmd.parameters['id'] = id;
         }
 
         if(cb!=null){
@@ -122,14 +111,14 @@ export class UIDrawCmdBuilder{
     }
 
     public attrs(attr:{[key:string]:any}){
-        if(attr == null) return;
+        if(attr == null) return this;
         if(this.cmd.parameters == null) this.cmd.parameters = {};
         this.cmd.parameters['attrs'] = attr;
         return this;
     }
 
-    public props(prop:{[key:string]:any}){
-        if(prop == null) return;
+    public props(prop:{[key:string]:any}):UIDrawCmdBuilder{
+        if(prop == null) return this;
         if(this.cmd.parameters == null) this.cmd.parameters = {};
         this.cmd.parameters['props'] = prop;
         return this;

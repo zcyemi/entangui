@@ -97,6 +97,8 @@ export class SampleUI extends UIContainer {
 
     private m_showOverlay:boolean = false;
 
+    private m_testContext:boolean = false;
+
     private sampleLayout(){
 
         this.cardBegin("TestCard");
@@ -137,6 +139,26 @@ export class SampleUI extends UIContainer {
 
         this.cardEnd();
 
+
+        this.divider();
+
+
+        this.button('Ctx with message',()=>{
+
+            this.m_testContext= true;
+            this.actionNotify('Test Notify',"Overmask");
+        })
+
+        if(this.m_testContext){
+            this.contextBegin("TestCtx",'mask');
+            this.button('Close',()=> this.m_testContext = false);
+            this.button("Show Toast",()=>{
+
+                this.actionToast("Test Toast","Test toast");
+            })
+            this.contextEnd('TestCtx');
+        }
+        
     }
 
     private sampleInput() {
@@ -323,7 +345,6 @@ export class SampleUI extends UIContainer {
                 console.log(err);
             });
         });
-        
         this.formEnd();
     }
 

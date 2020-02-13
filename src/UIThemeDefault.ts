@@ -629,6 +629,11 @@ left:0px;
 background: #000000aa;
 display: none;
 opacity: 0;
+z-index:1000;
+}
+
+#entangui-toastroot{
+    z-index:800;
 }
 
 .modal{
@@ -685,7 +690,7 @@ min-width: 100px;
     top:0;
     left:0;
     background:#000000aa;
-    z-index:1000;
+    z-index:500;
 }
 
 .center{
