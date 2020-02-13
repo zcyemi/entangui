@@ -2,6 +2,9 @@
 
 ---
 
+- 0.0.39
+    + Fix context z-index.
+
 - 0.0.38
     + BugFix: button inside form automatically submit the form data.
 
