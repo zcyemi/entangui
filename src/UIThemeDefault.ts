@@ -1101,7 +1101,8 @@ class UIBuilderDefault extends UIBaseBuilder{
         let flex = h('div', {
             class: {
                 'flex': true
-            }
+            },
+            style:options.style
         });
         this.pushNode(flex);
         this.beginChildren();
