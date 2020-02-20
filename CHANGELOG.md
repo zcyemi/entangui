@@ -2,6 +2,9 @@
 
 ---
 
+- 0.0.42:
+    + Add Form number/ vec2 / vec4 / vec4
+
 - 0.0.41
     + Fix flex item style property missing.
 
