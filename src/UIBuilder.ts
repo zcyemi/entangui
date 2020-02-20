@@ -377,10 +377,10 @@ export class UIBaseBuilder {
             padding = options.padding;
         }
         let wrap = h('div', {
-            style: {
+            style:this.mergeObject( {
                 padding: padding,
                 width: '100%'
-            },
+            },options.style),
             class: options && options.classes
         });
         this.pushNode(wrap);
@@ -1042,6 +1042,8 @@ export class UIBaseBuilder {
         this.pushNode(btn);
     }
 
+    public cmdFormNumber(options:any){}
+
     public cmdFormInput(options:any){
         let label = options.label;
         let id = options.id;
@@ -1049,7 +1051,6 @@ export class UIBaseBuilder {
         let finish = options.finish;
         let text = options.text;
         let name = options.name;
-
 
         let isDateTime = type == 'datetime';
         this.formGroupBegin(label,id);

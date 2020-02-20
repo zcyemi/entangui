@@ -71,6 +71,10 @@ export enum UIDrawCmdType{
     FormButton,
     FormRangeInput,
     FormRadio,
+    FormNumber,
+    FormVec2,
+    FormVec3,
+    FormVec4,
 
     Element,
     BeginChildren,

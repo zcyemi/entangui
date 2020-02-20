@@ -326,14 +326,23 @@ export class SampleUI extends UIContainer {
     }
 
 
-    private m_formInputEmail: string = "test@coconut.is";
+    private m_formInputEmail: string = "test@gmail.com";
     private m_formInputDateTime: string = null;
+
+    private m_formInputWidth:string = "200px";
+
+    private m_formNumber:number = -1;
+    private m_formVec2:number[] =[1,2];
+    private m_formVec3:number[] =[1,2,3];
+    private m_formVec4:number[] =[1,2,3,4];
+
     private sampleForm() {
         this.formBegin(null,null);
         this.formInput("Email", this.m_formInputEmail, "email",'email', (val) => {
             this.m_formInputEmail = val;
         })
 
+        this.formInput("Test UI ---DWDW ",null,"text");
         this.button("exec");
         this.formInput("Password", "123", 'password');
         this.formInput("Text", "123", 'text');
@@ -346,7 +355,7 @@ export class SampleUI extends UIContainer {
             this.m_formInputDateTime = val;
         });
 
-        this.formTextArea("Json", "{}", 5, val => console.log(val));
+        // this.formTextArea("Json", "{}", 5, val => console.log(val));
 
         this.formSelect('Select', {
             AAAA: "AAAA",
@@ -366,6 +375,49 @@ export class SampleUI extends UIContainer {
             });
         });
         this.formEnd();
+
+
+        this.divider();
+
+        this.button('100px',()=>this.m_formInputWidth = '100px');
+        this.button('200px',()=>this.m_formInputWidth = '200px');
+        this.button('400px',()=>this.m_formInputWidth = '400px');
+
+        this.beginGroup("DataInput").style({width:this.m_formInputWidth,background:'#444'});
+        this.formInput("basic",null,"text");
+
+        this.formNumber("Number",this.m_formNumber,val=>{
+            this.m_formNumber= val;
+            this.actionToast("Number",val+"");
+        });
+        this.formVec2("Vec2",this.m_formVec2,val=>{
+            this.m_formVec2= val;
+            this.actionToast("Vec2",val+"");
+        });
+        this.formVec3("Vec3",this.m_formVec3,val=>{
+            this.m_formVec3= val;
+            this.actionToast("Vec3",val+"");
+        });
+        this.formVec4("Vec4",this.m_formVec4,val=>{
+            this.m_formVec4= val;
+            this.actionToast("Vec4",val+"");
+        });
+
+        this.endGroup();
+
+        this.formNumber("Number",this.m_formNumber,val=>this.m_formNumber= val);
+        this.formVec2("Vec2",this.m_formVec2,val=>{
+            this.m_formVec2= val;
+            this.actionToast("Vec2",val+"");
+        });
+        this.formVec3("Vec3",this.m_formVec3,val=>{
+            this.m_formVec3= val;
+            this.actionToast("Vec3",val+"");
+        });
+        this.formVec4("Vec4",this.m_formVec4,val=>{
+            this.m_formVec4= val;
+            this.actionToast("Vec4",val+"");
+        });
     }
 
 

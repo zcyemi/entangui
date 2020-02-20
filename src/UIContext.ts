@@ -598,6 +598,51 @@ export class UIContext{
         });
     }
 
+
+    public formNumber(label:string,val:number,finish?:(val:number)=>void){
+        let id = this.genItemID(UIDrawCmdType.FormNumber);
+        this.pushEventListener(id,'finish',finish);
+        return this.pushCmd(UIDrawCmdType.FormNumber,{
+            label:label,
+            value:val,
+            id:id,
+            finish:finish!=null
+        });
+    }
+
+    public formVec2(label:string,val:number[],finish?:(val:number[])=>void){
+        let id = this.genItemID(UIDrawCmdType.FormVec2);
+        this.pushEventListener(id,'finish',finish);
+        return this.pushCmd(UIDrawCmdType.FormVec2,{
+            label:label,
+            value:val,
+            id:id,
+            finish:finish!=null
+        });
+    }
+
+    public formVec3(label:string,val:number[],finish?:(val:number[])=>void){
+        let id = this.genItemID(UIDrawCmdType.FormVec3);
+        this.pushEventListener(id,'finish',finish);
+        return this.pushCmd(UIDrawCmdType.FormVec3,{
+            label:label,
+            value:val,
+            id:id,
+            finish:finish!=null
+        });
+    }
+
+    public formVec4(label:string,val:number[],finish?:(val:number[])=>void){
+        let id = this.genItemID(UIDrawCmdType.FormVec4);
+        this.pushEventListener(id,'finish',finish);
+        return this.pushCmd(UIDrawCmdType.FormVec4,{
+            label:label,
+            value:val,
+            id:id,
+            finish:finish!=null
+        });
+    }
+
     public formButton(label:string,click?:(formid:string)=>void){
         let id = this.genItemID(UIDrawCmdType.FormButton);
         this.pushEventListener(id,"click",click);

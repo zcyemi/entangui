@@ -172,19 +172,30 @@ content: '\e838';
 display: flex;
 padding-left: 5px;
 padding-right: 5px;
+min-width:50px;
 }
 
 .input-wrap > span{
 color: rgb(189, 189, 189);
 max-width: 200px;
-min-width: 100px;
-width: 36%;
+min-width: 75px;
+flex:1;
+text-overflow:ellipsis;
+overflow:hidden;
+white-space:nowrap;
+line-height:26px;
 
 }
 
+.input-wrap > * {
+    box-sizing:border-box;
+}
+
 .input-wrap > input{
-flex: 1;
+flex: 4;
+width:50px;
 padding: 0 5px 0 5px;
+
 }
 .input-wrap > button{
 max-width: 200px;
@@ -550,35 +561,57 @@ form{
 background: #383838;
 border: 1px solid #292929;
 margin: 2px;
+box-sizing:border-box;
 }
 
 div.form-group{
 display: flex;
-padding-left: 5px;
-padding-right: 5px;
+padding-left: 2px;
+padding-right: 2px;
 margin: 2px 0 2px 0;
+overflow:hidden;
+position:relative;
 }
 
+div.form-group > *{
+    box-sizing:border-box;
+}
 
 div.form-group > label{
-color: rgb(189, 189, 189);
-max-width: 200px;
-min-width: 100px;
-width: 36%;
+    color: rgb(189, 189, 189);
+    max-width: 200px;
+    min-width:75px;
+    padding-left: 2px;
+    flex: 1;
+    line-height:26px;
+    text-overflow:ellipsis;
+    overflow:hidden;
+    white-space:nowrap;
 }
 
 div.form-group > input{
-flex: 1;
+flex: 4;
+width:35px;
 padding: 0 5px 0 5px;
 }
 
+div.form-group > div.form-input-part{
+    flex:4;
+    display:flex;
+    flex-wrap:wrap;
+}
+
+div.form-input-part > input{
+    width:55px;
+    padding: 0 5px 0 5px;
+}
 
 div.form-group > textarea{
-flex: 1;
+flex: 4;
 }
 
 div.form-group > select{
-flex: 1;
+flex: 4;
 }
 
 select{
@@ -1017,6 +1050,133 @@ class UIBuilderDefault extends UIBaseBuilder{
         this.formGroupEnd();
     }
 
+    public cmdFormNumber(options:any){
+        let label = options.label;
+        let id = options.id;
+        let type = "number";
+        let finish = options.finish;
+        let value = options.value || 0;
+        this.m_paramCache[id] = value;
+
+        this.formGroupBegin(label);
+        {
+            let onEvents = {};
+            if(finish){
+                onEvents['focusout'] = this.wrapEventDelay(id, 'finish', () => {
+                    var val = $(`#${id}`).val();
+                    return val;
+                });
+            }
+            
+            let input = h('input',{
+                props:{
+                    type:type,
+                    id:id,
+                    value:value,
+                    'autocomplete':'off'
+                },
+                on:onEvents,
+                class:this.buildClasses('form-control'),
+            });
+            this.pushNode(input);
+        }
+        this.formGroupEnd();
+    }
+
+    public cmdFormVec2(options:any){
+        let label = options.label;
+        let id = options.id;
+        let value = options.value;
+        let hasevt = options.finish == true;
+
+        value = value || [0,0];
+        this.m_paramCache[id] = value;
+
+        this.formGroupBegin(label);
+        {
+            this.pushNode(h('div',{
+                class:{'form-input-part':true}
+            }));
+            this.beginChildren();
+            this.drawFormNumberInputPart(value[0],id,0,hasevt);
+            this.drawFormNumberInputPart(value[1],id,1,hasevt);
+            this.endChildren();
+        }
+        this.formGroupEnd();
+    }
+
+    public cmdFormVec3(options:any){
+        let label = options.label;
+        let id = options.id;
+        let value = options.value;
+        let hasevt = options.finish == true;
+
+        value = value || [0,0,0];
+        this.m_paramCache[id] = value;
+
+        this.formGroupBegin(label);
+        {
+            this.pushNode(h('div',{
+                class:{'form-input-part':true}
+            }));
+            this.beginChildren();
+            this.drawFormNumberInputPart(value[0],id,0,hasevt);
+            this.drawFormNumberInputPart(value[1],id,1,hasevt);
+            this.drawFormNumberInputPart(value[2],id,2,hasevt);
+            this.endChildren();
+        }
+        this.formGroupEnd();
+    }
+
+    public cmdFormVec4(options:any){
+        let label = options.label;
+        let id = options.id;
+        let value = options.value;
+        let hasevt = options.finish == true;
+
+        value = value || [0,0,0,0];
+        this.m_paramCache[id] = value;
+
+        this.formGroupBegin(label);
+        {
+            this.pushNode(h('div',{
+                class:{'form-input-part':true}
+            }));
+            this.beginChildren();
+            this.drawFormNumberInputPart(value[0],id,0,hasevt);
+            this.drawFormNumberInputPart(value[1],id,1,hasevt);
+            this.drawFormNumberInputPart(value[2],id,2,hasevt);
+            this.drawFormNumberInputPart(value[3],id,3,hasevt);
+            this.endChildren();
+        }
+        this.formGroupEnd();
+    }
+
+    private drawFormNumberInputPart(val:number,id:string,index:number,evt:boolean){
+        var pid = `${id}-${index}`;
+        let onEvents = evt? {
+            focusout:this.wrapEventDelay(id, 'finish', () => {
+            var val = $(`#${pid}`).val();
+            let vecval = this.m_paramCache[id];
+            if(vecval){
+                vecval[index] = val;
+            }
+            return vecval;
+            })
+        }: {};
+        let input = h('input',{
+            props:{
+                type:'number',
+                id:pid,
+                value:val,
+                'autocomplete':'off'
+            },
+            on:onEvents,
+            class:this.buildClasses('form-control'),
+        });
+        this.pushNode(input);
+    }
+
 
     public cmdInput(options: any) {
         let label = options['label'];
@@ -1084,9 +1244,9 @@ class UIBuilderDefault extends UIBaseBuilder{
             padding = options.padding;
         }
         let wrap = h('div', {
-            style: {
+            style: this.mergeObject({
                 padding: padding,
-            },
+            },options.style),
             class: this.buildClasses(options && options.classes,'group')
         });
         this.pushNode(wrap);
