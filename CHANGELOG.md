@@ -2,6 +2,9 @@
 
 ---
 
+- 0.0.41
+    + Fix flex item style property missing.
+
 - 0.0.40
     + Fix flex style property missing.
 

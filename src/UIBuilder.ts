@@ -813,7 +813,7 @@ export class UIBaseBuilder {
         var flex = options.flex;
 
 
-        var style = {};
+        var style = options.style || {};
         if (width) {
             style['width'] = width;
         }

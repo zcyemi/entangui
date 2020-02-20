@@ -158,6 +158,26 @@ export class SampleUI extends UIContainer {
             })
             this.contextEnd('TestCtx');
         }
+
+        this.divider();
+
+        this.text('Flex Demo');
+
+        this.flexBegin().style({height:'300px'});
+
+        this.FlexItemBegin('200px').style({background:'#ff0000'});
+        this.text("Flex width:200px");
+        this.flexItemEnd();
+
+        this.FlexItemBegin(null,1).style({background:'#00ff00'});
+        this.text("Flex flex:1");
+        this.flexItemEnd();
+
+        this.FlexItemBegin(null,2).style({background:'#0000ff'});
+        this.text("Flex flex:2");
+        this.flexItemEnd();
+
+        this.flexEnd();
         
     }
 
