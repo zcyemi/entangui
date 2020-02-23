@@ -2,6 +2,11 @@
 
 ---
 
+- 0.0.43:
+    + FormSelect add default value.
+    + Fix FormNumber/Vec value NaN.
+    + Adjust TreeList icon width.
+
 - 0.0.42:
     + Add Form number/ vec2 / vec4 / vec4
 
