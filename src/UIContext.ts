@@ -665,12 +665,13 @@ export class UIContext{
         });
     }
 
-    public formSelect(label:string,items:{[key:string]:string},change?:(key:string)=>void){
+    public formSelect(label:string,items:{[key:string]:string},key?:string,change?:(key:string)=>void){
         let id = this.genItemID(UIDrawCmdType.FormSelect);
         this.pushEventListener(id,'change',change);
         return this.pushCmd(UIDrawCmdType.FormSelect,{
             label:label,
             items:items,
+            value:key,
             id:id,
             change:change!=null
         });

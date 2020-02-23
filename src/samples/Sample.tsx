@@ -361,10 +361,17 @@ export class SampleUI extends UIContainer {
             AAAA: "AAAA",
             BBBB: 'BBBB',
             CCCC: 'CCCC',
-        }, (sel) => {
+        },"CCCC", (sel) => {
             this.actionToast('Select', "you selection: " + sel);
         });
 
+        this.formSelect('Select None default val', {
+            AAAA: "AAAA",
+            BBBB: 'BBBB',
+            CCCC: 'CCCC',
+        },null, (sel) => {
+            this.actionToast('Select', "you selection: " + sel);
+        });
 
         this.formInput('File',null,'file',"pkg");
         this.button('Submit',formid=>{

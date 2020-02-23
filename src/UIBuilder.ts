@@ -1137,6 +1137,14 @@ export class UIBaseBuilder {
         let items = options.items;
         let label = options.label;
         let id = options.id;
+        let value = options.value;
+
+        if(value == null){
+            for (const key in items) {
+                value = key;
+                break;
+            }
+        }
 
         let onEvent = {};
         if(options.change){
@@ -1153,7 +1161,7 @@ export class UIBaseBuilder {
         let sel = h('select',{
             class:this.buildClasses('form-control'),
             props:{
-                id:id
+                id:id,
             },
             on:onEvent
         });
@@ -1165,9 +1173,13 @@ export class UIBaseBuilder {
                 for (const key in items) {
                     if (items.hasOwnProperty(key)) {
                         const val = items[key];
+
                         this.pushNode(h('option',{
                             props:{
                                 value:key
+                            },
+                            attrs:{
+                                selected: key == value
                             }
                         },val))
                     }

@@ -838,7 +838,7 @@ min-width: 100px;
 }
 
 .tree-head > .fa{
-    width:8px;
+    width:10px;
 }
 
 .tree-head:hover{
@@ -1063,8 +1063,13 @@ class UIBuilderDefault extends UIBaseBuilder{
             let onEvents = {};
             if(finish){
                 onEvents['focusout'] = this.wrapEventDelay(id, 'finish', () => {
-                    var val = $(`#${id}`).val();
-                    return val;
+                    var val:any = $(`#${id}`).val();
+                    let pval = Number.parseFloat(val);
+                    if(pval === undefined || Number.isNaN(pval)){
+                        pval = this.m_paramCache[id];
+                        $(`#${id}`).val(pval);
+                    }
+                    return pval;
                 });
             }
             
@@ -1156,10 +1161,16 @@ class UIBuilderDefault extends UIBaseBuilder{
         var pid = `${id}-${index}`;
         let onEvents = evt? {
             focusout:this.wrapEventDelay(id, 'finish', () => {
-            var val = $(`#${pid}`).val();
+            var val:any = $(`#${pid}`).val();
             let vecval = this.m_paramCache[id];
             if(vecval){
-                vecval[index] = val;
+                let pval = Number.parseFloat(val);
+                if(pval == null || Number.isNaN(pval)){
+                    $(`#${pid}`).val(vecval[index]);
+                }
+                else{
+                    vecval[index] = Number.parseFloat(val);
+                }
             }
             return vecval;
             })
