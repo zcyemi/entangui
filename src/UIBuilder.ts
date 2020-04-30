@@ -1,9 +1,9 @@
-import { h, thunk } from 'snabbdom';
-import { VNode } from 'snabbdom/vnode';
-import { UIEventData, UIDefineData, UIDefineType, UIDrawCmd, UIDrawCmdType, UIFrameData } from './UIProtocol';
+import { h } from 'snabbdom';
 import toVNode from 'snabbdom/tovnode';
-import { appendFile } from 'fs';
+import { VNode } from 'snabbdom/vnode';
 import { UIDomElement } from './UIFactory';
+import { UIDefineData, UIDefineType, UIDrawCmd, UIDrawCmdType, UIEventData, UIFrameData } from './UIProtocol';
+import { UIFeature } from './UIRender';
 import { UIDomContext, UIVirtualDom } from './UIVirtualDom';
 
 
@@ -15,7 +15,7 @@ export class UIBaseBuilder {
     protected m_internalDiv: HTMLDivElement;
     public get rootNode(): VNode { return this.m_rootNode; }
 
-
+    public feature_set:UIFeature[];
 
     protected m_evtCallback: (evtdata: UIEventData) => void;
     protected m_paramCache: Map<string, any> = new Map();
@@ -47,6 +47,12 @@ export class UIBaseBuilder {
         // this.resetRootNode();
 
         this.m_modalRoot = $('div#entangui-modalroot');
+    }
+
+    protected isFeatureEnable(feature:UIFeature):boolean{
+        const featureset = this.feature_set;
+        if(featureset == null || featureset.length == 0) return false;
+        return featureset.includes(feature);
     }
 
     public beginFrame(domctx:UIDomContext){
@@ -1052,7 +1058,11 @@ export class UIBaseBuilder {
         let text = options.text;
         let name = options.name;
 
-        let isDateTime = type == 'datetime';
+        let isDateTime = (type == 'datetime');
+        if(isDateTime && !this.isFeatureEnable(UIFeature.datetime_picker)){
+            isDateTime = false;
+            type = "text";
+        }
         this.formGroupBegin(label,id);
         {
             let onEvents = {};
@@ -1092,12 +1102,6 @@ export class UIBaseBuilder {
                     });
                 },100);
             }
-            else{
-                setTimeout(()=>{
-                    $(`#${id}`)['datetimepicker']("disable");
-                },100);
-            }
-
         }
         this.formGroupEnd();
     }

@@ -6,7 +6,7 @@ import { UIEventData, UIDefineData, UIDefineType, UIDrawCmd, UIDrawCmdType } fro
 import toVNode from 'snabbdom/tovnode';
 import { appendFile } from 'fs';
 import { UIDomElement } from './UIFactory';
-import { UIHTMLDepLoader } from "./UIRender";
+import { UIHTMLDepLoader, UIFeature } from "./UIRender";
 import { UIVirtualDom } from "./UIVirtualDom";
 
 const DEFAULT_CSS = `
@@ -1001,7 +1001,11 @@ class UIBuilderDefault extends UIBaseBuilder{
         let text = options.text;
         let name = options.name;
 
-        let isDateTime = type == 'datetime';
+        let isDateTime = (type == 'datetime');
+        if(isDateTime && !this.isFeatureEnable(UIFeature.datetime_picker)){
+            isDateTime = false;
+            type = "text";
+        }
         this.formGroupBegin(label,id);
         {
             let onEvents = {};
@@ -1038,11 +1042,6 @@ class UIBuilderDefault extends UIBaseBuilder{
                             return val;
                         })
                     });
-                },100);
-            }
-            else{
-                setTimeout(()=>{
-                    $(`#${id}`)['datetimepicker']("disable");
                 },100);
             }
 

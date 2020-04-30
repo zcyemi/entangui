@@ -671,6 +671,7 @@ export class SampleUI extends UIContainer {
 export function InitSample() {
     let opt: UIRenderInitOptions = new UIRenderInitOptions();
     opt.theme = new UIThemeDefault();
+    opt.feature_set = [];
     var render = new UIRenderer(document.getElementById('container'),opt);
     var source = new UISourceLocal(new SampleUI());
     UIRenderingBind(source, render);

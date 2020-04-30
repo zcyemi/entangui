@@ -53,13 +53,26 @@ const patchConfig = init([
     datasetModule,
 ]);
 
+export enum UIFeature{
+    datetime_picker = "datetime_picker"
+}
+
 export class UIRenderInitOptions{
     public disconnPage?:boolean = false;
+    public auto_load_res:boolean = true;
     public theme?:IUITheme = new UIThemeDefault();
 
     public cdn_jquery_datetimepicker_js?:string = "https://cdn.bootcss.com/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js";
     public cdn_jquery_datetimepicker_css?:string = "https://cdn.bootcss.com/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css";
     public cdn_font_awesome_css?:string = "https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css";
+
+    public feature_set:UIFeature[] = [UIFeature.datetime_picker];
+
+    public isFeatureEnable(feature:UIFeature):boolean{
+        if(this.feature_set == null) return false;
+        if(this.feature_set.indexOf(feature) >=0) return true;
+        return false;
+    }
 }
 
 export class UIHTMLDepLoader{
@@ -126,17 +139,30 @@ export class UIRenderer {
 
     private m_virtualDom:UIVirtualDom;
 
+
+
+
     private static initDepResources(options:UIRenderInitOptions){
         if(UIRenderer.s_cssInited) return;
         UIRenderer.s_cssInited = true;
-        UIHTMLDepLoader.loadCss(options.cdn_font_awesome_css);
 
-        UIHTMLDepLoader.loadCss(options.cdn_jquery_datetimepicker_css);
-        UIHTMLDepLoader.loadJs(options.cdn_jquery_datetimepicker_js);
+
+        if(options.auto_load_res){
+            UIHTMLDepLoader.loadCss(options.cdn_font_awesome_css);
+            if(options.isFeatureEnable(UIFeature.datetime_picker)){
+                UIHTMLDepLoader.loadCss(options.cdn_jquery_datetimepicker_css);
+                UIHTMLDepLoader.loadJs(options.cdn_jquery_datetimepicker_js);
+            }
+
+        }
 
         var theme = options.theme;
+
         theme.LoadDepStyleSheet();
-        theme.LoadDepScript();
+        if(options.auto_load_res){
+            theme.LoadDepScript();
+        }
+
 
         UIHTMLDepLoader.addCSS('internal_css',INTERNAL_CSS);
     }
@@ -162,6 +188,7 @@ export class UIRenderer {
 
 
         this.m_builder = this.m_options.theme.GetUIBuilder(this.onMessageEvent.bind(this),this.m_virtualDom);
+        this.m_builder.feature_set = options.feature_set;
     }
 
     private onMessageEvent(evt: UIEventData) {
