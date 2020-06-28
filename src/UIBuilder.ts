@@ -514,8 +514,13 @@ export class UIBaseBuilder {
     }
 
     public cmdText(options: any) {
+        options = options || {};
         let tag = options['tag'] || 'p';
-        let text = h(tag, {}, options['text']);
+        let text = h(tag, {
+            class:this.buildClasses(options.class),
+            props:options.props,
+            style:options.style,
+        }, options['text']);
         this.pushNode(text);
     }
 
@@ -553,7 +558,7 @@ export class UIBaseBuilder {
         else{
             rawclasses.push('btn-primary');
         }
-        let classes = this.buildClasses('btn',...(rawclasses));
+        let classes = this.buildClasses('btn',...(rawclasses??[]));
         let btn = h('button',
             {
                 class: classes,
@@ -847,7 +852,7 @@ export class UIBaseBuilder {
     }
 
     public cmdCardBegin(options: any) {
-        let classes = this.buildClasses(...options.class,'card');
+        let classes = this.buildClasses(...(options.class??[]),'card');
         let card = h('div', {
             class: classes,
             style: options.style
@@ -1035,7 +1040,7 @@ export class UIBaseBuilder {
         else{
             rawclasses.push('btn-primary');
         }
-        let classes = this.buildClasses('btn',...(rawclasses));
+        let classes = this.buildClasses('btn',...(rawclasses??[]));
         let btn = h('button',
             {
                 class: classes,
