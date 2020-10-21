@@ -1268,6 +1268,7 @@ class UIBuilderDefault extends UIBaseBuilder{
     }
 
     public cmdFlexBegin(options: any) {
+        options = options || {};
         let flex = h('div', {
             class: {
                 'flex': true
